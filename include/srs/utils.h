@@ -21,7 +21,6 @@
 // Provides C++ utility methods.
 //
 
-#include <srs/utils_impl/arma_io.h>
 #include <srs/utils_impl/format.h>
 #include <srs/utils_impl/input.h>
 #include <srs/utils_impl/stream.h>
