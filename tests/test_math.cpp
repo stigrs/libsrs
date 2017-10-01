@@ -17,6 +17,7 @@
 #include <srs/math.h>
 #include <armadillo>
 #include <catch/catch.hpp>
+#include <complex>
 #include <iostream>
 
 TEST_CASE("test_math")
@@ -231,6 +232,113 @@ TEST_CASE("test_math")
                 CHECK(srs::approx_equal(
                     std::abs(a(i, j)), std::abs(eigvec(i, j)), 1.0e-12));
             }
+        }
+    }
+
+    SECTION("eigs")
+    {
+        arma::mat aa = {{1.0, 0.5, 1. / 3., 1. / 4., 1. / 5},
+                        {0.5, 1. / 3., 1. / 4., 1. / 5., 1. / 6.},
+                        {1. / 3., 1. / 4., 1. / 5., 1. / 6., 1. / 7.},
+                        {1. / 4., 1. / 5., 1. / 6., 1. / 7., 1. / 8.},
+                        {1. / 5., 1. / 6., 1. / 7., 1. / 8., 1. / 9.}};
+
+        arma::mat eigvec;
+        arma::vec eigval;
+        arma::eig_sym(eigval, eigvec, aa);
+
+        srs::dmatrix a = srs::hilbert(5);
+        srs::dvector wr(5);
+        srs::eigs(a, wr);
+
+        for (std::size_t i = 0; i < wr.size(); ++i) {
+            CHECK(srs::approx_equal(wr(i), eigval(i), 1.0e-12));
+        }
+        for (std::size_t j = 0; j < a.cols(); ++j) {
+            for (std::size_t i = 0; i < a.rows(); ++i) {
+                CHECK(srs::approx_equal(
+                    std::abs(a(i, j)), std::abs(eigvec(i, j)), 1.0e-12));
+            }
+        }
+    }
+
+    SECTION("eig")
+    {
+        arma::mat a1 = {{1.0, 5.0, 4.0, 2.0},
+                        {-2.0, 3.0, 6.0, 4.0},
+                        {5.0, 1.0, 0.0, -1.0},
+                        {2.0, 3.0, -4.0, 0.0}};
+
+        arma::cx_mat eigvec;
+        arma::cx_vec eigval;
+        arma::eig_gen(eigval, eigvec, a1);
+
+        srs::dmatrix a2 = {{1.0, 5.0, 4.0, 2.0},
+                           {-2.0, 3.0, 6.0, 4.0},
+                           {5.0, 1.0, 0.0, -1.0},
+                           {2.0, 3.0, -4.0, 0.0}};
+        srs::zmatrix v(4, 4);
+        srs::zvector w(4);
+        srs::eig(a2, v, w);
+
+        for (std::size_t i = 0; i < w.size(); ++i) {
+            CHECK(srs::approx_equal(w(i).real(), eigval(i).real(), 1.0e-12));
+            CHECK(srs::approx_equal(w(i).imag(), eigval(i).imag(), 1.0e-12));
+        }
+        for (std::size_t j = 0; j < v.cols(); ++j) {
+            for (std::size_t i = 0; i < v.rows(); ++i) {
+                CHECK(srs::approx_equal(
+                    v(i, j).real(), eigvec(i, j).real(), 1.0e-12));
+                CHECK(srs::approx_equal(
+                    v(i, j).imag(), eigvec(i, j).imag(), 1.0e-12));
+            }
+        }
+    }
+
+    SECTION("inv")
+    {
+        arma::mat aa = {{1.0, 5.0, 4.0, 2.0},
+                        {-2.0, 3.0, 6.0, 4.0},
+                        {5.0, 1.0, 0.0, -1.0},
+                        {2.0, 3.0, -4.0, 0.0}};
+
+        srs::dmatrix a = {{1.0, 5.0, 4.0, 2.0},
+                          {-2.0, 3.0, 6.0, 4.0},
+                          {5.0, 1.0, 0.0, -1.0},
+                          {2.0, 3.0, -4.0, 0.0}};
+
+        aa = arma::inv(aa);
+        srs::inv(a);
+
+        for (std::size_t j = 0; j < a.cols(); ++j) {
+            for (std::size_t i = 0; i < a.rows(); ++i) {
+                CHECK(srs::approx_equal(a(i, j), aa(i, j), 1.0e-12));
+            }
+        }
+    }
+
+    SECTION("linsolve")
+    {
+        double a[] = {1, 2, 3, 2, 3, 4, 3, 4, 1};
+        double b[] = {14, 20, 14};
+
+        srs::dmatrix A(3, 3, &a[0]);
+        srs::dmatrix B(3, 1, &b[0]);
+
+        arma::mat AA(3, 3);
+        arma::vec BB = {14.0, 20.0, 14.0};
+
+        for (std::size_t j = 0; j < A.cols(); ++j) {
+            for (std::size_t i = 0; i < A.rows(); ++i) {
+                AA(i, j) = A(i, j);
+            }
+        }
+
+        arma::vec x = arma::solve(AA, BB);
+        srs::linsolve(A, B);
+
+        for (std::size_t i = 0; i < B.rows(); ++i) {
+            CHECK(srs::approx_equal(B(i, 0), x(i), 1.0e-12));
         }
     }
 }
