@@ -17,10 +17,10 @@
 #ifndef SRS_ARRAY_H
 #define SRS_ARRAY_H
 
+#include <complex>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
-
 
 
 namespace srs {
@@ -61,14 +61,17 @@ struct Array_error : std::runtime_error {
 typedef Array<int, 1> ivector;
 typedef Array<std::size_t, 1> uvector;
 typedef Array<double, 1> dvector;
+typedef Array<std::complex<double>, 1> zvector;
 
 typedef Array<int, 2> imatrix;
 typedef Array<std::size_t, 2> umatrix;
 typedef Array<double, 2> dmatrix;
+typedef Array<std::complex<double>, 2> zmatrix;
 
 typedef Array<int, 3> icube;
 typedef Array<std::size_t, 3> ucube;
 typedef Array<double, 3> dcube;
+typedef Array<std::complex<double>, 3> zcube;
 
 }  // namespace srs
 
