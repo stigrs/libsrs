@@ -341,4 +341,35 @@ TEST_CASE("test_math")
             CHECK(srs::approx_equal(B(i, 0), x(i), 1.0e-12));
         }
     }
+
+    SECTION("stat")
+    {
+        srs::dvector a = {3.0,
+                          13.0,
+                          7.0,
+                          5.0,
+                          21.0,
+                          23.0,
+                          39.0,
+                          23.0,
+                          40.0,
+                          23.0,
+                          14.0,
+                          12.0,
+                          56.0,
+                          23.0,
+                          29.0};
+
+        CHECK(srs::approx_equal(srs::mean(a), 22.066666666666666, 1.0e-8));
+        CHECK(srs::approx_equal(srs::median(a), 23.0, 1.0e-8));
+        CHECK(srs::approx_equal(srs::stddev(a), 14.49860420211283, 1.0e-8));
+        CHECK(srs::approx_equal(srs::rms(a), 26.136819495365792, 1.0e-8));
+
+        // clang-format off
+        srs::dvector b = {3, 13, 7, 5, 21, 23, 23, 40, 23, 14, 12, 56, 23, 29};
+        srs::dvector c = {3, 13, 7, 5, 21, 23, 39, 23, 40, 23, 14, 12, 56, 23};
+        // clang-format on
+
+        CHECK(srs::approx_equal(srs::cov(b, c), 59.78021978, 1.0e-8));
+    }
 }
