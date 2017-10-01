@@ -381,7 +381,6 @@ void srs::inv(srs::dmatrix& a)
     MKL_INT n = a.rows();
 
     srs::ivector ipiv(n);
-
     lu(a, ipiv);  // perform LU factorization
 
     MKL_INT info
@@ -695,16 +694,15 @@ double srs::median(srs::dvector& x)
 
 double srs::var(const srs::dvector& x)
 {
+    // Two-pass algorithm:
     double n     = static_cast<double>(x.size());
     double xmean = srs::mean(x);
     double sum2  = 0.0;
-    double sum3  = 0.0;
 
     for (std::size_t i = 0; i < x.size(); ++i) {
         sum2 += std::pow(x(i) - xmean, 2.0);
-        sum3 += x(i) - xmean;
     }
-    return (sum2 - sum3 * sum3 / n) / (n - 1.0);
+    return sum2 / (n - 1.0);
 }
 
 double srs::mad(const srs::dvector& x)
@@ -740,7 +738,7 @@ double srs::cov(const srs::dvector& x, const srs::dvector& y)
     for (std::size_t i = 0; i < x.size(); ++i) {
         double a = x(i) - xmean;
         double b = y(i) - ymean;
-        cov += a * b / n;
+        cov += a * b / (n - 1.0);
     }
     return cov;
 }
