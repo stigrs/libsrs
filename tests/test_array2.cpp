@@ -276,7 +276,6 @@ TEST_CASE("test_array2")
         CHECK(d(0) == 1);
         CHECK(d(1) == 5);
         CHECK(d(2) == 9);
-        CHECK_THROWS(m.diag());
     }
 
     SECTION("slicing")
