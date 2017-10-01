@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cmath>
 #include <gsl/gsl>
+#include <limits>
 #include <numeric>
 #include <stdexcept>
 #include <string>
@@ -212,11 +213,32 @@ inline srs::dmatrix identity(std::size_t n)
 // Create Hilbert matrix.
 srs::dmatrix hilbert(std::size_t n);
 
+// Create a vector with elements set to random integer values in the
+// interval [a, b].
+srs::ivector randi(std::size_t n,
+                   int a = 0,
+                   int b = std::numeric_limits<int>::max());
+
+// Create a vector with elements set to real random uniform distribution values
+// in the interval [0, 1).
+srs::dvector randu(std::size_t n);
+
+// Create a M x N matrix with elements set to random integer values in the
+// interval [a, b].
+srs::imatrix randi(std::size_t m,
+                   std::size_t n,
+                   int a = 0,
+                   int b = std::numeric_limits<int>::max());
+
+// Create a M x N matrix with elements set to real random uniform distribution
+// values in the interval [0, 1).
+srs::dmatrix randu(std::size_t m, std::size_t n);
+
 //------------------------------------------------------------------------------
 
 // Intel MKL wrappers:
 
-/// Matrix-matrix multiplication.
+// Matrix-matrix multiplication.
 void dgemm(const std::string& transa,
            const std::string& transb,
            const double alpha,
@@ -224,6 +246,14 @@ void dgemm(const std::string& transa,
            const srs::dmatrix& b,
            const double beta,
            srs::dmatrix& c);
+
+// Matrix-vector multiplication.
+void dgemv(const std::string& transa,
+           const double alpha,
+           const srs::dmatrix& a,
+           const srs::dvector& x,
+           const double beta,
+           srs::dvector& y);
 
 //------------------------------------------------------------------------------
 
@@ -245,6 +275,22 @@ inline srs::dmatrix matmul(const srs::dmatrix& a, const srs::dmatrix& b)
     return result;
 }
 
+// Matrix-vector multiplication.
+inline void matmul(const srs::dmatrix& a,
+                   const srs::dvector& x,
+                   srs::dvector& y)
+{
+    dgemv("N", 1.0, a, x, 0.0, y);
+}
+
+// Matrix-vector multiplication.
+inline dvector matmul(const srs::dmatrix& a, const srs::dvector x)
+{
+    srs::dvector result;
+    dgemv("N", 1.0, a, x, 0.0, result);
+    return result;
+}
+
 //------------------------------------------------------------------------------
 
 // Linear algebra:
@@ -252,8 +298,23 @@ inline srs::dmatrix matmul(const srs::dmatrix& a, const srs::dmatrix& b)
 // Determinant of a matrix.
 double det(const srs::dmatrix& a);
 
+// Matrix inversion.
+void inv(srs::dmatrix& a);
+
+// Compute LU factorization.
+void lu(srs::dmatrix& a, srs::ivector& ipiv);
+
+// Compute eigenvalues and eigenvectors of a real symmetric matrix.
+void eigs(srs::dmatrix& a, srs::dvector& wr);
+
+// Compute eigenvalues and eigenvectors of a real non-symmetric matrix.
+void eig(srs::dmatrix& a, srs::zmatrix& v, srs::zvector& w);
+
 // Compute eigenvalues and eigenvectors of a real symmetric matrix.
 void jacobi(srs::dmatrix& a, srs::dvector& wr);
+
+// Solve linear system of equations.
+void linsolve(srs::dmatrix& a, srs::dmatrix& b);
 
 //------------------------------------------------------------------------------
 

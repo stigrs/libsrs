@@ -18,6 +18,7 @@
 #include <srs/math.h>
 #include <boost/math/special_functions/legendre.hpp>
 #include <gsl/gsl>
+#include <random>
 #include <vector>
 
 
@@ -177,6 +178,62 @@ srs::dmatrix srs::hilbert(std::size_t n)
     return result;
 }
 
+srs::ivector srs::randi(std::size_t n, int a, int b)
+{
+    srs::ivector result(n);
+
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_int_distribution<> rdist(a, b);
+
+    for (std::size_t i = 0; i < n; ++i) {
+        result(i) = rdist(mt);
+    }
+    return result;
+}
+
+srs::dvector srs::randu(std::size_t n)
+{
+    srs::dvector result(n);
+
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_real_distribution<> rdist;
+
+    for (std::size_t i = 0; i < n; ++i) {
+        result(i) = rdist(mt);
+    }
+    return result;
+}
+
+srs::imatrix srs::randi(std::size_t m, std::size_t n, int a, int b)
+{
+    srs::imatrix result(m, n);
+
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_int_distribution<> rdist(a, b);
+
+    for (std::size_t i = 0; i < result.size(); ++i) {
+        result.data()[i] = rdist(mt);
+    }
+    return result;
+}
+
+srs::dmatrix srs::randu(std::size_t m, std::size_t n)
+{
+    srs::dmatrix result(m, n);
+
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_real_distribution<> rdist;
+
+    for (std::size_t i = 0; i < result.size(); ++i) {
+        result.data()[i] = rdist(mt);
+    }
+    return result;
+}
+
 //------------------------------------------------------------------------------
 
 void srs::dgemm(const std::string& transa,
@@ -224,20 +281,53 @@ void srs::dgemm(const std::string& transa,
         cblas_transb = CblasNoTrans;
     }
 
-    cblas_dgemm(CblasColMajor,
-                cblas_transa,
-                cblas_transb,
-                m,
-                n,
-                k,
-                alpha,
-                a.data(),
-                lda,
-                b.data(),
-                ldb,
-                beta,
-                c.data(),
-                ldc);
+    // clang-format off
+    cblas_dgemm(
+        CblasColMajor, cblas_transa, cblas_transb, m, n, k, alpha, a.data(),
+        lda, b.data(), ldb, beta, c.data(), ldc);
+    // clang-format on
+}
+
+void srs::dgemv(const std::string& transa,
+                const double alpha,
+                const srs::dmatrix& a,
+                const srs::dvector& x,
+                const double beta,
+                srs::dvector& y)
+{
+    MKL_INT m = a.rows();
+    MKL_INT n = a.cols();
+
+    if ((transa == "N") || (transa == "n")) {
+        Expects(x.size() == a.cols());
+        if (y.empty()) {
+            y.resize(m);
+        }
+    }
+    else {
+        Expects(x.size() == a.cols());
+        if (y.empty()) {
+            y.resize(n);
+        }
+    }
+
+    MKL_INT lda  = m > 1 ? m : 1;
+    MKL_INT incx = 1;
+    MKL_INT incy = 1;
+
+    CBLAS_TRANSPOSE cblas_transa;
+    if ((transa == "T") || (transa == "t")) {
+        cblas_transa = CblasTrans;
+    }
+    else {
+        cblas_transa = CblasNoTrans;
+    }
+
+    // clang-format off
+    cblas_dgemv(
+        CblasColMajor, cblas_transa, m, n, alpha, a.data(), lda, x.data(),
+        incx, beta, y.data(), incy);
+    // clang-format on
 }
 
 //------------------------------------------------------------------------------
@@ -262,9 +352,8 @@ double srs::det(const srs::dmatrix& a)
     }
     else {  // use LU decomposition
         srs::dmatrix tmp = a;
-        srs::ivector ipiv(n);
-
-        LAPACKE_dgetrf(LAPACK_COL_MAJOR, n, n, tmp.data(), n, ipiv.data());
+        srs::ivector ipiv;
+        lu(tmp, ipiv);
 
         long permut = 0;
         for (long i = 1; i <= n; ++i) {
@@ -280,6 +369,113 @@ double srs::det(const srs::dmatrix& a)
         ddet *= std::pow(-1.0, static_cast<double>(permut));
     }
     return ddet;
+}
+
+void srs::inv(srs::dmatrix& a)
+{
+    Expects(a.rows() == a.cols());
+
+    if (det(a) == 0.0) {
+        throw Math_error("srs::inv(): matrix is not invertible");
+    }
+    MKL_INT n = a.rows();
+
+    srs::ivector ipiv(n);
+
+    lu(a, ipiv);  // perform LU factorization
+
+    MKL_INT info
+        = LAPACKE_dgetri(LAPACK_COL_MAJOR, n, a.data(), n, ipiv.data());
+    if (info != 0) {
+        throw Math_error("dgetri: matrix inversion failed");
+    }
+}
+
+void srs::lu(srs::dmatrix& a, srs::ivector& ipiv)
+{
+    MKL_INT m = a.rows();
+    MKL_INT n = a.cols();
+    ipiv.resize(std::min(m, n));
+
+    MKL_INT info
+        = LAPACKE_dgetrf(LAPACK_COL_MAJOR, m, n, a.data(), m, ipiv.data());
+    if (info < 0) {
+        throw Math_error("dgetrf: illegal input parameter");
+    }
+    else if (info > 0) {
+        throw Math_error("dgetrf: U matrix is singular");
+    }
+}
+
+void srs::eigs(srs::dmatrix& a, srs::dvector& wr)
+{
+    Expects(a.rows() == a.cols());
+
+    MKL_INT n      = a.rows();
+    MKL_INT lwork  = 26 * n;
+    MKL_INT liwork = 10 * n;
+    MKL_INT info   = 0;
+
+    wr.resize(n);
+    srs::dmatrix z(n, n);
+    srs::ivector isuppz(2 * n);
+    srs::dvector work(lwork);
+    srs::ivector iwork(liwork);
+
+    double abstol = n * std::numeric_limits<double>::epsilon();
+    double zero   = 0.0;
+
+    // clang-format off
+    dsyevr(
+        "V", "A", "U", &n, a.data(), &n, &zero, &zero, 0, 0, &abstol, &n, 
+        wr.data(), z.data(), &n, isuppz.data(), work.data(), &lwork, 
+        iwork.data(), &liwork, &info);
+    // clang-format on
+    if (info != 0) {
+        throw Math_error("dsyevr failed");
+    }
+    a = z;
+}
+
+void srs::eig(srs::dmatrix& a, srs::zmatrix& v, srs::zvector& w)
+{
+    Expects(a.rows() == a.cols());
+
+    MKL_INT n     = a.cols();
+    MKL_INT lwork = 4 * n;
+    MKL_INT info  = 0;
+
+    if (w.size() != a.cols()) {
+        w.resize(a.cols());
+    }
+    srs::dvector wr(n);
+    srs::dvector wi(n);
+    srs::dmatrix vr(n, n);
+    srs::dmatrix vl(n, n);
+    srs::dvector work(lwork);
+
+    // clang-format off
+    dgeev(
+        "N", "V", &n, a.data(), &n, wr.data(), wi.data(), vl.data(), &n, 
+        vr.data(), &n, work.data(), &lwork, &info);
+    // clang-format on
+    if (info != 0) {
+        throw Math_error("dgeev failed");
+    }
+    for (std::size_t i = 0; i < vr.rows(); ++i) {  // can this be done faster?
+        std::complex<double> wii(wr(i), wi(i));
+        w(i) = wii;
+        for (std::size_t j = 0; j < vr.cols(); j += 2) {
+            std::complex<double> v1 = {vr(i, j), 0.0};
+            std::complex<double> v2 = {vr(i, j + 1), 0.0};
+            if (wi(j) != 0.0) {
+                v1 = {vr(i, j), vr(i, j + 1)};
+                v2 = {vr(i, j), -vr(i, j + 1)};
+            }
+            v(i, j)     = v1;
+            v(i, j + 1) = v2;
+        }
+    }
 }
 
 void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
@@ -446,6 +642,25 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         }
     }
     a = vr;
+}
+
+void srs::linsolve(srs::dmatrix& a, srs::dmatrix& b)
+{
+    Expects(a.rows() == a.cols());
+    Expects(b.rows() == a.cols());
+
+    MKL_INT n    = a.cols();
+    MKL_INT lda  = a.rows();
+    MKL_INT ldb  = b.rows();
+    MKL_INT nrhs = b.cols();
+
+    srs::ivector ipiv(n);
+
+    MKL_INT info = LAPACKE_dgesv(
+        LAPACK_COL_MAJOR, n, nrhs, a.data(), lda, ipiv.data(), b.data(), ldb);
+    if (info != 0) {
+        throw Math_error("dgesv: factor U is singular");
+    }
 }
 
 //------------------------------------------------------------------------------
