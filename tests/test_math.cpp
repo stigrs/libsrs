@@ -372,4 +372,10 @@ TEST_CASE("test_math")
 
         CHECK(srs::approx_equal(srs::cov(b, c), 59.78021978, 1.0e-8));
     }
+
+    SECTION("trace")
+    {
+        srs::imatrix a = {{-1, 0, 3}, {11, 5, 2}, {6, 12, -6}};
+        CHECK(srs::trace(a) == -2);
+    }
 }

@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2017 Stig Rune Sellevag. All rights reserved.
 //
@@ -258,6 +258,15 @@ void dgemv(const std::string& transa,
 //------------------------------------------------------------------------------
 
 // Matrix-vector functions:
+
+// Compute trace of N x N matrix.
+template <class T>
+inline T trace(const srs::Array<T, 2>& a)
+{
+    Expects(a.rows() == a.cols());
+    const auto d = a.diag();
+    return std::accumulate(d.begin(), d.end(), T(0));
+}
 
 // Matrix-matrix multiplication.
 inline void matmul(const srs::dmatrix& a,
