@@ -90,9 +90,9 @@ void srs::rotate(srs::dmatrix& xyz, const srs::dmatrix& rotm)
 
     for (std::size_t i = 0; i < xyz.rows(); ++i) {
         auto xyz_new = rotm * xyz.row(i);
-        xyz(i, 0)    = xyz_new(0);
-        xyz(i, 1)    = xyz_new(1);
-        xyz(i, 2)    = xyz_new(2);
+        xyz(i, 0) = xyz_new(0);
+        xyz(i, 1) = xyz_new(1);
+        xyz(i, 2) = xyz_new(2);
     }
 }
 
@@ -410,25 +410,22 @@ void srs::eigs(srs::dmatrix& a, srs::dvector& wr)
 {
     Expects(a.rows() == a.cols());
 
-    MKL_INT n      = a.rows();
-    MKL_INT lwork  = 26 * n;
-    MKL_INT liwork = 10 * n;
-    MKL_INT info   = 0;
+    MKL_INT n  = a.rows();
+    MKL_INT il = 1;
+    MKL_INT iu = n;
 
     wr.resize(n);
     srs::dmatrix z(n, n);
     srs::ivector isuppz(2 * n);
-    srs::dvector work(lwork);
-    srs::ivector iwork(liwork);
 
-    double abstol = n * std::numeric_limits<double>::epsilon();
-    double zero   = 0.0;
+    double abstol = -1.0;  // use default value
+    double vl     = 0.0;
+    double vu     = 0.0;
 
     // clang-format off
-    dsyevr(
-        "V", "A", "U", &n, a.data(), &n, &zero, &zero, 0, 0, &abstol, &n, 
-        wr.data(), z.data(), &n, isuppz.data(), work.data(), &lwork, 
-        iwork.data(), &liwork, &info);
+    MKL_INT info = LAPACKE_dsyevr(
+        LAPACK_COL_MAJOR, 'V', 'A', 'U', n, a.data(), n, vl, vu, il, iu, abstol, 
+        &n, wr.data(), z.data(), n, isuppz.data());
     // clang-format on
     if (info != 0) {
         throw Math_error("dsyevr failed");
@@ -582,21 +579,21 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     // Apply Jacobi transformation:
 
                     a(p, q) = 0.0;
-                    wr[p] -= z;
-                    wr[q] += z;
+                    wr(p) -= z;
+                    wr(q) += z;
 
                     for (std::size_t r = 0; r < p; ++r) {
-                        t       = a(r, p);
+                        t = a(r, p);
                         a(r, p) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (std::size_t r = p + 1; r < q; ++r) {
-                        t       = a(p, r);
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (std::size_t r = q + 1; r < n; ++r) {
-                        t       = a(p, r);
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(q, r);
                         a(q, r) = s * t + c * a(q, r);
                     }
@@ -604,7 +601,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     // Update eigenvectors:
 
                     for (std::size_t r = 0; r < n; ++r) {
-                        t        = vr(r, p);
+                        t = vr(r, p);
                         vr(r, p) = c * t - s * vr(r, q);
                         vr(r, q) = s * t + c * vr(r, q);
                     }
@@ -621,7 +618,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
     for (std::size_t ii = 1; ii < n; ++ii) {
         std::size_t i = ii - 1;
         std::size_t k = i;
-        double p      = wr[i];
+        double p      = wr(i);
         for (std::size_t j = ii; j < n; ++j) {
             if (wr(j) >= p) {
                 continue;
@@ -635,7 +632,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         wr(k) = wr(i);
         wr(i) = p;
         for (std::size_t j = 0; j < n; ++j) {
-            p        = vr(j, i);
+            p = vr(j, i);
             vr(j, i) = vr(j, k);
             vr(j, k) = p;
         }
