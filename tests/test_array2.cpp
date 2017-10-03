@@ -144,7 +144,7 @@ TEST_CASE("test_array2")
     SECTION("assignment")
     {
         srs::Array<double, 2> a = {{1.0, 2.0}, {3.0, 4.0}};
-        auto b = a;
+        auto b                  = a;
         CHECK(a == b);
         CHECK(a.size() == b.size());
         CHECK(a.rows() == b.rows());
@@ -384,10 +384,39 @@ TEST_CASE("test_array2")
     SECTION("row_subtraction")
     {
         srs::dvector rans = {3.0, 3.0, 3.0};
-        const auto mm     = m;
-        const auto rr     = mm.row(1) - mm.row(0);
-        auto r            = m.row(1) - m.row(0);
+
+        const auto mm = m;
+        const auto rr = mm.row(1) - mm.row(0);
+        auto r        = m.row(1) - m.row(0);
+
         CHECK(rr == rans);
         CHECK(r == rans);
+    }
+
+    SECTION("sort")
+    {
+        srs::imatrix a = {{-1, 0, 3}, {11, 5, 2}, {6, 12, -6}};
+
+        srs::imatrix aca = {{-1, 0, -6}, {6, 5, 2}, {11, 12, 3}};
+        srs::imatrix acd = {{11, 12, 3}, {6, 5, 2}, {-1, 0, -6}};
+
+        srs::imatrix ara = {{-1, 0, 3}, {2, 5, 11}, {-6, 6, 12}};
+        srs::imatrix ard = {{3, 0, -1}, {11, 5, 2}, {12, 6, -6}};
+
+        srs::imatrix tmp = a;
+        srs::sort(tmp, 2, true);
+        CHECK(tmp == aca);
+
+        tmp = a;
+        srs::sort(tmp, 2, false);
+        CHECK(tmp == acd);
+
+        tmp = a;
+        srs::sort(tmp, 1, true);
+        CHECK(tmp == ara);
+
+        tmp = a;
+        srs::sort(tmp, 1, false);
+        CHECK(tmp == ard);
     }
 }

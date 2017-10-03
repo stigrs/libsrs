@@ -34,6 +34,8 @@ class Array_ref<T, 1> {
 public:
     typedef T value_type;
     typedef std::size_t size_type;
+    typedef Slice_iter<T> iterator;
+    typedef Cslice_iter<T> const_iterator;
 
     // Constructors:
 
@@ -55,18 +57,11 @@ public:
 
     // Iterators:
 
-    Slice_iter<T> begin() 
-    {
-        return {elems, srs::Slice(0, size(), stride)};
-    }
+    iterator begin();
+    iterator end();
 
-    Cslice_iter<T> begin() const
-    {
-        return {elems, srs::Slice(0, size(), stride)};
-    }
-
-    Slice_iter<T> end() { return {elems, srs::Slice(size(), 1, stride)}; }
-    Cslice_iter<T> end() const { return {elems, srs::Slice(size(), 1, stride)}; }
+    const_iterator begin() const;
+    const_iterator end() const;
 
     // Capacity:
 
@@ -164,6 +159,30 @@ inline const T& Array_ref<T, 1>::operator[](size_type i) const
 #else
     return at(i);
 #endif
+}
+
+template <class T>
+Slice_iter<T> Array_ref<T, 1>::begin()
+{
+    return Slice_iter<T>(elems, srs::Slice(0, size(), stride));
+}
+
+template <class T>
+Cslice_iter<T> Array_ref<T, 1>::begin() const
+{
+    return Cslice_iter<T>(elems, srs::Slice(0, size(), stride));
+}
+
+template <class T>
+Slice_iter<T> Array_ref<T, 1>::end()
+{
+    return Slice_iter<T>(elems, srs::Slice(size(), 1, stride));
+}
+
+template <class T>
+Cslice_iter<T> Array_ref<T, 1>::end() const
+{
+    return Cslice_iter<T>(elems, srs::Slice(size(), 1, stride));
 }
 
 template <class T>
