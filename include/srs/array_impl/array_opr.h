@@ -112,7 +112,7 @@ inline Array<T, 1> operator*(const Array<T, 2>& a, const Array<T, 1>& v)
 
 // Sort vector.
 template <class T>
-inline void sort(srs::Array<T, 1>& vec, bool ascending = true)
+inline void sort(Array<T, 1>& vec, bool ascending = true)
 {
     if (ascending) {
         std::sort(vec.begin(), vec.end(), std::less<T>());
@@ -122,23 +122,56 @@ inline void sort(srs::Array<T, 1>& vec, bool ascending = true)
     }
 }
 
+template <typename T>
+void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
+{
+    if (dim == 1) {  // sort elements along each row
+        if (ascending) {
+            for (std::size_t i = 0; i < a.rows(); ++i) {
+                auto ri = a.row(i);
+                std::sort(ri.begin(), ri.end(), std::less<T>());
+            }
+        }
+        else {
+            for (std::size_t i = 0; i < a.rows(); ++i) {
+                auto ri = a.row(i);
+                std::sort(ri.begin(), ri.end(), std::greater<T>());
+            }
+        }
+    }
+    else {  // sort elements along each column
+        if (ascending) {
+            for (std::size_t j = 0; j < a.cols(); ++j) {
+                auto cj = a.column(j);
+                std::sort(cj.begin(), cj.end(), std::less<T>());
+            }
+        }
+        else {
+            for (std::size_t j = 0; j < a.cols(); ++j) {
+                auto cj = a.column(j);
+                std::sort(cj.begin(), cj.end(), std::greater<T>());
+            }
+        }
+    }
+}
+
 // Find maximum element.
 template <class T>
-inline T max(const srs::Array<T, 1>& vec)
+inline T max(const Array<T, 1>& vec)
 {
     return *std::max_element(vec.begin(), vec.end());
 }
 
 // Find minimum element.
 template <class T>
-inline T min(const srs::Array<T, 1>& vec)
+inline T min(const Array<T, 1>& vec)
 {
     return *std::min_element(vec.begin(), vec.end());
 }
 
 // Find maximum element.
 template <class T>
-Array<T, 1> max(const srs::Array<T, 2>& a, int dim = 2)
+Array<T, 1> max(const Array<T, 2>& a, int dim = 2)
 {
     Array<T, 1> result;
     if (dim == 1) {  // row
@@ -160,7 +193,7 @@ Array<T, 1> max(const srs::Array<T, 2>& a, int dim = 2)
 
 // Find maximum element.
 template <class T>
-Array<T, 1> min(const srs::Array<T, 2>& a, int dim = 2)
+Array<T, 1> min(const Array<T, 2>& a, int dim = 2)
 {
     Array<T, 1> result;
     if (dim == 1) {
@@ -182,21 +215,21 @@ Array<T, 1> min(const srs::Array<T, 2>& a, int dim = 2)
 
 // Compute sum of elements.
 template <class T>
-inline T sum(const srs::Array<T, 1>& vec)
+inline T sum(const Array<T, 1>& vec)
 {
     return std::accumulate(vec.begin(), vec.end(), T(0));
 }
 
 // Compute product of elements.
 template <class T>
-inline T prod(const srs::Array<T, 1>& vec)
+inline T prod(const Array<T, 1>& vec)
 {
     return std::accumulate(vec.begin(), vec.end(), T(1), std::multiplies<T>());
 }
 
 // Compute the norm of a vector.
 template <class T>
-inline T norm(const srs::Array<T, 1>& vec, int p = 2)
+inline T norm(const Array<T, 1>& vec, int p = 2)
 {
     T pnorm = T(0);
     if (!vec.empty()) {
@@ -237,7 +270,7 @@ inline srs::dvector normalize(const srs::dvector& vec)
 
 // Compute dot product.
 template <class T>
-inline T dot(const srs::Array<T, 1>& a, const srs::Array<T, 1>& b)
+inline T dot(const Array<T, 1>& a, const Array<T, 1>& b)
 {
     // Intel MKL will be faster for large N.
     Expects(a.size() == b.size());
@@ -246,11 +279,10 @@ inline T dot(const srs::Array<T, 1>& a, const srs::Array<T, 1>& b)
 
 // Compute cross product.
 template <class T>
-inline srs::Array<T, 1> cross(const srs::Array<T, 1>& a,
-                              const srs::Array<T, 1>& b)
+inline Array<T, 1> cross(const Array<T, 1>& a, const Array<T, 1>& b)
 {
     Expects(a.size() == b.size() && a.size() == 3);
-    srs::Array<T, 1> result(3);
+    Array<T, 1> result(3);
     result(0) = a(1) * b(2) - a(2) * b(1);
     result(1) = a(2) * b(0) - a(0) * b(2);
     result(2) = a(0) * b(1) - a(1) * b(0);
@@ -333,7 +365,6 @@ inline Array<T, 1> mv_mul(const Array<T, 2>& a, const Array<T, 1>& v)
     mv_mul(a, v, result);
     return result;
 }
-
 
 // Matrix-vector multiplication.
 template <class T>
