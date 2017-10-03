@@ -377,5 +377,9 @@ TEST_CASE("test_math")
     {
         srs::imatrix a = {{-1, 0, 3}, {11, 5, 2}, {6, 12, -6}};
         CHECK(srs::trace(a) == -2);
+        srs::Array_ref<double, 1> d = a.diag();
+        for (srs::Slice_iter<double> it = d.begin(); it != d.end(); ++it) {
+            std::cout << (*it) << std::endl;
+        }
     }
 }

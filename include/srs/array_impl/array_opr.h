@@ -136,6 +136,50 @@ inline T min(const srs::Array<T, 1>& vec)
     return *std::min_element(vec.begin(), vec.end());
 }
 
+// Find maximum element.
+template <class T>
+Array<T, 1> max(const srs::Array<T, 2>& a, int dim = 2)
+{
+    Array<T, 1> result;
+    if (dim == 1) {  // row
+        result.resize(a.rows());
+        for (std::size_t i = 0; i < a.rows(); ++i) {
+            auto ri   = a.row(i);
+            result(i) = *std::max_element(ri.begin(), ri.end());
+        }
+    }
+    else {  // column
+        result.resize(a.cols());
+        for (std::size_t j = 0; j < a.cols(); ++j) {
+            auto rj   = a.column(j);
+            result(j) = *std::max_element(rj.begin(), rj.end());
+        }
+    }
+    return result;
+}
+
+// Find maximum element.
+template <class T>
+Array<T, 1> min(const srs::Array<T, 2>& a, int dim = 2)
+{
+    Array<T, 1> result;
+    if (dim == 1) {
+        result.resize(a.rows());
+        for (std::size_t i = 0; i < a.rows(); ++i) {
+            auto ri   = a.row(i);
+            result(i) = *std::min_element(ri.begin(), ri.end());
+        }
+    }
+    else {
+        result.resize(a.cols());
+        for (std::size_t j = 0; j < a.cols(); ++j) {
+            auto rj   = a.column(j);
+            result(j) = *std::min_element(rj.begin(), rj.end());
+        }
+    }
+    return result;
+}
+
 // Compute sum of elements.
 template <class T>
 inline T sum(const srs::Array<T, 1>& vec)

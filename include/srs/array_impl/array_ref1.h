@@ -19,6 +19,7 @@
 
 #include <srs/array.h>
 #include <srs/array_impl/functors.h>
+#include <srs/array_impl/slice_iter.h>
 #include <array>
 #include <gsl/gsl>
 
@@ -51,6 +52,21 @@ public:
 
     T& operator[](size_type i);
     const T& operator[](size_type i) const;
+
+    // Iterators:
+
+    Slice_iter<T> begin() 
+    {
+        return {elems, srs::Slice(0, size(), stride)};
+    }
+
+    Cslice_iter<T> begin() const
+    {
+        return {elems, srs::Slice(0, size(), stride)};
+    }
+
+    Slice_iter<T> end() { return {elems, srs::Slice(size(), 1, stride)}; }
+    Cslice_iter<T> end() const { return {elems, srs::Slice(size(), 1, stride)}; }
 
     // Capacity:
 
