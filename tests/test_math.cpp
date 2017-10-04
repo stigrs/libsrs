@@ -142,6 +142,14 @@ TEST_CASE("test_math")
         for (std::size_t i = 0; i < v2.size(); ++i) {
             CHECK(srs::approx_equal(n1(i), n2(i), 1.0e-18));
         }
+
+        arma::mat m1    = {{-4, -3, -2}, {-1, 0, 1}, {2, 3, 4}};
+        srs::dmatrix m2 = {{-4, -3, -2}, {-1, 0, 1}, {2, 3, 4}};
+        CHECK(srs::approx_equal(srs::norm(m2), arma::norm(m1, "fro"), 1.0e-12));
+        CHECK(srs::approx_equal(
+            srs::norm(m2, srs::L1), arma::norm(m1, 1), 1.0e-12));
+        CHECK(srs::approx_equal(
+            srs::norm(m2, srs::Inf), arma::norm(m1, "inf"), 1.0e-12));
     }
 
     SECTION("sum_prod_max_min")
@@ -375,7 +383,9 @@ TEST_CASE("test_math")
 
     SECTION("trace")
     {
-        srs::imatrix a = {{-1, 0, 3}, {11, 5, 2}, {6, 12, -6}};
+        srs::imatrix a  = {{-1, 0, 3}, {11, 5, 2}, {6, 12, -6}};
+        const auto asub = a.slice(0, 1, 0, 1);
         CHECK(srs::trace(a) == -2);
+        CHECK(srs::trace(asub) == 4);
     }
 }

@@ -17,6 +17,7 @@
 #ifndef SRS_ARRAY_OPR_H
 #define SRS_ARRAY_OPR_H
 
+#include <srs/array_impl/norm_type.h>
 #include <algorithm>
 #include <cmath>
 #include <gsl/gsl>
@@ -455,6 +456,38 @@ inline T sum(const Array<T, 1>& vec)
     return std::accumulate(vec.begin(), vec.end(), T(0));
 }
 
+template <class T>
+inline T sum(const Array_ref<T, 1>& vec)
+{
+    return std::accumulate(vec.begin(), vec.end(), T(0));
+}
+
+template <class T>
+inline T sum(const Array_ref<const T, 1>& vec)
+{
+    return std::accumulate(vec.begin(), vec.end(), T(0));
+}
+
+// Compute sum of elements along given dimension.
+template <class T>
+Array<T, 1> sum(const Array<T, 2>& a, int dim = 2)
+{
+    Array<T, 1> result;
+    if (dim == 1) {  // sum element along each row
+        result.resize(a.rows());
+        for (std::size_t i = 0; i < a.rows(); ++i) {
+            result(i) = sum(a.row(i));
+        }
+    }
+    else {  // sum element along each column
+        result.resize(a.cols());
+        for (std::size_t j = 0; j < a.cols(); ++j) {
+            result(j) = sum(a.column(j));
+        }
+    }
+    return result;
+}
+
 // Compute product of elements.
 template <class T>
 inline T prod(const Array<T, 1>& vec)
@@ -462,9 +495,41 @@ inline T prod(const Array<T, 1>& vec)
     return std::accumulate(vec.begin(), vec.end(), T(1), std::multiplies<T>());
 }
 
+template <class T>
+inline T prod(const Array_ref<T, 1>& vec)
+{
+    return std::accumulate(vec.begin(), vec.end(), T(1), std::multiplies<T>());
+}
+
+template <class T>
+inline T prod(const Array_ref<const T, 1>& vec)
+{
+    return std::accumulate(vec.begin(), vec.end(), T(1), std::multiplies<T>());
+}
+
+// Compute product of elements along given dimension.
+template <class T>
+Array<T, 1> prod(const Array<T, 2>& a, int dim = 2)
+{
+    Array<T, 1> result;
+    if (dim == 1) {  // product of elements along each row
+        result.resize(a.rows());
+        for (std::size_t i = 0; i < a.rows(); ++i) {
+            result(i) = prod(a.row(i));
+        }
+    }
+    else {  // product of elements along each column
+        result.resize(a.cols());
+        for (std::size_t j = 0; j < a.cols(); ++j) {
+            result(j) = prod(a.column(j));
+        }
+    }
+    return result;
+}
+
 // Compute the norm of a vector.
 template <class T>
-inline T norm(const Array<T, 1>& vec, int p = 2)
+inline T norm(const Array<T, 1>& vec, int p = srs::L2)
 {
     T pnorm = T(0);
     if (!vec.empty()) {
@@ -494,6 +559,75 @@ inline T norm(const Array<T, 1>& vec, int p = 2)
         }
     }
     return pnorm;
+}
+
+// Compute matrix norm.
+template <class T>
+T norm(const Array<T, 2>& a, int p = srs::Fro)
+{
+    T pnorm = T(0);
+    T tsum  = T(0);
+
+    if (!a.empty()) {
+        if (p == srs::Fro) {  // Frobenius norm
+            for (std::size_t j = 0; j < a.cols(); ++j) {
+                for (std::size_t i = 0; i < a.rows(); ++i) {
+                    tsum += a(i, j) * a(i, j);
+                }
+            }
+            pnorm = std::sqrt(tsum);
+        }
+        else if (p == srs::L1) {  // maximum absolute column sum norm (L1 norm)
+            for (std::size_t j = 0; j < a.cols(); ++j) {
+                tsum    = T(0);
+                auto cj = a.column(j);
+                for (const auto& v : cj) {
+                    tsum += std::abs(v);
+                }
+                if (tsum > pnorm) {
+                    pnorm = tsum;
+                }
+            }
+        }
+        else {  // maximum absolute row sum norm (L-infinity norm)
+            for (std::size_t i = 0; i < a.rows(); ++i) {
+                tsum    = T(0);
+                auto ri = a.row(i);
+                for (const auto& v : ri) {
+                    tsum += std::abs(v);
+                }
+                if (tsum > pnorm) {
+                    pnorm = tsum;
+                }
+            }
+        }
+    }
+    return pnorm;
+}
+
+// Compute trace of N x N matrix.
+template <class T>
+inline T trace(const srs::Array<T, 2>& a)
+{
+    Expects(a.rows() == a.cols());
+    const auto d = a.diag();
+    return std::accumulate(d.begin(), d.end(), T(0));
+}
+
+template <class T>
+inline T trace(const srs::Array_ref<T, 2>& a)
+{
+    Expects(a.rows() == a.cols());
+    const auto d = a.diag();
+    return std::accumulate(d.begin(), d.end(), T(0));
+}
+
+template <class T>
+inline T trace(const srs::Array_ref<const T, 2>& a)
+{
+    Expects(a.rows() == a.cols());
+    const auto d = a.diag();
+    return std::accumulate(d.begin(), d.end(), T(0));
 }
 
 // Compute normalized vector.

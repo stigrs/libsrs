@@ -431,4 +431,13 @@ TEST_CASE("test_array2")
         CHECK(asub * b == mm);
         CHECK(asub * c == mv);
     }
+
+    SECTION("prod")
+    {
+        srs::imatrix a = {{-1, 0, 3}, {11, 5, 2}, {6, 12, -6}};
+        srs::ivector c = {-66, 0, -36};
+        srs::ivector r = {0, 110, -432};
+        CHECK(srs::prod(a, 2) == c);
+        CHECK(srs::prod(a, 1) == r);
+    }
 }

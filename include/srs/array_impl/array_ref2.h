@@ -61,6 +61,9 @@ public:
     Array_ref<T, 1> column(size_type i);
     Array_ref<const T, 1> column(size_type i) const;
 
+    Array_ref<T, 1> diag();
+    Array_ref<const T, 1> diag() const;
+
     // Capacity:
 
     size_type rows() const { return extents[0]; }
@@ -169,6 +172,20 @@ inline Array_ref<const T, 1> Array_ref<T, 2>::column(size_type i) const
 {
     Expects(i >= 0 && i < extents[1]);
     return Array_ref<const T, 1>(extents[0], 1, data() + i * stride);
+}
+
+template <class T>
+inline Array_ref<T, 1> Array_ref<T, 2>::diag()
+{
+    Expects(extents[0] == extents[1]);
+    return Array_ref<T, 1>(extents[0], stride + 1, data());
+}
+
+template <class T>
+inline Array_ref<const T, 1> Array_ref<T, 2>::diag() const
+{
+    Expects(extents[0] == extents[1]);
+    return Array_ref<const T, 1>(extents[0], stride + 1, data());
 }
 
 template <class T>
