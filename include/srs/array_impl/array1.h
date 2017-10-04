@@ -33,6 +33,8 @@ namespace srs {
 template <class T>
 class Array<T, 1> {
 public:
+    static constexpr std::size_t rank = 1;
+
     typedef T value_type;
     typedef typename std::vector<T>::size_type size_type;
     typedef typename std::vector<T>::iterator iterator;
@@ -54,7 +56,8 @@ public:
     Array(std::initializer_list<T> ilist) : elems(ilist) {}
 
     // Copy elements referenced by Array_ref.
-    Array(const Array_ref<T, 1>& a);
+    template <class U>
+    Array(const Array_ref<U, 1>& a);
 
     // T f(const T&) would be a typical type for f.
     template <class F>
@@ -66,7 +69,9 @@ public:
 
     // Assignments:
 
-    Array& operator=(const Array_ref<T, 1>& a);
+    template <class U>
+    Array& operator=(const Array_ref<U, 1>& a);
+
     Array& operator=(std::initializer_list<T> ilist);
 
     // Element access:
@@ -91,18 +96,18 @@ public:
     // Slicing:
 
     Array_ref<T, 1> head(size_type n) { return slice(0, n); }
-    Array<T, 1> head(size_type n) const { return slice(0, n); }
+    Array_ref<const T, 1> head(size_type n) const { return slice(0, n); }
 
     Array_ref<T, 1> tail(size_type n) { return slice(n, size() - 1); }
-    Array<T, 1> tail(size_type n) const { return slice(n, size() - 1); }
+    Array_ref<const T, 1> tail(size_type n) const
+    {
+        return slice(n, size() - 1);
+    }
 
     Array_ref<T, 1> slice(size_type ifirst, size_type ilast);
-    Array<T, 1> slice(size_type ifirst, size_type ilast) const;
+    Array_ref<const T, 1> slice(size_type ifirst, size_type ilast) const;
 
     // Capacity:
-
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
 
     bool empty() const { return elems.empty(); }
 
@@ -156,7 +161,6 @@ public:
 
 private:
     std::vector<T> elems;  // storage
-    static constexpr size_type rank_ = 1;
 };
 
 template <class T>
@@ -177,7 +181,8 @@ Array<T, 1>::Array(const T (&a)[n]) : elems(n)
 }
 
 template <class T>
-Array<T, 1>::Array(const Array_ref<T, 1>& a) : elems(a.size())
+template <class U>
+Array<T, 1>::Array(const Array_ref<U, 1>& a) : elems(a.size())
 {
     for (size_type i = 0; i < size(); ++i) {
         elems[i] = a[i];
@@ -205,7 +210,8 @@ Array<T, 1>::Array(const Array& a, F f, const Arg& value)
 }
 
 template <class T>
-Array<T, 1>& Array<T, 1>::operator=(const Array_ref<T, 1>& a)
+template <class U>
+Array<T, 1>& Array<T, 1>::operator=(const Array_ref<U, 1>& a)
 {
     resize(a.size());
 
@@ -270,14 +276,11 @@ inline Array_ref<T, 1> Array<T, 1>::slice(size_type ifirst, size_type ilast)
 }
 
 template <class T>
-inline Array<T, 1> Array<T, 1>::slice(size_type ifirst, size_type ilast) const
+inline Array_ref<const T, 1> Array<T, 1>::slice(size_type ifirst,
+                                                size_type ilast) const
 {
     Expects(ifirst >= 0 && ifirst < ilast && ilast < size());
-    Array<T, 1> result(ilast - ifirst + 1);
-    for (size_type j = 0; j < result.size(); ++j) {
-        result(j) = data()[ifirst + j];
-    }
-    return result;
+    return Array_ref<const T, 1>(ilast - ifirst + 1, 1, data() + ifirst);
 }
 
 template <class T>

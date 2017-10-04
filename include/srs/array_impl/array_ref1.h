@@ -32,6 +32,8 @@ namespace srs {
 template <class T>
 class Array_ref<T, 1> {
 public:
+    static constexpr std::size_t rank = 1;
+
     typedef T value_type;
     typedef std::size_t size_type;
     typedef Slice_iter<T> iterator;
@@ -65,8 +67,6 @@ public:
 
     // Capacity:
 
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
     size_type size() const { return extents[0]; }
 
     // Access underlying array:
@@ -78,6 +78,7 @@ public:
 
     template <class F>
     Array_ref& apply(F f);
+
     template <class F>
     Array_ref& apply(F f, const T& value);
 
@@ -104,7 +105,6 @@ private:
     T* elems;
     std::array<size_type, 1> extents;
     size_type stride;
-    static constexpr size_type rank_ = 1;
 };
 
 template <class T>

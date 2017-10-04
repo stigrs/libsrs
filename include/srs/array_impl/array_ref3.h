@@ -30,6 +30,8 @@ namespace srs {
 template <class T>
 class Array_ref<T, 3> {
 public:
+    static constexpr std::size_t rank = 3;
+
     typedef T value_type;
     typedef std::size_t size_type;
 
@@ -53,23 +55,21 @@ public:
     const T& operator()(size_type i, size_type j, size_type k) const;
 
     Array_ref<T, 2> operator[](size_type i) { return depth(i); }
-    Array<T, 2> operator[](size_type i) const { return depth(i); }
+    Array_ref<const T, 2> operator[](size_type i) const { return depth(i); }
 
     // Slicing:
 
     Array_ref<T, 2> depth(size_type i);
-    Array<T, 2> depth(size_type i) const;
+    Array_ref<const T, 2> depth(size_type i) const;
 
     // Capacity:
 
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
     size_type rows() const { return extents[0]; }
     size_type cols() const { return extents[1]; }
     size_type depths() const { return extents[2]; }
     size_type extent(size_type dim) const
     {
-        Expects(dim >= 0 && dim < rank());
+        Expects(dim >= 0 && dim < rank);
         return extents[dim];
     }
 
@@ -82,6 +82,7 @@ public:
 
     template <class F>
     Array_ref& apply(F f);
+
     template <class F>
     Array_ref& apply(F f, const T& value);
 
@@ -108,7 +109,6 @@ private:
     T* elems;
     std::array<size_type, 3> extents;
     std::array<size_type, 2> strides;
-    static constexpr size_type rank_ = 3;
 };
 
 template <class T>
@@ -160,14 +160,11 @@ inline Array_ref<T, 2> Array_ref<T, 3>::depth(size_type i)
 }
 
 template <class T>
-inline Array<T, 2> Array_ref<T, 3>::depth(size_type i) const
+inline Array_ref<const T, 2> Array_ref<T, 3>::depth(size_type i) const
 {
     Expects(i >= 0 && i < extents[2]);
-    Array<T, 2> result(extents[0], extents[1]);
-    for (size_type j = 0; j < result.size(); ++j) {
-        result.data()[i] = data()[i * strides[1] + j * strides[0]];
-    }
-    return result;
+    return Array_ref<const T, 2>(
+        extents[0], extents[1], strides[0], data() + i * strides[1]);
 }
 
 template <class T>

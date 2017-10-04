@@ -34,6 +34,8 @@ namespace srs {
 template <class T>
 class Array<T, 2> {
 public:
+    static constexpr std::size_t rank = 2;
+
     typedef T value_type;
     typedef typename std::vector<T>::size_type size_type;
     typedef typename std::vector<T>::iterator iterator;
@@ -61,7 +63,8 @@ public:
     Array(std::initializer_list<std::initializer_list<T>> ilist);
 
     // Copy elements referenced by array slice.
-    Array(const Array_ref<T, 2>& a);
+    template <class U>
+    Array(const Array_ref<U, 2>& a);
 
     // T f(const T&) would be a typical type for f.
     template <class F>
@@ -73,7 +76,8 @@ public:
 
     // Assignments:
 
-    Array& operator=(const Array_ref<T, 2>& a);
+    template <class U>
+    Array& operator=(const Array_ref<U, 2>& a);
     Array& operator=(std::initializer_list<std::initializer_list<T>> ilist);
 
     // Element access:
@@ -85,7 +89,7 @@ public:
     const T& operator()(size_type i, size_type j) const;
 
     Array_ref<T, 1> operator[](size_type i) { return row(i); }
-    Array<T, 1> operator[](size_type i) const { return row(i); }
+    Array_ref<const T, 1> operator[](size_type i) const { return row(i); }
 
     // Iterators:
 
@@ -98,27 +102,24 @@ public:
     // Slicing:
 
     Array_ref<T, 1> row(size_type i);
-    Array<T, 1> row(size_type i) const;
+    Array_ref<const T, 1> row(size_type i) const;
 
     Array_ref<T, 1> column(size_type i);
-    Array<T, 1> column(size_type i) const;
+    Array_ref<const T, 1> column(size_type i) const;
 
     Array_ref<T, 1> diag();
-    Array<T, 1> diag() const;
+    Array_ref<const T, 1> diag() const;
 
     Array_ref<T, 2> slice(size_type ifirst,
                           size_type ilast,
                           size_type jfirst,
                           size_type jlast);
-    Array<T, 2> slice(size_type ifirst,
-                      size_type ilast,
-                      size_type jfirst,
-                      size_type jlast) const;
+    Array_ref<const T, 2> slice(size_type ifirst,
+                                size_type ilast,
+                                size_type jfirst,
+                                size_type jlast) const;
 
     // Capacity:
-
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
 
     bool empty() const { return elems.empty(); }
 
@@ -131,7 +132,7 @@ public:
     size_type dim2() const { return extents[1]; }
     size_type extent(size_type dim) const
     {
-        Expects(dim >= 0 && dim < rank());
+        Expects(dim >= 0 && dim < rank);
         return extents[dim];
     }
 
@@ -182,7 +183,6 @@ private:
     std::vector<T> elems;  // storage
     std::array<size_type, 2> extents;
     size_type stride;
-    static constexpr size_type rank_ = 2;
 };
 
 template <class T>
@@ -226,7 +226,8 @@ Array<T, 2>::Array(std::initializer_list<std::initializer_list<T>> ilist)
 }
 
 template <class T>
-Array<T, 2>::Array(const Array_ref<T, 2>& a)
+template <class U>
+Array<T, 2>::Array(const Array_ref<U, 2>& a)
     : elems(a.rows() * a.cols()), extents{a.rows(), a.cols()}, stride(a.rows())
 {
     for (size_type j = 0; j < a.cols(); ++j) {
@@ -257,7 +258,8 @@ Array<T, 2>::Array(const Array& a, F f, const Arg& value)
 }
 
 template <class T>
-Array<T, 2>& Array<T, 2>::operator=(const Array_ref<T, 2>& a)
+template <class U>
+Array<T, 2>& Array<T, 2>::operator=(const Array_ref<U, 2>& a)
 {
     resize(a.rows() * a.cols());
     extents = {a.rows(), a.cols()};
@@ -335,14 +337,10 @@ inline Array_ref<T, 1> Array<T, 2>::row(size_type i)
 }
 
 template <class T>
-inline Array<T, 1> Array<T, 2>::row(size_type i) const
+inline Array_ref<const T, 1> Array<T, 2>::row(size_type i) const
 {
     Expects(i >= 0 && i < extents[0]);
-    Array<T, 1> result(extents[1]);
-    for (size_type j = 0; j < result.size(); ++j) {
-        result(j) = data()[i + j * stride];
-    }
-    return result;
+    return Array_ref<const T, 1>(extents[1], stride, data() + i);
 }
 
 template <class T>
@@ -353,17 +351,10 @@ inline Array_ref<T, 1> Array<T, 2>::column(size_type i)
 }
 
 template <class T>
-inline Array<T, 1> Array<T, 2>::column(size_type i) const
+inline Array_ref<const T, 1> Array<T, 2>::column(size_type i) const
 {
     Expects(i >= 0 && i < extents[1]);
-
-    Array<T, 1> result(extents[0]);
-
-    size_type start = i * stride;
-    for (size_type j = 0; j < result.size(); ++j) {
-        result(j) = data()[start + j];
-    }
-    return result;
+    return Array_ref<const T, 1>(extents[0], 1, data() + i * stride);
 }
 
 template <class T>
@@ -374,14 +365,10 @@ inline Array_ref<T, 1> Array<T, 2>::diag()
 }
 
 template <class T>
-inline Array<T, 1> Array<T, 2>::diag() const
+inline Array_ref<const T, 1> Array<T, 2>::diag() const
 {
     Expects(extents[0] == extents[1]);
-    Array<T, 1> result(extents[0]);
-    for (size_type j = 0; j < result.size(); ++j) {
-        result(j) = data()[j * (stride + 1)];
-    }
-    return result;
+    return Array_ref<const T, 1>(extents[0], stride + 1, data());
 }
 
 template <class T>
@@ -399,21 +386,17 @@ inline Array_ref<T, 2> Array<T, 2>::slice(size_type ifirst,
 }
 
 template <class T>
-inline Array<T, 2> Array<T, 2>::slice(size_type ifirst,
-                                      size_type ilast,
-                                      size_type jfirst,
-                                      size_type jlast) const
+inline Array_ref<const T, 2> Array<T, 2>::slice(size_type ifirst,
+                                                size_type ilast,
+                                                size_type jfirst,
+                                                size_type jlast) const
 {
     Expects(ifirst >= 0 && ifirst < ilast && ilast < extents[0]);
     Expects(jfirst >= 0 && jfirst < jlast && jlast < extents[1]);
-
-    Array<T, 2> result(ilast - ifirst + 1, jlast - jfirst + 1);
-
-    size_type start = ifirst + jfirst * stride;
-    for (size_type k = 0; k < result.size(); ++k) {
-        result.data()[k] = data()[start + k * stride];
-    }
-    return result;
+    return Array_ref<const T, 2>(ilast - ifirst + 1,
+                                 jlast - jfirst + 1,
+                                 stride,
+                                 data() + ifirst + jfirst * stride);
 }
 
 template <class T>

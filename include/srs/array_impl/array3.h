@@ -34,13 +34,15 @@ namespace srs {
 template <class T>
 class Array<T, 3> {
 public:
+    static constexpr std::size_t rank = 3;
+
     typedef T value_type;
     typedef typename std::vector<T>::size_type size_type;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
-    typedef typename std::
-        initializer_list<std::initializer_list<std::initializer_list<T>>>
-            initializer_list_3d;
+    typedef typename std::initializer_list<
+        std::initializer_list<std::initializer_list<T>>>
+        initializer_list_3d;
 
     // Constructors:
 
@@ -64,7 +66,8 @@ public:
     Array(initializer_list_3d ilist) { assign(ilist); }
 
     // Copy elements referenced by array slice.
-    Array(const Array_ref<T, 3>& a);
+    template <class U>
+    Array(const Array_ref<U, 3>& a);
 
     // T f(const T&) would be a typical type for f.
     template <class F>
@@ -76,8 +79,9 @@ public:
 
     // Assignments:
 
+    template <class U>
+    Array& operator=(const Array_ref<U, 3>& a);
     Array& operator=(initializer_list_3d ilist);
-    Array& operator=(const Array_ref<T, 3>& a);
 
     // Element access:
 
@@ -88,7 +92,7 @@ public:
     const T& operator()(size_type i, size_type j, size_type k) const;
 
     Array_ref<T, 2> operator[](size_type i) { return depth(i); }
-    Array<T, 2> operator[](size_type i) const { return depth(i); }
+    Array_ref<const T, 2> operator[](size_type i) const { return depth(i); }
 
     // Iterators:
 
@@ -101,7 +105,7 @@ public:
     // Slicing:
 
     Array_ref<T, 2> depth(size_type i);
-    Array<T, 2> depth(size_type i) const;
+    Array_ref<const T, 2> depth(size_type i) const;
 
     Array_ref<T, 3> slice(size_type ifirst,
                           size_type ilast,
@@ -109,17 +113,14 @@ public:
                           size_type jlast,
                           size_type kfirst,
                           size_type klast);
-    Array<T, 3> slice(size_type ifirst,
-                      size_type ilast,
-                      size_type jfirst,
-                      size_type jlast,
-                      size_type kfirst,
-                      size_type klast) const;
+    Array_ref<const T, 3> slice(size_type ifirst,
+                                size_type ilast,
+                                size_type jfirst,
+                                size_type jlast,
+                                size_type kfirst,
+                                size_type klast) const;
 
     // Capacity:
-
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
 
     bool empty() const { return elems.empty(); }
 
@@ -134,7 +135,7 @@ public:
     size_type dim3() const { return extents[2]; }
     size_type extent(size_type dim) const
     {
-        Expects(dim >= 0 && dim < rank());
+        Expects(dim >= 0 && dim < rank);
         return extents[dim];
     }
 
@@ -183,7 +184,6 @@ private:
     std::vector<T> elems;  // storage
     std::array<size_type, 3> extents;
     std::array<size_type, 2> strides;
-    static constexpr size_type rank_ = 3;
 
     // Compute index.
     std::size_t index(size_type i, size_type j, size_type k) const;
@@ -216,7 +216,8 @@ Array<T, 3>::Array(const T (&a)[n1][n2][n3])
 }
 
 template <class T>
-Array<T, 3>::Array(const Array_ref<T, 3>& a)
+template <class U>
+Array<T, 3>::Array(const Array_ref<U, 3>& a)
     : elems(a.rows() * a.cols() * a.depths()),
       extents{a.rows(), a.cols(), a.depths()},
       strides{a.rows(), a.rows() * a.cols()}
@@ -251,14 +252,8 @@ Array<T, 3>::Array(const Array& a, F f, const Arg& value)
 }
 
 template <class T>
-inline Array<T, 3>& Array<T, 3>::operator=(initializer_list_3d ilist)
-{
-    assign(ilist);
-    return *this;
-}
-
-template <class T>
-Array<T, 3>& Array<T, 3>::operator=(const Array_ref<T, 3>& a)
+template <class U>
+Array<T, 3>& Array<T, 3>::operator=(const Array_ref<U, 3>& a)
 {
     resize(a.rows() * a.cols() * a.depths());
     extents = {a.rows(), a.cols(), a.depths()};
@@ -271,6 +266,13 @@ Array<T, 3>& Array<T, 3>::operator=(const Array_ref<T, 3>& a)
             }
         }
     }
+    return *this;
+}
+
+template <class T>
+inline Array<T, 3>& Array<T, 3>::operator=(initializer_list_3d ilist)
+{
+    assign(ilist);
     return *this;
 }
 
@@ -323,17 +325,11 @@ inline Array_ref<T, 2> Array<T, 3>::depth(size_type i)
 }
 
 template <class T>
-inline Array<T, 2> Array<T, 3>::depth(size_type i) const
+inline Array_ref<const T, 2> Array<T, 3>::depth(size_type i) const
 {
     Expects(i >= 0 && i < extents[2]);
-
-    size_type start = i + strides[1];
-
-    Array<T, 2> result(extents[0], extents[1]);
-    for (size_type j = 0; j < result.size(); ++j) {
-        result.data()[j] = data()[start + j * strides[0]];
-    }
-    return result;
+    return Array_ref<const T, 2>(
+        extents[0], extents[1], strides[0], data() + i * strides[1]);
 }
 
 template <class T>
@@ -357,33 +353,23 @@ Array_ref<T, 3> Array<T, 3>::slice(size_type ifirst,
 }
 
 template <class T>
-Array<T, 3> Array<T, 3>::slice(size_type ifirst,
-                               size_type ilast,
-                               size_type jfirst,
-                               size_type jlast,
-                               size_type kfirst,
-                               size_type klast) const
+Array_ref<const T, 3> Array<T, 3>::slice(size_type ifirst,
+                                         size_type ilast,
+                                         size_type jfirst,
+                                         size_type jlast,
+                                         size_type kfirst,
+                                         size_type klast) const
 {
     Expects(ifirst >= 0 && ifirst < ilast && ilast < extents[0]);
     Expects(jfirst >= 0 && jfirst < jlast && jlast < extents[1]);
     Expects(kfirst >= 0 && kfirst < klast && klast < extents[2]);
-
     size_type n1 = ilast - ifirst + 1;
     size_type n2 = jlast - jfirst + 1;
     size_type n3 = klast - kfirst + 1;
-
-    Array<T, 3> result(n1, n2, n3);
-
-    size_type start = ifirst + jfirst * strides[0] + kfirst * strides[1];
-    for (size_type k = 0; k < result.depths(); ++k) {
-        for (size_type j = 0; j < result.cols(); ++j) {
-            for (size_type i = 0; i < result.rows(); ++i) {
-                size_type ijk = i + j * strides[0] + k * strides[1];
-                result(i, j, k) = data()[start + ijk];
-            }
-        }
-    }
-    return result;
+    // clang-format off
+    return Array_ref<const T, 3>(n1, n2, n3, strides[0], strides[1], 
+        data() + ifirst + jfirst * strides[0] + kfirst * strides[1]);
+    // clang-format on
 }
 
 template <class T>

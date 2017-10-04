@@ -30,6 +30,8 @@ namespace srs {
 template <class T>
 class Array_ref<T, 2> {
 public:
+    static constexpr std::size_t rank = 2;
+
     typedef T value_type;
     typedef std::size_t size_type;
 
@@ -54,20 +56,18 @@ public:
     // Slicing:
 
     Array_ref<T, 1> row(size_type i);
-    Array<T, 1> row(size_type i) const;
+    Array_ref<const T, 1> row(size_type i) const;
 
     Array_ref<T, 1> column(size_type i);
-    Array<T, 1> column(size_type i) const;
+    Array_ref<const T, 1> column(size_type i) const;
 
     // Capacity:
 
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
     size_type rows() const { return extents[0]; }
     size_type cols() const { return extents[1]; }
     size_type extent(size_type dim) const
     {
-        Expects(dim >= 0 && dim < rank());
+        Expects(dim >= 0 && dim < rank);
         return extents[dim];
     }
 
@@ -80,6 +80,7 @@ public:
 
     template <class F>
     Array_ref& apply(F f);
+
     template <class F>
     Array_ref& apply(F f, const T& value);
 
@@ -106,7 +107,6 @@ private:
     T* elems;
     std::array<size_type, 2> extents;
     size_type stride;
-    static constexpr size_type rank_ = 2;
 };
 
 template <class T>
@@ -151,14 +151,10 @@ inline Array_ref<T, 1> Array_ref<T, 2>::row(size_type i)
 }
 
 template <class T>
-inline Array<T, 1> Array_ref<T, 2>::row(size_type i) const
+inline Array_ref<const T, 1> Array_ref<T, 2>::row(size_type i) const
 {
     Expects(i >= 0 && i < extents[0]);
-    Array<T, 1> result(extents[1]);
-    for (size_type j = 0; j < result.size(); ++j) {
-        result(i) = data()[i + j * stride];
-    }
-    return result;
+    return Array_ref<const T, 1>(extents[1], stride, data() + i);
 }
 
 template <class T>
@@ -169,17 +165,10 @@ inline Array_ref<T, 1> Array_ref<T, 2>::column(size_type i)
 }
 
 template <class T>
-inline Array<T, 1> Array_ref<T, 2>::column(size_type i) const
+inline Array_ref<const T, 1> Array_ref<T, 2>::column(size_type i) const
 {
     Expects(i >= 0 && i < extents[1]);
-
-    size_type start = i * stride;
-
-    Array<T, 1> result(extents[0]);
-    for (size_type j = 0; j < result.size(); ++j) {
-        result(i) = data()[start + j];
-    }
-    return result;
+    return Array_ref<const T, 1>(extents[0], 1, data() + i * stride);
 }
 
 template <class T>

@@ -34,6 +34,8 @@ namespace srs {
 template <class T>
 class Array<T, 4> {
 public:
+    static constexpr std::size_t rank = 4;
+
     typedef T value_type;
     typedef typename std::vector<T>::size_type size_type;
     typedef typename std::vector<T>::iterator iterator;
@@ -92,7 +94,7 @@ public:
                         size_type l) const;
 
     Array_ref<T, 3> operator[](size_type i) { return slice(i); }
-    Array<T, 3> operator[](size_type i) const { return slice(i); }
+    Array_ref<const T, 3> operator[](size_type i) const { return slice(i); }
 
     // Iterators:
 
@@ -105,12 +107,9 @@ public:
     // Slicing:
 
     Array_ref<T, 3> slice(size_type i);
-    Array<T, 3> slice(size_type i) const;
+    Array_ref<const T, 3> slice(size_type i) const;
 
     // Capacity:
-
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
 
     bool empty() const { return elems.empty(); }
 
@@ -123,7 +122,7 @@ public:
     size_type dim4() const { return extents[3]; }
     size_type extent(size_type dim) const
     {
-        Expects(dim >= 0 && dim < rank());
+        Expects(dim >= 0 && dim < rank);
         return extents[dim];
     }
 
@@ -173,7 +172,6 @@ private:
     std::vector<T> elems;  // storage
     std::array<size_type, 4> extents;
     std::array<size_type, 3> strides;
-    static constexpr size_type rank_ = 4;
 
     // Compute index.
     std::size_t index(size_type i, size_type j, size_type k, size_type l) const;
@@ -300,22 +298,15 @@ inline Array_ref<T, 3> Array<T, 4>::slice(size_type i)
 }
 
 template <class T>
-inline Array<T, 3> Array<T, 4>::slice(size_type i) const
+inline Array_ref<const T, 3> Array<T, 4>::slice(size_type i) const
 {
     Expects(i >= 0 && i < extents[3]);
-
-    Array<T, 3> result(extents[0], extents[1], extents[2]);
-
-    size_type start = i * strides[2];
-    for (size_type l = 0; l < result.depths(); ++l) {
-        for (size_type k = 0; k < result.cols(); ++k) {
-            for (size_type j = 0; j < result.rows(); ++j) {
-                size_type jkl = j + k * strides[0] + l * strides[1];
-                result(j, k, l) = data()[start + jkl];
-            }
-        }
-    }
-    return result;
+    return Array_ref<const T, 3>(extents[0],
+                                 extents[1],
+                                 extents[2],
+                                 strides[0],
+                                 strides[1],
+                                 data() + i * strides[2]);
 }
 
 template <class T>
