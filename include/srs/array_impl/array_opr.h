@@ -557,6 +557,7 @@ void axpy(const T& a, const Array<T, 1>& x, Array<T, 1>& y)
 
 // Matrix-matrix multiplication.
 template <class A1, class A2, class A3>
+// requires A1 = Array<T, 2>, A2 = Array<T, 2>, A3 = Array<T, 2>
 void mm_mul(const A1& a, const A2& b, A3& c)
 {
     using value_type = typename A1::value_type;
@@ -580,6 +581,7 @@ void mm_mul(const A1& a, const A2& b, A3& c)
 
 // Matrix-vector multiplication.
 template <class A1, class A2, class A3>
+// requires A1 = Array<T, 2>, A2 = Array<T, 1>, A3 = Array<T, 1>
 void mv_mul(const A1& a, const A2& v, A3& w)
 {
     using value_type = typename A1::value_type;
