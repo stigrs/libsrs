@@ -64,7 +64,7 @@ inline bool operator>=(const Array<T, N>& a, const Array<T, N>& b)
 
 //------------------------------------------------------------------------------
 
-// Aritmetic operators:
+// Array addition:
 
 template <class T, std::size_t N>
 inline Array<T, N> operator+(const Array<T, N>& a, const Array<T, N>& b)
@@ -74,11 +74,141 @@ inline Array<T, N> operator+(const Array<T, N>& a, const Array<T, N>& b)
 }
 
 template <class T, std::size_t N>
+inline Array<T, N> operator+(const Array_ref<T, N>& a, const Array_ref<T, N>& b)
+{
+    Array<T, N> result(a);
+    return result += b;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator+(const Array_ref<const T, N>& a,
+                             const Array_ref<const T, N>& b)
+{
+    Array<T, N> result(a);
+    return result += b;
+}
+
+//------------------------------------------------------------------------------
+
+// Array subtraction:
+
+template <class T, std::size_t N>
 inline Array<T, N> operator-(const Array<T, N>& a, const Array<T, N>& b)
 {
     Array<T, N> result(a);
     return result -= b;
 }
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const Array_ref<T, N>& a, const Array_ref<T, N>& b)
+{
+    Array<T, N> result(a);
+    return result -= b;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const Array_ref<const T, N>& a,
+                             const Array_ref<const T, N>& b)
+{
+    Array<T, N> result(a);
+    return result -= b;
+}
+
+//------------------------------------------------------------------------------
+
+// Scalar addition:
+
+template <class T, std::size_t N>
+inline Array<T, N> operator+(const Array<T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result += scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator+(const T& scalar, const Array<T, N>& a)
+{
+    Array<T, N> result(a);
+    return result += scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator+(const Array_ref<T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result += scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator+(const T& scalar, const Array_ref<T, N>& a)
+{
+    Array<T, N> result(a);
+    return result += scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator+(const Array_ref<const T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result += scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator+(const T& scalar, const Array_ref<const T, N>& a)
+{
+    Array<T, N> result(a);
+    return result += scalar;
+}
+
+//------------------------------------------------------------------------------
+
+// Scalar subtraction:
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const Array<T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result -= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const T& scalar, const Array<T, N>& a)
+{
+    Array<T, N> result(a);
+    return result -= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const Array_ref<T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result -= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const T& scalar, const Array_ref<T, N>& a)
+{
+    Array<T, N> result(a);
+    return result -= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const Array_ref<const T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result -= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator-(const T& scalar, const Array_ref<const T, N>& a)
+{
+    Array<T, N> result(a);
+    return result -= scalar;
+}
+
+//------------------------------------------------------------------------------
+
+// Scalar multiplication:
 
 template <class T, std::size_t N>
 inline Array<T, N> operator*(const Array<T, N>& a, const T& scalar)
@@ -94,66 +224,171 @@ inline Array<T, N> operator*(const T& scalar, const Array<T, N>& a)
     return result *= scalar;
 }
 
+template <class T, std::size_t N>
+inline Array<T, N> operator*(const Array_ref<T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result *= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator*(const T& scalar, const Array_ref<T, N>& a)
+{
+    Array<T, N> result(a);
+    return result *= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator*(const Array_ref<const T, N>& a, const T& scalar)
+{
+    Array<T, N> result(a);
+    return result *= scalar;
+}
+
+template <class T, std::size_t N>
+inline Array<T, N> operator*(const T& scalar, const Array_ref<const T, N>& a)
+{
+    Array<T, N> result(a);
+    return result *= scalar;
+}
+
+//------------------------------------------------------------------------------
+
+// Matrix-matrix multiplication:
+
+// Declaration.
+template <class A1, class A2, class A3>
+void mm_mul(const A1& a, const A2& b, A3& c);
+
 template <class T>
 inline Array<T, 2> operator*(const Array<T, 2>& a, const Array<T, 2>& b)
 {
-    return mm_mul(a, b);
+    Array<T, 2> result;
+    mm_mul(a, b, result);
+    return result;
 }
+
+template <class T>
+inline Array<T, 2> operator*(const Array_ref<T, 2>& a, const Array_ref<T, 2>& b)
+{
+    Array<T, 2> result;
+    mm_mul(a, b, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 2> operator*(const Array_ref<const T, 2>& a,
+                             const Array_ref<const T, 2>& b)
+{
+    Array<T, 2> result;
+    mm_mul(a, b, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 2> operator*(const Array<T, 2>& a, const Array_ref<T, 2>& b)
+{
+    Array<T, 2> result;
+    mm_mul(a, b, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 2> operator*(const Array<T, 2>& a,
+                             const Array_ref<const T, 2>& b)
+{
+    Array<T, 2> result;
+    mm_mul(a, b, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 2> operator*(const Array_ref<T, 2>& a, const Array<T, 2>& b)
+{
+    Array<T, 2> result;
+    mm_mul(a, b, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 2> operator*(const Array_ref<const T, 2>& a,
+                             const Array<T, 2>& b)
+{
+    Array<T, 2> result;
+    mm_mul(a, b, result);
+    return result;
+}
+
+//------------------------------------------------------------------------------
+
+// Matrix-vector multiplication:
+
+// Declaration.
+template <class A1, class A2, class A3>
+void mv_mul(const A1& a, const A2& v, A3& w);
 
 template <class T>
 inline Array<T, 1> operator*(const Array<T, 2>& a, const Array<T, 1>& v)
 {
-    return mv_mul(a, v);
+    Array<T, 1> result;
+    mv_mul(a, v, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> operator*(const Array_ref<T, 2>& a, const Array_ref<T, 1>& v)
+{
+    Array<T, 1> result;
+    mv_mul(a, v, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> operator*(const Array_ref<const T, 2>& a,
+                             const Array_ref<const T, 1>& v)
+{
+    Array<T, 1> result;
+    mv_mul(a, v, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> operator*(const Array<T, 2>& a, const Array_ref<T, 1>& v)
+{
+    Array<T, 1> result;
+    mv_mul(a, v, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> operator*(const Array<T, 2>& a,
+                             const Array_ref<const T, 1>& v)
+{
+    Array<T, 1> result;
+    mv_mul(a, v, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> operator*(const Array_ref<T, 2>& a, const Array<T, 1>& v)
+{
+    Array<T, 1> result;
+    mv_mul(a, v, result);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> operator*(const Array_ref<const T, 2>& a,
+                             const Array<T, 1>& v)
+{
+    Array<T, 1> result;
+    mv_mul(a, v, result);
+    return result;
 }
 
 //------------------------------------------------------------------------------
 
 // Mathematical functions:
-
-// Sort vector.
-template <class T>
-inline void sort(Array<T, 1>& vec, bool ascending = true)
-{
-    if (ascending) {
-        std::sort(vec.begin(), vec.end(), std::less<T>());
-    }
-    else {  // descending
-        std::sort(vec.begin(), vec.end(), std::greater<T>());
-    }
-}
-
-template <typename T>
-void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
-{
-    if (dim == 1) {  // sort elements along each row
-        if (ascending) {
-            for (std::size_t i = 0; i < a.rows(); ++i) {
-                auto ri = a.row(i);
-                std::sort(ri.begin(), ri.end(), std::less<T>());
-            }
-        }
-        else {
-            for (std::size_t i = 0; i < a.rows(); ++i) {
-                auto ri = a.row(i);
-                std::sort(ri.begin(), ri.end(), std::greater<T>());
-            }
-        }
-    }
-    else {  // sort elements along each column
-        if (ascending) {
-            for (std::size_t j = 0; j < a.cols(); ++j) {
-                auto cj = a.column(j);
-                std::sort(cj.begin(), cj.end(), std::less<T>());
-            }
-        }
-        else {
-            for (std::size_t j = 0; j < a.cols(); ++j) {
-                auto cj = a.column(j);
-                std::sort(cj.begin(), cj.end(), std::greater<T>());
-            }
-        }
-    }
-}
 
 // Find maximum element.
 template <class T>
@@ -321,71 +556,45 @@ void axpy(const T& a, const Array<T, 1>& x, Array<T, 1>& y)
 }
 
 // Matrix-matrix multiplication.
-template <class T>
-inline Array<T, 2> mm_mul(const Array<T, 2>& a, const Array<T, 2>& b)
+template <class A1, class A2, class A3>
+void mm_mul(const A1& a, const A2& b, A3& c)
 {
-    Array<T, 2> result;
-    mm_mul(a, b, result);
-    return result;
-}
+    using value_type = typename A1::value_type;
 
-// Matrix-matrix multiplication.
-template <class T>
-void mm_mul(const Array<T, 2>& a, const Array<T, 2>& b, Array<T, 2>& c)
-{
-    typedef typename Array<T, 2>::size_type size_type;
-
+    Expects(A1::rank == 2);
+    Expects(A2::rank == 2);
+    Expects(A3::rank == 2);
     Expects(a.cols() == b.rows());
 
     c.resize(a.rows(), b.cols());
-    c = T(0);
 
-    size_type astr = a.rows();
-    size_type bstr = b.rows();
-    size_type cstr = c.rows();
-
-    for (size_type j = 0; j < b.cols(); ++j) {
-        for (size_type k = 0; k < a.cols(); ++k) {
-            T b_kj = b.data()[k + j * bstr];  // help the compiler
-            if (b_kj != T(0)) {
-                for (size_type i = 0; i < a.rows(); ++i) {
-                    // c(i,j) += a(i,k) * b(k,j);
-                    c.data()[i + j * cstr] += a.data()[i + k * astr] * b_kj;
-                }
+    for (std::size_t j = 0; j < b.cols(); ++j) {
+        for (std::size_t i = 0; i < a.rows(); ++i) {
+            c(i, j) = value_type(0);
+            for (std::size_t k = 0; k < a.cols(); ++k) {
+                c(i, j) += a(i, k) * b(k, j);
             }
         }
     }
 }
 
 // Matrix-vector multiplication.
-template <class T>
-inline Array<T, 1> mv_mul(const Array<T, 2>& a, const Array<T, 1>& v)
+template <class A1, class A2, class A3>
+void mv_mul(const A1& a, const A2& v, A3& w)
 {
-    Array<T, 1> result;
-    mv_mul(a, v, result);
-    return result;
-}
+    using value_type = typename A1::value_type;
 
-// Matrix-vector multiplication.
-template <class T>
-void mv_mul(const Array<T, 2>& a, const Array<T, 1>& v, Array<T, 1>& w)
-{
-    typedef typename Array<T, 2>::size_type size_type;
-
+    Expects(A1::rank == 2);
+    Expects(A2::rank == 1);
+    Expects(A3::rank == 1);
     Expects(v.size() == a.cols());
 
     w.resize(a.rows());
-    w = T(0);
+    w = value_type(0);
 
-    size_type astr = a.rows();
-
-    for (size_type j = 0; j < a.cols(); ++j) {
-        T vj = v(j);
-        if (vj != T(0)) {
-            for (size_type i = 0; i < a.rows(); ++i) {
-                // w(i) += a(i,j) * v[j];
-                w(i) += a.data()[i + j * astr] * vj;  // help the compiler
-            }
+    for (std::size_t j = 0; j < a.cols(); ++j) {
+        for (std::size_t i = 0; i < a.rows(); ++i) {
+            w(i) += a(i, j) * v(j);
         }
     }
 }
@@ -394,11 +603,58 @@ void mv_mul(const Array<T, 2>& a, const Array<T, 1>& v, Array<T, 1>& w)
 
 // Algorithms:
 
+// Swap arrays.
 template <class T, std::size_t N>
 inline void swap(Array<T, N>& a, Array<T, N>& b)
 {
     if (a != b) {
         a.swap(b);
+    }
+}
+
+// Sort vector.
+template <class T>
+inline void sort(Array<T, 1>& vec, bool ascending = true)
+{
+    if (ascending) {
+        std::sort(vec.begin(), vec.end(), std::less<T>());
+    }
+    else {  // descending
+        std::sort(vec.begin(), vec.end(), std::greater<T>());
+    }
+}
+
+// Sort matrix.
+template <typename T>
+void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
+{
+    if (dim == 1) {  // sort elements along each row
+        if (ascending) {
+            for (std::size_t i = 0; i < a.rows(); ++i) {
+                auto ri = a.row(i);
+                std::sort(ri.begin(), ri.end(), std::less<T>());
+            }
+        }
+        else {
+            for (std::size_t i = 0; i < a.rows(); ++i) {
+                auto ri = a.row(i);
+                std::sort(ri.begin(), ri.end(), std::greater<T>());
+            }
+        }
+    }
+    else {  // sort elements along each column
+        if (ascending) {
+            for (std::size_t j = 0; j < a.cols(); ++j) {
+                auto cj = a.column(j);
+                std::sort(cj.begin(), cj.end(), std::less<T>());
+            }
+        }
+        else {
+            for (std::size_t j = 0; j < a.cols(); ++j) {
+                auto cj = a.column(j);
+                std::sort(cj.begin(), cj.end(), std::greater<T>());
+            }
+        }
     }
 }
 
