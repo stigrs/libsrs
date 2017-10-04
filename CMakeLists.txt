@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.4.3)
 project(libsrs CXX)
 
-# By default, ChemApps is install in the HOME directory.
+# By default, LIBSRS is install in the HOME directory.
 if(WIN32)
     set(CMAKE_INSTALL_PREFIX "C:/Users/$ENV{USERNAME}")
 else()
@@ -21,7 +21,6 @@ else()
 endif()
 
 option(BUILD_TESTS "Build tests." ON)
-option(BUILD_BENCH "Build benchmarks." ON)
 
 # Set release compiler options.
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
@@ -50,15 +49,6 @@ add_compile_options(
     "$<$<CONFIG:Debug>:${libsrs_DEFINITIONS_DEBUG}>"
     "$<$<CONFIG:Release>:${libsrs_DEFINITIONS_RELEASE}>" 
 )
-
-# Armadillo library is required.
-if(MSVC)
-    find_path(ARMADILLO_INCLUDE_DIRS armadillo HINTS $ENV{HOME}/include)
-    add_definitions(-DARMA_USE_BLAS)
-    add_definitions(-DARMA_USE_LAPACK)
-else()
-    find_package(Armadillo 7.950.1 REQUIRED)
-endif()
 
 # Boost library is required.
 if(MSVC)
@@ -97,10 +87,15 @@ install(
 add_subdirectory(lib)
 
 if(BUILD_TESTS)
+    # Armadillo library is required.
+    if(MSVC)
+        find_path(ARMADILLO_INCLUDE_DIRS armadillo HINTS $ENV{HOME}/include)
+        add_definitions(-DARMA_USE_BLAS)
+        add_definitions(-DARMA_USE_LAPACK)
+    else()
+        find_package(Armadillo 7.950.1 REQUIRED)
+    endif()
     enable_testing()
     add_subdirectory(tests)
-endif()
-
-if(BUILD_BENCH)
     add_subdirectory(bench)
 endif()
