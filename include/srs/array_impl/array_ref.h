@@ -41,6 +41,5 @@ private:
 #include <srs/array_impl/array_ref1.h>
 #include <srs/array_impl/array_ref2.h>
 #include <srs/array_impl/array_ref3.h>
-#include <srs/array_impl/array_ref_opr.h>
 
 #endif  // SRS_ARRAY_REF_H
