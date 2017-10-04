@@ -42,6 +42,22 @@ std::ostream& operator<<(std::ostream& to, const Array<T, 1>& a)
 }
 
 template <typename T>
+std::ostream& operator<<(std::ostream& to, const Array_ref<T, 1>& a)
+{
+    typedef typename Array_ref<T, 1>::size_type size_type;
+
+    to << a.size() << '\n' << "[ ";
+    for (size_type i = 0; i < a.size(); ++i) {
+        to << std::setw(9) << a(i) << " ";
+        if (!((i + 1) % 7) && (i != (a.size() - 1))) {
+            to << "\n  ";
+        }
+    }
+    to << ']';
+    return to;
+}
+
+template <typename T>
 std::istream& operator>>(std::istream& from, Array<T, 1>& a)
 {
     typedef typename Array<T, 1>::size_type size_type;
@@ -72,6 +88,24 @@ template <class T>
 std::ostream& operator<<(std::ostream& to, const Array<T, 2>& a)
 {
     typedef typename Array<T, 2>::size_type size_type;
+
+    to << a.rows() << " x " << a.cols() << "\n[";
+    for (size_type i = 0; i < a.rows(); ++i) {
+        for (size_type j = 0; j < a.cols(); ++j) {
+            to << std::setw(9) << a(i, j) << " ";
+        }
+        if (i != (a.rows() - 1)) {
+            to << "\n ";
+        }
+    }
+    to << "]\n";
+    return to;
+}
+
+template <class T>
+std::ostream& operator<<(std::ostream& to, const Array_ref<T, 2>& a)
+{
+    typedef typename Array_ref<T, 2>::size_type size_type;
 
     to << a.rows() << " x " << a.cols() << "\n[";
     for (size_type i = 0; i < a.rows(); ++i) {
@@ -124,6 +158,33 @@ template <typename T>
 std::ostream& operator<<(std::ostream& to, const Array<T, 3>& a)
 {
     typedef typename Array<T, 3>::size_type size_type;
+
+    size_type n1 = a.rows();
+    size_type n2 = a.cols();
+    size_type n3 = a.depths();
+    to << n1 << " x " << n2 << " x " << n3 << '\n' << "[ ";
+
+    for (size_type k = 0; k < n3; ++k) {
+        for (size_type i = 0; i < n1; ++i) {
+            for (size_type j = 0; j < n2; ++j) {
+                to << std::setw(9) << a(i, j, k) << " ";
+            }
+            if (i != (n1 - 1)) {
+                to << "\n  ";
+            }
+        }
+        if (k != (n3 - 1)) {
+            to << "\n\n  ";
+        }
+    }
+    to << ']';
+    return to;
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& to, const Array_ref<T, 3>& a)
+{
+    typedef typename Array_ref<T, 3>::size_type size_type;
 
     size_type n1 = a.rows();
     size_type n2 = a.cols();
