@@ -58,8 +58,6 @@ TEST_CASE("test_array2")
 
     SECTION("capacity")
     {
-        CHECK(m.rank() == 2);
-        CHECK(m.order() == 2);
         CHECK(m.size() == 12);
         CHECK(m.rows() == 4);
         CHECK(m.cols() == 3);
@@ -418,5 +416,19 @@ TEST_CASE("test_array2")
         tmp = a;
         srs::sort(tmp, 1, false);
         CHECK(tmp == ard);
+    }
+
+    SECTION("subarray_multiplication")
+    {
+        const srs::Array<int, 2> a(4, 4, 1);
+        const srs::Array<int, 2> b(2, 2, 2);
+        const srs::Array<int, 1> c(2, 3);
+        const srs::Array<int, 2> mm = {{4, 4}, {4, 4}};
+        const srs::Array<int, 1> mv = {6, 6};
+
+        auto asub = a.slice(0, 1, 0, 1);
+
+        CHECK(asub * b == mm);
+        CHECK(asub * c == mv);
     }
 }
