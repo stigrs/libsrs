@@ -26,6 +26,8 @@ namespace srs {
 template <class T>
 class Array<T, 0> {
 public:
+    static constexpr std::size_t rank = 0;
+
     typedef T value_type;
     typedef std::size_t size_type;
 
@@ -47,12 +49,8 @@ public:
     operator T&() { return elem; }
     operator const T&() { return elem; }
 
-    size_type rank() const { return rank_; }
-    size_type order() const { return rank_; }
-
 private:
     T elem;
-    static constexpr size_type rank_ = 0;
 };
 
 }  // namespace srs
