@@ -26,13 +26,13 @@ typedef std::chrono::duration<double, std::milli> Timer;
 void print(int n,
            int m,
            const Timer& t_arma,
-           const Timer& t_mm_mul,
+           const Timer& t_mv_mul,
            const Timer& t_matmul)
 {
-    std::cout << "Matrix-matrix multiplication:\n"
+    std::cout << "Matrix-vector multiplication:\n"
               << "-----------------------------\n"
               << "size =        " << n << " x " << m << '\n'
-              << "mm_mul/arma = " << t_mm_mul.count() / t_arma.count() << "\n"
+              << "mv_mul/arma = " << t_mv_mul.count() / t_arma.count() << "\n"
               << "matmul/arma = " << t_matmul.count() / t_arma.count()
               << "\n\n";
 }
@@ -51,7 +51,7 @@ void benchmark(int n, int m)
     t1             = std::chrono::high_resolution_clock::now();
     auto b3        = b1 * b2;
     t2             = std::chrono::high_resolution_clock::now();
-    Timer t_mm_mul = t2 - t1;
+    Timer t_mv_mul = t2 - t1;
 
     srs::dvector b4;
     t1 = std::chrono::high_resolution_clock::now();
@@ -59,7 +59,7 @@ void benchmark(int n, int m)
     t2             = std::chrono::high_resolution_clock::now();
     Timer t_matmul = t2 - t1;
 
-    print(n, m, t_arma, t_mm_mul, t_matmul);
+    print(n, m, t_arma, t_mv_mul, t_matmul);
 }
 
 int main()
