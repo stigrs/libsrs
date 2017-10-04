@@ -35,7 +35,7 @@ public:
     typedef T value_type;
     typedef std::size_t size_type;
     typedef Slice_iter<T> iterator;
-    typedef Cslice_iter<T> const_iterator;
+    typedef Slice_iter<const T> const_iterator;
 
     // Constructors:
 
@@ -168,9 +168,9 @@ Slice_iter<T> Array_ref<T, 1>::begin()
 }
 
 template <class T>
-Cslice_iter<T> Array_ref<T, 1>::begin() const
+Slice_iter<const T> Array_ref<T, 1>::begin() const
 {
-    return Cslice_iter<T>(elems, srs::Slice(0, size(), stride));
+    return Slice_iter<const T>(elems, srs::Slice(0, size(), stride));
 }
 
 template <class T>
@@ -180,9 +180,9 @@ Slice_iter<T> Array_ref<T, 1>::end()
 }
 
 template <class T>
-Cslice_iter<T> Array_ref<T, 1>::end() const
+Slice_iter<const T> Array_ref<T, 1>::end() const
 {
-    return Cslice_iter<T>(elems, srs::Slice(size(), 1, stride));
+    return Slice_iter<const T>(elems, srs::Slice(size(), 1, stride));
 }
 
 template <class T>
