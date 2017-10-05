@@ -29,7 +29,7 @@ file for details regarding the licensing of Catch.
 
 ### Supported Platforms
 
-The test suite that exercises ChemApps has been built and passes successfully 
+The test suite that exercises LIBSRS has been built and passes successfully 
 on the following platforms:
 * GNU/Linux using GCC 5.4.0
 * GNU/Linux using Clang 3.8.0
