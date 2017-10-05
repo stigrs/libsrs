@@ -145,8 +145,6 @@ public:
     void resize(size_type nrows, size_type ncols);
     void resize(size_type nrows, size_type ncols, const T& value);
 
-    void reshape(size_type nrows, size_type ncols);
-
     void transpose();
 
     // Access underlying array:
@@ -431,14 +429,6 @@ inline void Array<T, 2>::resize(size_type nrows,
                                 const T& value)
 {
     elems.resize(nrows * ncols, value);
-    extents = {nrows, ncols};
-    stride  = nrows;
-}
-
-template <class T>
-inline void Array<T, 2>::reshape(size_type nrows, size_type ncols)
-{
-    Expects(nrows * ncols == size());
     extents = {nrows, ncols};
     stride  = nrows;
 }
