@@ -15,9 +15,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <srs/array.h>
+#include <srs/math.h>
 #include <catch/catch.hpp>
 #include <cmath>
 #include <iostream>
+#include <utility>
+
 
 TEST_CASE("test_array2")
 {
@@ -375,8 +378,14 @@ TEST_CASE("test_array2")
 
     SECTION("swap")
     {
-        srs::swap(m, m);
+        std::swap(m, m);
         CHECK(m == m);
+
+        srs::imatrix a1 = {{-1, 0, -6}, {6, 5, 2}, {11, 12, 3}};
+        srs::imatrix a2 = {{-1, 0, -6}, {6, 5, 2}, {11, 12, 3}};
+        srs::imatrix a3 = {{11, 12, 3}, {6, 5, 2}, {-1, 0, -6}};
+        std::swap(a2, a3);
+        CHECK(a3 == a1);
     }
 
     SECTION("row_subtraction")

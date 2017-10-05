@@ -46,6 +46,9 @@ public:
     {
     }
 
+    // Assignment:
+    Array_ref& operator=(const Array<T, 1>& a);
+
     // Element access:
 
     T& at(size_type i);
@@ -73,6 +76,10 @@ public:
 
     T* data() { return elems; }
     const T* data() const { return elems; }
+
+    // Modifiers:
+
+    void swap(const Array_ref& a);
 
     // Element-wise operations:
 
@@ -106,6 +113,16 @@ private:
     std::array<size_type, 1> extents;
     size_type stride;
 };
+
+template <class T>
+inline Array_ref<T, 1>& Array_ref<T, 1>::operator=(const Array<T, 1>& a)
+{
+    Expects(size() == a.size());
+    for (size_type i = 0; i < extents[0]; ++i) {
+        (*this)(i) = a(i);
+    }
+    return *this;
+}
 
 template <class T>
 inline T& Array_ref<T, 1>::at(size_type i)
@@ -183,6 +200,16 @@ template <class T>
 Slice_iter<const T> Array_ref<T, 1>::end() const
 {
     return Slice_iter<const T>(elems, srs::Slice(size(), 1, stride));
+}
+
+template <class T>
+inline void Array_ref<T, 1>::swap(const Array_ref<T, 1>& a)
+{
+    Expects(extents = a.extents);
+    Expects(stride = a.stride);
+    for (size_type i = 0; i < extents[0]; ++i) {
+        std::swap(elems[i], a(i));
+    }
 }
 
 template <class T>

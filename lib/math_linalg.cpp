@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2017 Stig Rune Sellevag. All rights reserved.
 //
@@ -12,159 +12,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 #include <mkl.h>
-#include <srs/math.h>
-#include <boost/math/special_functions/legendre.hpp>
+#include <srs/math_impl/core.h>
+#include <srs/math_impl/linalg.h>
+#include <cmath>
 #include <gsl/gsl>
 #include <random>
-#include <vector>
 
-
-double srs::hypot(const double a, const double b)
-{
-    double aa = std::abs(a);
-    double ab = std::abs(b);
-
-    if (aa > ab) {
-        return aa * std::sqrt(1.0 + std::pow(ab / aa, 2.0));
-    }
-    else {
-        return ab == 0.0 ? 0.0 : ab * std::sqrt(1.0 + std::pow(aa / ab, 2.0));
-    }
-}
-
-double srs::dihedral(const srs::dvector& a,
-                     const srs::dvector& b,
-                     const srs::dvector& c,
-                     const srs::dvector& d)
-{
-    auto ab  = srs::normalize(b - a);
-    auto bc  = srs::normalize(c - b);
-    auto cd  = srs::normalize(d - c);
-    auto n1  = srs::cross(ab, bc);
-    auto n2  = srs::cross(bc, cd);
-    auto m   = srs::cross(n1, bc);
-    double x = srs::dot(n1, n2);
-    double y = srs::dot(m, n2);
-
-    double tau = radtodeg(std::atan2(y, x));
-    if (std::abs(tau) < 1.0e-8) {  // avoid very small angles close to zero
-        tau = 0.0;
-    }
-    return tau;
-}
-
-void srs::pdist_matrix(srs::dmatrix& dm, const srs::dmatrix& mat)
-{
-    dm.resize(mat.rows(), mat.rows(), 0.0);
-
-    for (std::size_t j = 0; j < dm.cols(); ++j) {
-        for (std::size_t i = j; i < dm.rows(); ++i) {
-            if (i != j) {
-                auto dij = mat.row(i) - mat.row(j);
-                dm(i, j) = srs::norm(dij);
-                dm(j, i) = dm(i, j);
-            }
-        }
-    }
-}
-
-void srs::translate(srs::dmatrix& xyz, double dx, double dy, double dz)
-{
-    Expects(xyz.cols() == 3);
-    for (std::size_t i = 0; i < xyz.rows(); ++i) {
-        xyz(i, 0) += dx;
-        xyz(i, 1) += dy;
-        xyz(i, 2) += dz;
-    }
-}
-
-void srs::rotate(srs::dmatrix& xyz, const srs::dmatrix& rotm)
-{
-    Expects(rotm.rows() == 3 && rotm.cols() == 3);
-
-    srs::dvector xold;
-    srs::dvector xnew;
-
-    for (std::size_t i = 0; i < xyz.rows(); ++i) {
-        auto xyz_new = rotm * xyz.row(i);
-        xyz(i, 0) = xyz_new(0);
-        xyz(i, 1) = xyz_new(1);
-        xyz(i, 2) = xyz_new(2);
-    }
-}
-
-//------------------------------------------------------------------------------
-
-double srs::trapezoidal(double xlo, double xup, const srs::dvector& y)
-{
-    const double step = std::abs(xup - xlo) / static_cast<double>(y.size());
-
-    double ans = 0.0;
-    ans += 0.5 * y[0];
-    ans += 0.5 * y[y.size()];
-
-    for (std::size_t i = 1; i < y.size() - 1; ++i) {
-        ans += y[i];
-    }
-    return ans *= step;
-}
-
-double srs::simpsons(double xlo, double xup, const srs::dvector& y)
-{
-    const double step = std::abs(xup - xlo) / static_cast<double>(y.size());
-    double ans;
-    double f;
-
-    ans = 0.0;
-    for (std::size_t i = 0; i < y.size(); ++i) {
-        if ((i == 0) || (i == y.size() - 1)) {
-            f = y[i];
-        }
-        else if ((i % 2) == 1) {
-            f = 4.0 * y[i];
-        }
-        else {
-            f = 2.0 * y[i];
-        }
-        ans += f;
-    }
-    return ans *= step / 3.0;
-}
-
-void srs::gaussleg(int n, srs::dvector& x, srs::dvector& w, double a, double b)
-{
-    // Given the lower and upper limits of integration a and b, this
-    // function returns arrays x(n) and w(n) of length n, containing the
-    // abscissas and weights of the Gauss-Legendre n-point quadrature formula.
-
-    Expects(n >= 2);
-    Expects(srs::is_even(n));
-
-    x.resize(n);
-    w.resize(n);
-
-    std::vector<double> xp = boost::math::legendre_p_zeros<double>(n);
-
-    int nhalf = n / 2;
-    for (int i = nhalf; i < n; ++i) {  // find x and w from 0 to +1
-        int im    = i - nhalf;
-        double pp = boost::math::legendre_p_prime<double>(n, xp[im]);
-        x(i)      = xp[im];
-        w(i)      = 2.0 / ((1.0 - xp[im] * xp[im]) * pp * pp);
-    }
-    for (int i = 0; i < nhalf; ++i) {  // add symmetric counterpart
-        x(i) = -x(n - i - 1);
-        w(i) = w(n - i - 1);
-    }
-    x = 0.5 * (b - a) * x;
-    x += 0.5 * (a + b);  // scale to the desired interval
-    w = 0.5 * (b - a) * w;
-}
-
-//------------------------------------------------------------------------------
 
 srs::dmatrix srs::hilbert(std::size_t n)
 {
@@ -236,102 +92,6 @@ srs::dmatrix srs::randu(std::size_t m, std::size_t n)
 
 //------------------------------------------------------------------------------
 
-void srs::dgemm(const std::string& transa,
-                const std::string& transb,
-                const double alpha,
-                const srs::dmatrix& a,
-                const srs::dmatrix& b,
-                const double beta,
-                srs::dmatrix& c)
-{
-    Expects(a.rows() == b.cols());
-
-    const MKL_INT m = a.rows();
-    const MKL_INT n = b.cols();
-    const MKL_INT k = a.cols();
-
-    MKL_INT lda = k > 1 ? k : 1;
-    if ((transa == "N") || (transa == "n")) {
-        lda = m > 1 ? m : 1;
-    }
-
-    MKL_INT ldb = n > 1 ? n : 1;
-    if ((transb == "N") || (transb == "n")) {
-        ldb = k > 1 ? k : 1;
-    }
-
-    MKL_INT ldc = m > 1 ? m : 1;
-    if (c.empty()) {
-        c.resize(ldc, n);
-    }
-
-    CBLAS_TRANSPOSE cblas_transa;
-    if ((transa == "T") || (transa == "t")) {
-        cblas_transa = CblasTrans;
-    }
-    else {
-        cblas_transa = CblasNoTrans;
-    }
-
-    CBLAS_TRANSPOSE cblas_transb;
-    if ((transb == "T") || (transb == "t")) {
-        cblas_transb = CblasTrans;
-    }
-    else {
-        cblas_transb = CblasNoTrans;
-    }
-
-    // clang-format off
-    cblas_dgemm(
-        CblasColMajor, cblas_transa, cblas_transb, m, n, k, alpha, a.data(),
-        lda, b.data(), ldb, beta, c.data(), ldc);
-    // clang-format on
-}
-
-void srs::dgemv(const std::string& transa,
-                const double alpha,
-                const srs::dmatrix& a,
-                const srs::dvector& x,
-                const double beta,
-                srs::dvector& y)
-{
-    MKL_INT m = a.rows();
-    MKL_INT n = a.cols();
-
-    if ((transa == "N") || (transa == "n")) {
-        Expects(x.size() == a.cols());
-        if (y.empty()) {
-            y.resize(m);
-        }
-    }
-    else {
-        Expects(x.size() == a.cols());
-        if (y.empty()) {
-            y.resize(n);
-        }
-    }
-
-    MKL_INT lda  = m > 1 ? m : 1;
-    MKL_INT incx = 1;
-    MKL_INT incy = 1;
-
-    CBLAS_TRANSPOSE cblas_transa;
-    if ((transa == "T") || (transa == "t")) {
-        cblas_transa = CblasTrans;
-    }
-    else {
-        cblas_transa = CblasNoTrans;
-    }
-
-    // clang-format off
-    cblas_dgemv(
-        CblasColMajor, cblas_transa, m, n, alpha, a.data(), lda, x.data(),
-        incx, beta, y.data(), incy);
-    // clang-format on
-}
-
-//------------------------------------------------------------------------------
-
 double srs::det(const srs::dmatrix& a)
 {
     Expects(a.rows() == a.cols());
@@ -390,6 +150,8 @@ void srs::inv(srs::dmatrix& a)
     }
 }
 
+//------------------------------------------------------------------------------
+
 void srs::lu(srs::dmatrix& a, srs::ivector& ipiv)
 {
     MKL_INT m = a.rows();
@@ -405,6 +167,8 @@ void srs::lu(srs::dmatrix& a, srs::ivector& ipiv)
         throw Math_error("dgetrf: U matrix is singular");
     }
 }
+
+//------------------------------------------------------------------------------
 
 void srs::eigs(srs::dmatrix& a, srs::dvector& wr)
 {
@@ -583,17 +347,17 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     wr(q) += z;
 
                     for (std::size_t r = 0; r < p; ++r) {
-                        t = a(r, p);
+                        t       = a(r, p);
                         a(r, p) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (std::size_t r = p + 1; r < q; ++r) {
-                        t = a(p, r);
+                        t       = a(p, r);
                         a(p, r) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (std::size_t r = q + 1; r < n; ++r) {
-                        t = a(p, r);
+                        t       = a(p, r);
                         a(p, r) = c * t - s * a(q, r);
                         a(q, r) = s * t + c * a(q, r);
                     }
@@ -601,7 +365,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     // Update eigenvectors:
 
                     for (std::size_t r = 0; r < n; ++r) {
-                        t = vr(r, p);
+                        t        = vr(r, p);
                         vr(r, p) = c * t - s * vr(r, q);
                         vr(r, q) = s * t + c * vr(r, q);
                     }
@@ -632,13 +396,15 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         wr(k) = wr(i);
         wr(i) = p;
         for (std::size_t j = 0; j < n; ++j) {
-            p = vr(j, i);
+            p        = vr(j, i);
             vr(j, i) = vr(j, k);
             vr(j, k) = p;
         }
     }
     a = vr;
 }
+
+//------------------------------------------------------------------------------
 
 void srs::linsolve(srs::dmatrix& a, srs::dmatrix& b)
 {
@@ -661,81 +427,96 @@ void srs::linsolve(srs::dmatrix& a, srs::dmatrix& b)
 
 //------------------------------------------------------------------------------
 
-double srs::harmmean(const srs::dvector& x)
+void srs::mkl_dgemm(const std::string& transa,
+                    const std::string& transb,
+                    const double alpha,
+                    const srs::dmatrix& a,
+                    const srs::dmatrix& b,
+                    const double beta,
+                    srs::dmatrix& c)
 {
-    double sumi = 0.0;
-    for (std::size_t i = 0; i < x.size(); ++i) {
-        Expects(x(i) != 0.0);
-        sumi += 1.0 / x(i);
+    Expects(a.rows() == b.cols());
+
+    const MKL_INT m = a.rows();
+    const MKL_INT n = b.cols();
+    const MKL_INT k = a.cols();
+
+    MKL_INT lda = k > 1 ? k : 1;
+    if ((transa == "N") || (transa == "n")) {
+        lda = m > 1 ? m : 1;
     }
-    Ensures(sumi != 0.0);
-    return x.size() / sumi;
+
+    MKL_INT ldb = n > 1 ? n : 1;
+    if ((transb == "N") || (transb == "n")) {
+        ldb = k > 1 ? k : 1;
+    }
+
+    MKL_INT ldc = m > 1 ? m : 1;
+    if (c.empty()) {
+        c.resize(ldc, n);
+    }
+
+    CBLAS_TRANSPOSE cblas_transa;
+    if ((transa == "T") || (transa == "t")) {
+        cblas_transa = CblasTrans;
+    }
+    else {
+        cblas_transa = CblasNoTrans;
+    }
+
+    CBLAS_TRANSPOSE cblas_transb;
+    if ((transb == "T") || (transb == "t")) {
+        cblas_transb = CblasTrans;
+    }
+    else {
+        cblas_transb = CblasNoTrans;
+    }
+
+    // clang-format off
+    cblas_dgemm(
+        CblasColMajor, cblas_transa, cblas_transb, m, n, k, alpha, a.data(),
+        lda, b.data(), ldb, beta, c.data(), ldc);
+    // clang-format on
 }
 
-double srs::median(srs::dvector& x)
+void srs::mkl_dgemv(const std::string& transa,
+                    const double alpha,
+                    const srs::dmatrix& a,
+                    const srs::dvector& x,
+                    const double beta,
+                    srs::dvector& y)
 {
-    auto first = x.begin();
-    auto last  = x.end();
-    auto mid   = first + (last - first) / 2;
+    MKL_INT m = a.rows();
+    MKL_INT n = a.cols();
 
-    std::nth_element(first, mid, last);
-    double med = *mid;
-
-    if ((x.size() % 2) == 0) {  // size is even
-        mid = first + (last - first) / 2 - 1;
-        std::nth_element(first, mid, last);
-        med = (med + *mid) / 2.0;
+    if ((transa == "N") || (transa == "n")) {
+        Expects(x.size() == a.cols());
+        if (y.empty()) {
+            y.resize(m);
+        }
     }
-    return med;
-}
-
-double srs::var(const srs::dvector& x)
-{
-    // Two-pass algorithm:
-    double n     = static_cast<double>(x.size());
-    double xmean = srs::mean(x);
-    double sum2  = 0.0;
-
-    for (std::size_t i = 0; i < x.size(); ++i) {
-        sum2 += std::pow(x(i) - xmean, 2.0);
+    else {
+        Expects(x.size() == a.cols());
+        if (y.empty()) {
+            y.resize(n);
+        }
     }
-    return sum2 / (n - 1.0);
-}
 
-double srs::mad(const srs::dvector& x)
-{
-    double xmean  = mean(x);
-    double sumdev = 0.0;
+    MKL_INT lda  = m > 1 ? m : 1;
+    MKL_INT incx = 1;
+    MKL_INT incy = 1;
 
-    for (std::size_t i = 0; i < x.size(); ++i) {
-        sumdev = std::abs(x(i) - xmean);
+    CBLAS_TRANSPOSE cblas_transa;
+    if ((transa == "T") || (transa == "t")) {
+        cblas_transa = CblasTrans;
     }
-    return sumdev / static_cast<double>(x.size());
-}
-
-double srs::rms(const srs::dvector& x)
-{
-    double sum2 = 0.0;
-
-    for (std::size_t i = 0; i < x.size(); ++i) {
-        sum2 += x(i) * x(i);
+    else {
+        cblas_transa = CblasNoTrans;
     }
-    return std::sqrt(sum2 / static_cast<double>(x.size()));
-}
 
-double srs::cov(const srs::dvector& x, const srs::dvector& y)
-{
-    Expects(x.size() == y.size() && x.size() > 0);
-
-    double n     = x.size();
-    double xmean = srs::mean(x);
-    double ymean = srs::mean(y);
-    double cov   = 0.0;
-
-    for (std::size_t i = 0; i < x.size(); ++i) {
-        double a = x(i) - xmean;
-        double b = y(i) - ymean;
-        cov += a * b / (n - 1.0);
-    }
-    return cov;
+    // clang-format off
+    cblas_dgemv(
+        CblasColMajor, cblas_transa, m, n, alpha, a.data(), lda, x.data(),
+        incx, beta, y.data(), incy);
+    // clang-format on
 }

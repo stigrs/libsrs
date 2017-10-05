@@ -14,8 +14,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_NORM_TYPE_H
-#define SRS_NORM_TYPE_H
+#ifndef SRS_MATH_NORM_TYPE_H
+#define SRS_MATH_NORM_TYPE_H
 
 //
 // Provides vector and matrix norm types.
@@ -30,4 +30,4 @@ enum Norm_t {
 };
 }
 
-#endif  // SRS_NORM_TYPE_H
+#endif  // SRS_MATH_NORM_TYPE_H

@@ -42,6 +42,10 @@ public:
     {
     }
 
+    // Assignment:
+
+    Array_ref& operator=(const Array<T, 2>& a);
+
     // Element access:
 
     T& at(size_type i, size_type j);
@@ -111,6 +115,19 @@ private:
     std::array<size_type, 2> extents;
     size_type stride;
 };
+
+template <class T>
+Array_ref<T, 2>& Array_ref<T, 2>::operator=(const Array<T, 2>& a)
+{
+    Expects(rows() == a.rows());
+    Expects(cols() == a.cols());
+    for (size_type j = 0; j < extents[1]; ++j) {
+        for (size_type i = 0; i < extents[0]; ++i) {
+            (*this)(i, j) = a(i, j);
+        }
+    }
+    return *this;
+}
 
 template <class T>
 inline T& Array_ref<T, 2>::at(size_type i, size_type j)

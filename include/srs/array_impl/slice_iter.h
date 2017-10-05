@@ -51,24 +51,14 @@ bool operator==(const Slice_iter<T>&, const Slice_iter<T>&);
 template <class T>
 bool operator!=(const Slice_iter<T>&, const Slice_iter<T>&);
 
-template <class T>
-bool operator<(const Slice_iter<T>&, const Slice_iter<T>&);
-
-template <class T>
-bool operator>(const Slice_iter<T>&, const Slice_iter<T>&);
-
-template <class T>
-bool operator<=(const Slice_iter<T>&, const Slice_iter<T>&);
-
-template <class T>
-bool operator>=(const Slice_iter<T>&, const Slice_iter<T>&);
-
 //------------------------------------------------------------------------------
 
 //
-// Random access slice iterator class for use by Array_ref class.
+// Bidirectional slice iterator class for use by Array_ref class.
 //
 // This is a modified version of Stroustrup's Slice_iter class (TC++PL, p. 670).
+//
+// TODO: Make it a random access iterator.
 //
 template <class T>
 class Slice_iter {
@@ -77,23 +67,9 @@ public:
     typedef T* pointer;
     typedef T& reference;
     typedef std::size_t size_type;
-    typedef std::size_t difference_type;
-    typedef std::random_access_iterator_tag iterator_category;
+    typedef std::bidirectional_iterator_tag iterator_category;
 
-    Slice_iter(T* p, srs::Slice s) : ptr(p), desc(s), curr(s.start) {}
-
-    Slice_iter begin() const
-    {
-        Slice_iter t = *this;
-        return t;
-    }
-
-    Slice_iter end() const
-    {
-        Slice_iter t = *this;
-        t.curr       = size();
-        return t;
-    }
+    Slice_iter(T* p, const srs::Slice& s) : ptr(p), desc(s), curr(s.start) {}
 
     // Increment operators:
 
@@ -123,56 +99,15 @@ public:
         return t;
     }
 
-    // Capacity.
-    size_type size() const { return desc.size; }
-
-    // Element access:
-
-    reference operator[](difference_type i) { return ref(i); }
-
     // Pointer like operators:
 
     reference operator*() { return ref(curr); }
     pointer operator->() { return ptr + curr * desc.stride; }
 
-    // Arithmetic:
-
-    Slice_iter& operator+=(difference_type off)
-    {
-        curr += off;
-        return *this;
-    }
-
-    Slice_iter& operator-=(difference_type off)
-    {
-        curr -= off;
-        return *this;
-    }
-
-    Slice_iter operator+(difference_type off)
-    {
-        srs::Slice s(desc.start + off, desc.size, desc.stride);
-        return Slice_iter(ptr, s);
-    }
-
-    Slice_iter operator-(difference_type off)
-    {
-        srs::Slice s(desc.start - off, desc.size, desc.stride);
-        return Slice_iter(ptr, s);
-    }
-
-    difference_type operator-(const Slice_iter& rhs) { return curr - rhs.curr; }
-
     // Comparison operators:
 
-    // clang-format off
     friend bool operator==<>(const Slice_iter& a, const Slice_iter& b);
     friend bool operator!=<>(const Slice_iter& a, const Slice_iter& b);
-    friend bool operator< <>(const Slice_iter& a, const Slice_iter& b);
-    friend bool operator> <>(const Slice_iter& a, const Slice_iter& b);
-    friend bool operator<=<>(const Slice_iter& a, const Slice_iter& b);
-    friend bool operator>=<>(const Slice_iter& a, const Slice_iter& b);
-    // clang-format off
 
 private:
     T* ptr;
@@ -198,30 +133,6 @@ template <class T>
 inline bool operator!=(const Slice_iter<T>& a, const Slice_iter<T>& b)
 {
     return !(a == b);
-}
-
-template <class T>
-inline bool operator<(const Slice_iter<T>& a, const Slice_iter<T>& b)
-{
-    return (a.curr < b.curr) && (a.desc.stride == b.desc.stride);
-}
-
-template <class T>
-inline bool operator>(const Slice_iter<T>& a, const Slice_iter<T>& b)
-{
-    return b < a;
-}
-
-template <class T>
-inline bool operator<=(const Slice_iter<T>& a, const Slice_iter<T>& b)
-{
-    return !(a > b);
-}
-
-template <class T>
-inline bool operator>=(const Slice_iter<T>& a, const Slice_iter<T>& b)
-{
-    return !(a < b);
 }
 
 }  // namespace srs

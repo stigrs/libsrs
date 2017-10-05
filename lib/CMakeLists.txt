@@ -15,7 +15,10 @@ set(
     SRC_FILES
     datum.cpp
     input.cpp
-    math.cpp
+    math_geometry.cpp
+    math_integration.cpp
+    math_linalg.cpp
+    math_statistics.cpp
 )
 add_library(
     srs 

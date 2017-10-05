@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2017 Stig Rune Sellevag. All rights reserved.
 //
@@ -12,14 +12,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef SRS_ARRAY_OPR_H
 #define SRS_ARRAY_OPR_H
 
-#include <srs/array_impl/norm_type.h>
-#include <algorithm>
-#include <cmath>
 #include <gsl/gsl>
 
 
@@ -389,306 +386,6 @@ inline Array<T, 1> operator*(const Array_ref<const T, 2>& a,
 
 //------------------------------------------------------------------------------
 
-// Mathematical functions:
-
-// Find maximum element.
-template <class T>
-inline T max(const Array<T, 1>& vec)
-{
-    return *std::max_element(vec.begin(), vec.end());
-}
-
-// Find minimum element.
-template <class T>
-inline T min(const Array<T, 1>& vec)
-{
-    return *std::min_element(vec.begin(), vec.end());
-}
-
-// Find maximum element.
-template <class T>
-Array<T, 1> max(const Array<T, 2>& a, int dim = 2)
-{
-    Array<T, 1> result;
-    if (dim == 1) {  // row
-        result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
-            auto ri   = a.row(i);
-            result(i) = *std::max_element(ri.begin(), ri.end());
-        }
-    }
-    else {  // column
-        result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
-            auto rj   = a.column(j);
-            result(j) = *std::max_element(rj.begin(), rj.end());
-        }
-    }
-    return result;
-}
-
-// Find maximum element.
-template <class T>
-Array<T, 1> min(const Array<T, 2>& a, int dim = 2)
-{
-    Array<T, 1> result;
-    if (dim == 1) {
-        result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
-            auto ri   = a.row(i);
-            result(i) = *std::min_element(ri.begin(), ri.end());
-        }
-    }
-    else {
-        result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
-            auto rj   = a.column(j);
-            result(j) = *std::min_element(rj.begin(), rj.end());
-        }
-    }
-    return result;
-}
-
-// Compute sum of elements.
-template <class T>
-inline T sum(const Array<T, 1>& vec)
-{
-    return std::accumulate(vec.begin(), vec.end(), T(0));
-}
-
-template <class T>
-inline T sum(const Array_ref<T, 1>& vec)
-{
-    return std::accumulate(vec.begin(), vec.end(), T(0));
-}
-
-template <class T>
-inline T sum(const Array_ref<const T, 1>& vec)
-{
-    return std::accumulate(vec.begin(), vec.end(), T(0));
-}
-
-// Compute sum of elements along given dimension.
-template <class T>
-Array<T, 1> sum(const Array<T, 2>& a, int dim = 2)
-{
-    Array<T, 1> result;
-    if (dim == 1) {  // sum element along each row
-        result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
-            result(i) = sum(a.row(i));
-        }
-    }
-    else {  // sum element along each column
-        result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
-            result(j) = sum(a.column(j));
-        }
-    }
-    return result;
-}
-
-// Compute product of elements.
-template <class T>
-inline T prod(const Array<T, 1>& vec)
-{
-    return std::accumulate(vec.begin(), vec.end(), T(1), std::multiplies<T>());
-}
-
-template <class T>
-inline T prod(const Array_ref<T, 1>& vec)
-{
-    return std::accumulate(vec.begin(), vec.end(), T(1), std::multiplies<T>());
-}
-
-template <class T>
-inline T prod(const Array_ref<const T, 1>& vec)
-{
-    return std::accumulate(vec.begin(), vec.end(), T(1), std::multiplies<T>());
-}
-
-// Compute product of elements along given dimension.
-template <class T>
-Array<T, 1> prod(const Array<T, 2>& a, int dim = 2)
-{
-    Array<T, 1> result;
-    if (dim == 1) {  // product of elements along each row
-        result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
-            result(i) = prod(a.row(i));
-        }
-    }
-    else {  // product of elements along each column
-        result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
-            result(j) = prod(a.column(j));
-        }
-    }
-    return result;
-}
-
-// Compute the norm of a vector.
-template <class T>
-inline T norm(const Array<T, 1>& vec, int p = srs::L2)
-{
-    T pnorm = T(0);
-    if (!vec.empty()) {
-        if (p == 1) {  // L1 norm
-            for (const auto& v : vec) {
-                pnorm += std::abs(v);
-            }
-        }
-        else if (p == 2) {  // L2 norm (Euclidean)
-            for (const auto& v : vec) {
-                pnorm += v * v;
-            }
-            pnorm = std::sqrt(pnorm);
-        }
-        else if ((p > 2) && (p <= 10)) {
-            T pp = static_cast<T>(p);
-            for (const auto& v : vec) {
-                pnorm += std::pow(std::abs(v), pp);
-            }
-            pnorm = std::pow(pnorm, T(1) / pp);
-        }
-        else {  // L-infinity norm
-            pnorm = std::abs(vec(0));
-            for (const auto& v : vec) {
-                pnorm = std::max(pnorm, std::abs(v));
-            }
-        }
-    }
-    return pnorm;
-}
-
-// Compute matrix norm.
-template <class T>
-T norm(const Array<T, 2>& a, int p = srs::Fro)
-{
-    T pnorm = T(0);
-    T tsum  = T(0);
-
-    if (!a.empty()) {
-        if (p == srs::Fro) {  // Frobenius norm
-            for (std::size_t j = 0; j < a.cols(); ++j) {
-                for (std::size_t i = 0; i < a.rows(); ++i) {
-                    tsum += a(i, j) * a(i, j);
-                }
-            }
-            pnorm = std::sqrt(tsum);
-        }
-        else if (p == srs::L1) {  // maximum absolute column sum norm (L1 norm)
-            for (std::size_t j = 0; j < a.cols(); ++j) {
-                tsum    = T(0);
-                auto cj = a.column(j);
-                for (const auto& v : cj) {
-                    tsum += std::abs(v);
-                }
-                if (tsum > pnorm) {
-                    pnorm = tsum;
-                }
-            }
-        }
-        else {  // maximum absolute row sum norm (L-infinity norm)
-            for (std::size_t i = 0; i < a.rows(); ++i) {
-                tsum    = T(0);
-                auto ri = a.row(i);
-                for (const auto& v : ri) {
-                    tsum += std::abs(v);
-                }
-                if (tsum > pnorm) {
-                    pnorm = tsum;
-                }
-            }
-        }
-    }
-    return pnorm;
-}
-
-// Compute trace of N x N matrix.
-template <class T>
-inline T trace(const srs::Array<T, 2>& a)
-{
-    Expects(a.rows() == a.cols());
-    const auto d = a.diag();
-    return std::accumulate(d.begin(), d.end(), T(0));
-}
-
-template <class T>
-inline T trace(const srs::Array_ref<T, 2>& a)
-{
-    Expects(a.rows() == a.cols());
-    const auto d = a.diag();
-    return std::accumulate(d.begin(), d.end(), T(0));
-}
-
-template <class T>
-inline T trace(const srs::Array_ref<const T, 2>& a)
-{
-    Expects(a.rows() == a.cols());
-    const auto d = a.diag();
-    return std::accumulate(d.begin(), d.end(), T(0));
-}
-
-// Compute normalized vector.
-inline srs::dvector normalize(const srs::dvector& vec)
-{
-    srs::dvector result(vec);
-    return result /= norm(vec);
-}
-
-// Compute dot product.
-template <class T>
-inline T dot(const Array<T, 1>& a, const Array<T, 1>& b)
-{
-    // Intel MKL will be faster for large N.
-    Expects(a.size() == b.size());
-    return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
-}
-
-// Compute cross product.
-template <class T>
-inline Array<T, 1> cross(const Array<T, 1>& a, const Array<T, 1>& b)
-{
-    Expects(a.size() == b.size() && a.size() == 3);
-    Array<T, 1> result(3);
-    result(0) = a(1) * b(2) - a(2) * b(1);
-    result(1) = a(2) * b(0) - a(0) * b(2);
-    result(2) = a(0) * b(1) - a(1) * b(0);
-    return result;
-}
-
-// Vector convolution.
-template <class T>
-Array<T, 1> conv(const Array<T, 1>& a, const Array<T, 1>& b)
-{
-    const auto na = a.size();
-    const auto nb = b.size();
-    const auto nc = na + nb - 1;
-
-    Array<T, 1> result(nc);
-
-    for (std::size_t i = 0; i < nc; ++i) {
-        result(i) = T(0);
-        auto jmin = (i >= (nb - 1)) ? (i - (nb - 1)) : 0;
-        auto jmax = (i < (na - 1)) ? i : (na - 1);
-        for (std::size_t j = jmin; j <= jmax; ++j) {
-            result(i) += a(j) * b(i - j);
-        }
-    }
-    return result;
-}
-
-// Compute vector-scalar product and add the result to a vector.
-template <class T>
-void axpy(const T& a, const Array<T, 1>& x, Array<T, 1>& y)
-{
-    Expects(x.size() == y.size());
-    for (std::size_t i = 0; i < x.size(); ++i) {
-        y(i) = a * x(i) + y(i);
-    }
-}
-
 // Matrix-matrix multiplication.
 template <class A1, class A2, class A3>
 // requires A1 = Array<T, 2>, A2 = Array<T, 2>, A3 = Array<T, 2>
@@ -743,9 +440,7 @@ void mv_mul(const A1& a, const A2& v, A3& w)
 template <class T, std::size_t N>
 inline void swap(Array<T, N>& a, Array<T, N>& b)
 {
-    if (a != b) {
-        a.swap(b);
-    }
+    a.swap(b);
 }
 
 // Sort vector.
@@ -767,28 +462,34 @@ void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
     if (dim == 1) {  // sort elements along each row
         if (ascending) {
             for (std::size_t i = 0; i < a.rows(); ++i) {
-                auto ri = a.row(i);
+                // This is not terribly elegant, but I don't know (yet) how
+                // to make a random access slice iterator.
+                Array<T, 1> ri = a.row(i);
                 std::sort(ri.begin(), ri.end(), std::less<T>());
+                a.row(i) = ri;
             }
         }
         else {
             for (std::size_t i = 0; i < a.rows(); ++i) {
-                auto ri = a.row(i);
+                Array<T, 1> ri = a.row(i);
                 std::sort(ri.begin(), ri.end(), std::greater<T>());
+                a.row(i) = ri;
             }
         }
     }
     else {  // sort elements along each column
         if (ascending) {
             for (std::size_t j = 0; j < a.cols(); ++j) {
-                auto cj = a.column(j);
+                Array<T, 1> cj = a.column(j);
                 std::sort(cj.begin(), cj.end(), std::less<T>());
+                a.column(j) = cj;
             }
         }
         else {
             for (std::size_t j = 0; j < a.cols(); ++j) {
-                auto cj = a.column(j);
+                Array<T, 1> cj = a.column(j);
                 std::sort(cj.begin(), cj.end(), std::greater<T>());
+                a.column(j) = cj;
             }
         }
     }

@@ -14,20 +14,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_MATH_INTEGRATION_H
+#define SRS_MATH_INTEGRATION_H
+
+#include <srs/array.h>
 
 
 //
-// Provides a mathematical library with interfaces to Intel MKL.
+// Provides integration functions.
 //
+namespace srs {
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/norm_type.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+// Integrate array of function values using the Trapezoidal rule.
+double trapezoidal(double xlo, double xup, const srs::dvector& y);
 
-#endif  // SRS_MATH_H
+// Integrate array of function values using Simpson's rule.
+double simpsons(double xlo, double xup, const srs::dvector& y);
+
+// Compute abscissas and weights of Gauss-Legendre n-point quadrature formula.
+void gaussleg(
+    int n, srs::dvector& x, srs::dvector& w, double a = -1.0, double b = 1.0);
+
+}  // namespace srs
+
+#endif  // SRS_MATH_INTEGRATION_H

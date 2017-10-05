@@ -24,12 +24,13 @@
 
 typedef std::chrono::duration<double, std::micro> Timer;
 
-void print(int n, const Timer& t_arma, const Timer& t_srs)
+void print(int n, const Timer& t_arma, const Timer& t_srs, const Timer& t_ddot)
 {
     std::cout << "Dot product:\n"
               << "------------\n"
-              << "size =     " << n << '\n'
-              << "srs/arma = " << t_srs.count() / t_arma.count() << "\n\n";
+              << "size =      " << n << '\n'
+              << "srs/arma =  " << t_srs.count() / t_arma.count() << "\n"
+              << "ddot/arma = " << t_ddot.count() / t_arma.count() << "\n\n";
 }
 
 void benchmark(int n)
@@ -50,8 +51,12 @@ void benchmark(int n)
     t2          = std::chrono::high_resolution_clock::now();
     Timer t_srs = t2 - t1;
 
-    print(n, t_arma, t_srs);
+    t1 = std::chrono::high_resolution_clock::now();
+    srs::mkl_ddot(va, vb);
+    t2           = std::chrono::high_resolution_clock::now();
+    Timer t_ddot = t2 - t1;
 
+    print(n, t_arma, t_srs, t_ddot);
     if (arma != srs) {
         std::cout << "Different\n";
     }

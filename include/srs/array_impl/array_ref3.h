@@ -46,6 +46,10 @@ public:
     {
     }
 
+    // Assignment:
+
+    Array_ref& operator=(const Array<T, 3>& a);
+
     // Element access:
 
     T& at(size_type i, size_type j, size_type k);
@@ -110,6 +114,22 @@ private:
     std::array<size_type, 3> extents;
     std::array<size_type, 2> strides;
 };
+
+template <class T>
+Array_ref<T, 3>& Array_ref<T, 3>::operator=(const Array<T, 3>& a)
+{
+    Expects(rows() == a.rows());
+    Expects(cols() == a.cols());
+    Expects(depths() == a.depths());
+    for (size_type k = 0; k < extents[2]; ++k) {
+        for (size_type j = 0; j < extents[1]; ++j) {
+            for (size_type i = 0; i < extents[0]; ++i) {
+                (*this)(i, j, k) = a(i, j, k);
+            }
+        }
+    }
+    return *this;
+}
 
 template <class T>
 inline T& Array_ref<T, 3>::at(size_type i, size_type j, size_type k)

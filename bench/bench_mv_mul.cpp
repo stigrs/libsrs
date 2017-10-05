@@ -27,14 +27,13 @@ void print(int n,
            int m,
            const Timer& t_arma,
            const Timer& t_mv_mul,
-           const Timer& t_matmul)
+           const Timer& t_dgemv)
 {
     std::cout << "Matrix-vector multiplication:\n"
               << "-----------------------------\n"
               << "size =        " << n << " x " << m << '\n'
               << "mv_mul/arma = " << t_mv_mul.count() / t_arma.count() << "\n"
-              << "matmul/arma = " << t_matmul.count() / t_arma.count()
-              << "\n\n";
+              << "dgemv/arma =  " << t_dgemv.count() / t_arma.count() << "\n\n";
 }
 
 void benchmark(int n, int m)
@@ -55,11 +54,11 @@ void benchmark(int n, int m)
 
     srs::dvector b4;
     t1 = std::chrono::high_resolution_clock::now();
-    srs::matmul(b1, b2, b4);
-    t2             = std::chrono::high_resolution_clock::now();
-    Timer t_matmul = t2 - t1;
+    srs::mkl_dgemv("N", 1.0, b1, b2, 0.0, b4);
+    t2            = std::chrono::high_resolution_clock::now();
+    Timer t_dgemv = t2 - t1;
 
-    print(n, m, t_arma, t_mv_mul, t_matmul);
+    print(n, m, t_arma, t_mv_mul, t_dgemv);
 }
 
 int main()

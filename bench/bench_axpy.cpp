@@ -28,15 +28,16 @@ void print(int n,
            const Timer& t_arma,
            const Timer& t_srs,
            const Timer& t_val,
-           const Timer& t_axpy)
+           const Timer& t_axpy,
+           const Timer& t_daxpy)
 {
     std::cout << "Vector addition:\n"
               << "----------------\n"
-              << "size =      " << n << '\n'
-              << "srs/arma =  " << t_srs.count() / t_arma.count() << "\n"
-              << "srs/val =   " << t_srs.count() / t_val.count() << "\n"
-              << "axpy/arma = " << t_axpy.count() / t_arma.count() << "\n"
-              << "axpy/val =  " << t_axpy.count() / t_val.count() << "\n\n";
+              << "size =       " << n << '\n'
+              << "srs/arma =   " << t_srs.count() / t_arma.count() << "\n"
+              << "srs/val =    " << t_srs.count() / t_val.count() << "\n"
+              << "axpy/arma =  " << t_axpy.count() / t_arma.count() << "\n"
+              << "daxpy/arma = " << t_daxpy.count() / t_val.count() << "\n\n";
 }
 
 void benchmark(int n)
@@ -64,6 +65,13 @@ void benchmark(int n)
     t2           = std::chrono::high_resolution_clock::now();
     Timer t_axpy = t2 - t1;
 
+    srs::Array<double, 1> da(n, 1.0);
+    srs::Array<double, 1> db(n, 1.0);
+    t1 = std::chrono::high_resolution_clock::now();
+    srs::mkl_daxpy(2.0, da, db);
+    t2            = std::chrono::high_resolution_clock::now();
+    Timer t_daxpy = t2 - t1;
+
     std::valarray<double> wa(1.0, n);
     std::valarray<double> wb(1.0, n);
     t1          = std::chrono::high_resolution_clock::now();
@@ -71,7 +79,7 @@ void benchmark(int n)
     t2          = std::chrono::high_resolution_clock::now();
     Timer t_val = t2 - t1;
 
-    print(n, t_arma, t_srs, t_val, t_axpy);
+    print(n, t_arma, t_srs, t_val, t_axpy, t_daxpy);
 
     for (int i = 0; i < n; ++i) {
         if (ab(i) != vb(i)) {

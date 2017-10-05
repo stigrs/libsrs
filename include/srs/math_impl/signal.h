@@ -14,20 +14,38 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_MATH_SIGNAL_H
+#define SRS_MATH_SIGNAL_H
+
+#include <srs/array.h>
 
 
 //
-// Provides a mathematical library with interfaces to Intel MKL.
+// Provides signal processing methods.
 //
+namespace srs {
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/norm_type.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+// Vector convolution.
+template <class T>
+Array<T, 1> conv(const Array<T, 1>& a, const Array<T, 1>& b)
+{
+    const auto na = a.size();
+    const auto nb = b.size();
+    const auto nc = na + nb - 1;
 
-#endif  // SRS_MATH_H
+    Array<T, 1> result(nc);
+
+    for (std::size_t i = 0; i < nc; ++i) {
+        result(i) = T(0);
+        auto jmin = (i >= (nb - 1)) ? (i - (nb - 1)) : 0;
+        auto jmax = (i < (na - 1)) ? i : (na - 1);
+        for (std::size_t j = jmin; j <= jmax; ++j) {
+            result(i) += a(j) * b(i - j);
+        }
+    }
+    return result;
+}
+
+}  // namespace srs
+
+#endif  // SRS_MATH_SIGNAL_H
