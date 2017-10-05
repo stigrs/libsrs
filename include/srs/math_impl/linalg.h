@@ -426,6 +426,18 @@ void mkl_dgemv(const std::string& transa,
                const double beta,
                dvector& y);
 
+// Matrix transpose.
+inline void mkl_transpose(const dmatrix& a, dmatrix& b)
+{
+    std::size_t nrows = a.cols();
+    std::size_t ncols = a.rows();
+    std::size_t lda   = a.rows();
+    std::size_t ldb   = ncols;
+
+    b.resize(nrows, ncols);
+    mkl_domatcopy('C', 'T', nrows, ncols, 1.0, a.data(), lda, b.data(), ldb);
+}
+
 }  // namespace srs
 
 #endif  // SRS_MATH_LINALG_H

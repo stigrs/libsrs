@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <srs/array.h>
+#include <srs/math.h>
 #include <armadillo>
 #include <chrono>
 #include <iostream>
@@ -22,17 +23,19 @@
 
 typedef std::chrono::duration<double, std::milli> Timer;
 
-void print(
-    int n, int m, const Timer& t_arma, const Timer& t_in, const Timer& t_out)
+void print(int n,
+           int m,
+           const Timer& t_arma,
+           const Timer& t_in,
+           const Timer& t_out,
+           const Timer& t_mkl)
 {
     std::cout << "Matrix transpose:\n"
               << "-----------------\n"
               << "size =     " << n << " x " << m << '\n'
-              << "t(in) =    " << t_in.count() << '\n'
-              << "t(out) =   " << t_out.count() << '\n'
-              << "t(arma) =  " << t_arma.count() << '\n'
               << "in/arma =  " << t_in.count() / t_arma.count() << '\n'
-              << "out/arma = " << t_out.count() / t_arma.count() << "\n\n";
+              << "out/arma = " << t_out.count() / t_arma.count() << "\n"
+              << "mkl/arma = " << t_mkl.count() / t_arma.count() << "\n\n";
 }
 
 void benchmark(int n, int m)
@@ -55,7 +58,14 @@ void benchmark(int n, int m)
     t2          = std::chrono::high_resolution_clock::now();
     Timer t_out = t2 - t1;
 
-    print(n, m, t_arma, t_in, t_out);
+    srs::dmatrix m4(n, m, 1.0);
+    srs::dmatrix m5;
+    t1 = std::chrono::high_resolution_clock::now();
+    mkl_transpose(m4, m5);
+    t2          = std::chrono::high_resolution_clock::now();
+    Timer t_mkl = t2 - t1;
+
+    print(n, m, t_arma, t_in, t_out, t_mkl);
 }
 
 int main()
