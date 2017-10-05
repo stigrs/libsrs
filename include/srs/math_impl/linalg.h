@@ -203,7 +203,7 @@ Array<T, 1> prod(const Array<T, 2>& a, int dim = 2)
 // Compute trace of N x N matrix:
 
 template <class T>
-inline T trace(const srs::Array<T, 2>& a)
+inline T trace(const Array<T, 2>& a)
 {
     Expects(a.rows() == a.cols());
     const auto d = a.diag();
@@ -211,7 +211,7 @@ inline T trace(const srs::Array<T, 2>& a)
 }
 
 template <class T>
-inline T trace(const srs::Array_ref<T, 2>& a)
+inline T trace(const Array_ref<T, 2>& a)
 {
     Expects(a.rows() == a.cols());
     const auto d = a.diag();
@@ -219,7 +219,7 @@ inline T trace(const srs::Array_ref<T, 2>& a)
 }
 
 template <class T>
-inline T trace(const srs::Array_ref<const T, 2>& a)
+inline T trace(const Array_ref<const T, 2>& a)
 {
     Expects(a.rows() == a.cols());
     const auto d = a.diag();
@@ -365,7 +365,7 @@ void inv(dmatrix& a);
 // Matrix decomposition:
 
 // Compute LU factorization.
-void lu(dmatrix& a, srs::ivector& ipiv);
+void lu(dmatrix& a, ivector& ipiv);
 
 //------------------------------------------------------------------------------
 
@@ -375,7 +375,7 @@ void lu(dmatrix& a, srs::ivector& ipiv);
 void eigs(dmatrix& a, dvector& wr);
 
 // Compute eigenvalues and eigenvectors of a real non-symmetric matrix.
-void eig(dmatrix& a, srs::zmatrix& v, srs::zvector& w);
+void eig(dmatrix& a, zmatrix& v, zvector& w);
 
 // Compute eigenvalues and eigenvectors of a real symmetric matrix.
 void jacobi(dmatrix& a, dvector& wr);

@@ -29,7 +29,7 @@ namespace srs {
 // Arithmetic mean.
 inline double mean(const dvector& x)
 {
-    return srs::sum(x) / static_cast<double>(x.size());
+    return sum(x) / static_cast<double>(x.size());
 }
 
 // Geometric mean.

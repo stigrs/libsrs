@@ -90,15 +90,15 @@ inline void cart2pol(double x, double y, double& th, double& r)
 // Compute distance between two points.
 inline double distance(const dvector& a, const dvector& b)
 {
-    return srs::norm(b - a);
+    return norm(b - a);
 }
 
 // Compute angle in degrees between three points.
 inline double angle(const dvector& a, const dvector& b, const dvector& c)
 {
-    const auto& ab = srs::normalize(a - b);
-    const auto& bc = srs::normalize(c - b);
-    return radtodeg(std::acos(srs::dot(ab, bc)));
+    const auto& ab = normalize(a - b);
+    const auto& bc = normalize(c - b);
+    return radtodeg(std::acos(dot(ab, bc)));
 }
 
 // Compute dihedral angle in degrees given four points.

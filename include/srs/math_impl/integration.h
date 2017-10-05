@@ -26,14 +26,13 @@
 namespace srs {
 
 // Integrate array of function values using the Trapezoidal rule.
-double trapezoidal(double xlo, double xup, const srs::dvector& y);
+double trapezoidal(double xlo, double xup, const dvector& y);
 
 // Integrate array of function values using Simpson's rule.
-double simpsons(double xlo, double xup, const srs::dvector& y);
+double simpsons(double xlo, double xup, const dvector& y);
 
 // Compute abscissas and weights of Gauss-Legendre n-point quadrature formula.
-void gaussleg(
-    int n, srs::dvector& x, srs::dvector& w, double a = -1.0, double b = 1.0);
+void gaussleg(int n, dvector& x, dvector& w, double a = -1.0, double b = 1.0);
 
 }  // namespace srs
 
