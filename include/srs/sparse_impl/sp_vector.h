@@ -44,7 +44,7 @@ public:
     typedef typename std::vector<T>::const_iterator const_iterator;
 
     Sp_vector() : elems(), indx(), nnz{0} {}
-    Sp_vector(size_type n) : elems(n), indx(n), nnz{n} {}
+    explicit Sp_vector(size_type n) : elems(n), indx(n), nnz{n} {}
     Sp_vector(const std::vector<T>& val, const std::vector<size_type>& loc)
         : elems(val), indx(loc), nnz{val.size()}
     {
