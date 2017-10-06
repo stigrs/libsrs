@@ -84,6 +84,7 @@ set(PROGRAMS
     test_format
     test_input
     test_math
+    test_sp_vector
     test_stream
     test_string
 )
