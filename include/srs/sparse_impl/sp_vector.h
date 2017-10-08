@@ -17,6 +17,7 @@
 #ifndef SRS_SP_VECTOR_H
 #define SRS_SP_VECTOR_H
 
+#include <srs/array_impl/functors.h>
 #include <algorithm>
 #include <cstddef>
 #include <gsl/gsl>
@@ -43,12 +44,15 @@ public:
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
 
-    Sp_vector() : elems(), indx(), nnz{0} {}
-    explicit Sp_vector(size_type n) : elems(n), indx(n), nnz{n} {}
+    Sp_vector() : elems(), indx() {}
+
+    explicit Sp_vector(size_type n) : elems(n), indx(n) {}
+
     Sp_vector(const std::vector<T>& val, const std::vector<size_type>& loc)
-        : elems(val), indx(loc), nnz{val.size()}
+        : elems(val), indx(loc)
     {
     }
+
     Sp_vector(std::initializer_list<std::pair<T, size_type>> list);
 
     // Assignment:
@@ -70,7 +74,7 @@ public:
 
     // Capacity:
     bool empty() const { return elems.empty(); }
-    size_type size() const { return nnz; }
+    size_type size() const { return elems.size(); }
     size_type max_size() const { return elems.max_size(); }
     size_type capacity() const { return elems.capacity(); }
 
@@ -83,20 +87,32 @@ public:
     // Access underlying arrays:
 
     T* data() { return elems.data(); }
-    const T* data() { return elems.data(); }
+    const T* data() const { return elems.data(); }
 
     size_type* index() { return indx.data(); }
     const size_type* index() const { return indx.data(); }
 
+    // Element-wise operations:
+
+    template <class F>
+    Sp_vector& apply(F f);
+
+    template <class F>
+    Sp_vector& apply(F f, const T& value);
+
+    Sp_vector& operator*=(const T& value);
+    Sp_vector& operator/=(const T& value);
+    Sp_vector& operator-();
+
 private:
     std::vector<T> elems;
     std::vector<size_type> indx;
-    size_type nnz;  // number of non-zero elements
+    static const T zero = T(0);
 };
 
 template <class T>
 Sp_vector<T>::Sp_vector(std::initializer_list<std::pair<T, size_type>> list)
-    : elems(list.size()), indx(list.size()), nnz(list.size())
+    : elems(list.size()), indx(list.size())
 {
     size_type i = 0;
     for (const auto& il : list) {
@@ -112,7 +128,6 @@ Sp_vector<T>& Sp_vector<T>::operator=(
 {
     elems.resize(list.size());
     indx.resize(list.size());
-    nnz = list.size();
 
     size_type i = 0;
     for (const auto& il : list) {
@@ -127,7 +142,7 @@ inline T& Sp_vector<T>::at(size_type i)
 {
     auto pos   = std::find(indx.begin(), indx.end(), i);
     auto index = std::distance(indx.begin(), pos);
-    Expects(index >= 0 && index < gsl::narrow_cast<std::ptrdiff_t>(nnz));
+    Expects(index >= 0 && index < gsl::narrow_cast<std::ptrdiff_t>(size()));
     return elems[index];
 }
 
@@ -136,7 +151,7 @@ inline const T& Sp_vector<T>::at(size_type i) const
 {
     auto pos   = std::find(indx.begin(), indx.end(), i);
     auto index = std::distance(indx.begin(), pos);
-    Expects(index >= 0 && index < gsl::narrow_cast<std::ptrdiff_t>(nnz));
+    Expects(index >= 0 && index < gsl::narrow_cast<std::ptrdiff_t>(size()));
     return elems[index];
 }
 
@@ -145,7 +160,6 @@ inline void Sp_vector<T>::clear()
 {
     elems.clear();
     indx.clear();
-    nnz = 0;
 }
 
 template <class T>
@@ -155,7 +169,6 @@ inline void Sp_vector<T>::insert(const T& value, size_type i)
     auto pos = std::lower_bound(indx.begin(), indx.end(), value);
     elems.insert(pos, value);
     indx.insert(pos, i);
-    ++nnz;
 }
 
 template <class T>
@@ -163,7 +176,6 @@ inline void Sp_vector<T>::swap(const Sp_vector<T>& x)
 {
     elems.swap(x.elems);
     indx.swap(x.indx);
-    std::swap(nnz, x.nnz);
 }
 
 template <class T>
@@ -171,7 +183,47 @@ inline void Sp_vector<T>::resize(size_type n)
 {
     elems.resize(n);
     indx.resize(n);
-    nnz = n;
+}
+
+template <class T>
+template <class F>
+inline Sp_vector<T>& Sp_vector<T>::apply(F f)
+{
+    for (auto& v : elems) {
+        f(v);
+    }
+    return *this;
+}
+
+template <class T>
+template <class F>
+inline Sp_vector<T>& Sp_vector<T>::apply(F f, const T& value)
+{
+    for (auto& v : elems) {
+        f(v, value);
+    }
+    return *this;
+}
+
+template <class T>
+inline Sp_vector<T>& Sp_vector<T>::operator*=(const T& value)
+{
+    apply(Mul_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Sp_vector<T>& Sp_vector<T>::operator/=(const T& value)
+{
+    apply(Div_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Sp_vector<T>& Sp_vector<T>::operator-()
+{
+    apply(Unary_minus<T>());
+    return *this;
 }
 
 }  // namespace srs
