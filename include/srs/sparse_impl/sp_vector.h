@@ -107,7 +107,7 @@ public:
 private:
     std::vector<T> elems;
     std::vector<size_type> indx;
-    const T zero;
+    T zero;
 };
 
 template <class T>
@@ -165,8 +165,9 @@ template <class T>
 inline void Sp_vector<T>::insert(const T& value, size_type i)
 {
     Expects(value != T(0));  // zero values should not be stored
-    auto pos = std::lower_bound(indx.begin(), indx.end(), value);
-    elems.insert(pos, value);
+    auto pos        = std::upper_bound(indx.begin(), indx.end(), i);
+    size_type index = std::distance(indx.begin(), pos);
+    elems.insert(elems.begin() + index, value);
     indx.insert(pos, i);
 }
 
