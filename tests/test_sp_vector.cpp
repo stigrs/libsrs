@@ -15,8 +15,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <srs/sparse.h>
+#include <algorithm>
 #include <catch/catch.hpp>
-#include <iostream>
 
 
 TEST_CASE("sp_vector")
@@ -25,6 +25,7 @@ TEST_CASE("sp_vector")
 
     SECTION("element_access")
     {
+        CHECK(spvec.size() == 3);
         CHECK(spvec(1) == 10);
         CHECK(spvec(4) == 20);
         CHECK(spvec(5) == 0);
@@ -35,6 +36,19 @@ TEST_CASE("sp_vector")
     SECTION("insert")
     {
         spvec.insert(40, 5);
+        CHECK(spvec.size() == 4);
         CHECK(spvec(5) == 40);
+    }
+
+    SECTION("swap")
+    {
+        srs::Sp_vector<int> spv1 = {{20, 2}, {30, 4}, {40, 7}};
+        std::swap(spvec, spv1);
+        CHECK(spvec.size() == 3);
+        CHECK(spvec(1) == 0);
+        CHECK(spvec(2) == 20);
+        CHECK(spvec(4) == 30);
+        CHECK(spvec(7) == 40);
+        CHECK(spvec(9) == 0);
     }
 }
