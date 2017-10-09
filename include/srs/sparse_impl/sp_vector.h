@@ -17,8 +17,10 @@
 #ifndef SRS_SP_VECTOR_H
 #define SRS_SP_VECTOR_H
 
+#include <srs/array.h>
 #include <srs/array_impl/functors.h>
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <gsl/gsl>
 #include <iterator>
@@ -29,7 +31,7 @@
 namespace srs {
 
 //
-// Sparse vector class.
+// Range-checked sparse vector class (zero-based).
 //
 // Note:
 // - It is assumed that the sparse vector is initialized with element indices
@@ -65,7 +67,11 @@ public:
     iterator end() { return elems.end(); }
     const_iterator end() const { return elems.end(); }
 
+    // Element index.
+    auto loc(size_type i) const;
+
     // Element access:
+
     T& at(size_type i);
     const T& at(size_type i) const;
 
@@ -74,15 +80,23 @@ public:
 
     // Capacity:
     bool empty() const { return elems.empty(); }
-    size_type size() const { return elems.size(); }
+    size_type num_nonzero() const { return elems.size(); }
+    size_type size() const;
     size_type max_size() const { return elems.max_size(); }
     size_type capacity() const { return elems.capacity(); }
 
     // Modifiers:
     void clear();
     void insert(const T& value, size_type i);
-    void swap(const Sp_vector& vec);
+    void swap(const Sp_vector& x);
     void resize(size_type n);
+
+    // Euclidean norm.
+    T norm() const;
+
+    // Dot product.
+    T dot(const srs::Array<T, 1>& y);
+    T dot(const std::vector<T>& y);
 
     // Access underlying arrays:
 
@@ -100,6 +114,8 @@ public:
     template <class F>
     Sp_vector& apply(F f, const T& value);
 
+    Sp_vector& operator+=(const T& value);
+    Sp_vector& operator-=(const T& value);
     Sp_vector& operator*=(const T& value);
     Sp_vector& operator/=(const T& value);
     Sp_vector& operator-();
@@ -139,11 +155,18 @@ Sp_vector<T>& Sp_vector<T>::operator=(
 }
 
 template <class T>
+inline auto Sp_vector<T>::loc(size_type i) const
+{
+    Expects(i >= 0 && i < num_nonzero());
+    return indx[i];
+}
+
+template <class T>
 inline T& Sp_vector<T>::at(size_type i)
 {
     auto pos        = std::find(indx.begin(), indx.end(), i);
     size_type index = std::distance(indx.begin(), pos);
-    return index >= 0 && index < size() ? elems[index] : zero;
+    return index >= 0 && index < num_nonzero() ? elems[index] : zero;
 }
 
 template <class T>
@@ -151,7 +174,13 @@ inline const T& Sp_vector<T>::at(size_type i) const
 {
     auto pos        = std::find(indx.begin(), indx.end(), i);
     size_type index = std::distance(indx.begin(), pos);
-    return index >= 0 && index < size() ? elems[index] : zero;
+    return index >= 0 && index < num_nonzero() ? elems[index] : zero;
+}
+
+template <class T>
+inline std::size_t Sp_vector<T>::size() const
+{
+    return *std::max_element(indx.begin(), indx.end()) + 1;
 }
 
 template <class T>
@@ -165,10 +194,14 @@ template <class T>
 inline void Sp_vector<T>::insert(const T& value, size_type i)
 {
     Expects(value != T(0));  // zero values should not be stored
-    auto pos        = std::upper_bound(indx.begin(), indx.end(), i);
-    size_type index = std::distance(indx.begin(), pos);
-    elems.insert(elems.begin() + index, value);
-    indx.insert(pos, i);
+
+    // Insert should not replace any existing elements.
+    if (std::find(indx.begin(), indx.end(), i) == indx.end()) {
+        auto pos        = std::upper_bound(indx.begin(), indx.end(), i);
+        size_type index = std::distance(indx.begin(), pos);
+        elems.insert(elems.begin() + index, value);
+        indx.insert(pos, i);
+    }
 }
 
 template <class T>
@@ -183,6 +216,40 @@ inline void Sp_vector<T>::resize(size_type n)
 {
     elems.resize(n);
     indx.resize(n);
+}
+
+template <class T>
+T Sp_vector<T>::norm() const
+{
+    T result(0);
+    for (const auto& v : elems) {
+        result += v * v;
+    }
+    return std::sqrt(result);
+}
+
+template <class T>
+T Sp_vector<T>::dot(const srs::Array<T, 1>& y)
+{
+    T result(0);
+    size_type i = 0;
+    for (const auto& v : elems) {
+        result += v * y(indx[i]);
+        ++i;
+    }
+    return result;
+}
+
+template <class T>
+T Sp_vector<T>::dot(const std::vector<T>& y)
+{
+    T result(0);
+    size_type i = 0;
+    for (const auto& v : elems) {
+        result += v * y[indx[i]];
+        ++i;
+    }
+    return result;
 }
 
 template <class T>
@@ -202,6 +269,20 @@ inline Sp_vector<T>& Sp_vector<T>::apply(F f, const T& value)
     for (auto& v : elems) {
         f(v, value);
     }
+    return *this;
+}
+
+template <class T>
+inline Sp_vector<T>& Sp_vector<T>::operator+=(const T& value)
+{
+    apply(Add_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Sp_vector<T>& Sp_vector<T>::operator-=(const T& value)
+{
+    apply(Minus_assign<T>(), value);
     return *this;
 }
 
