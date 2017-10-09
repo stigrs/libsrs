@@ -21,11 +21,20 @@
 
 TEST_CASE("sp_vector")
 {
+    srs::Sp_vector<int> spvec = {{10, 1}, {20, 4}, {30, 9}};
+
     SECTION("element_access")
     {
-        srs::Sp_vector<int> spvec = {{10, 1}, {20, 4}, {30, 9}};
         CHECK(spvec(1) == 10);
         CHECK(spvec(4) == 20);
+        CHECK(spvec(5) == 0);
         CHECK(spvec(9) == 30);
+        CHECK(spvec(10) == 0);
+    }
+
+    SECTION("insert")
+    {
+        spvec.insert(40, 5);
+        CHECK(spvec(5) == 40);
     }
 }

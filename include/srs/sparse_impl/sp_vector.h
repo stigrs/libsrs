@@ -46,10 +46,10 @@ public:
 
     Sp_vector() : elems(), indx() {}
 
-    explicit Sp_vector(size_type n) : elems(n), indx(n) {}
+    explicit Sp_vector(size_type n) : elems(n), indx(n), zero(0) {}
 
     Sp_vector(const std::vector<T>& val, const std::vector<size_type>& loc)
-        : elems(val), indx(loc)
+        : elems(val), indx(loc), zero(0)
     {
     }
 
@@ -107,12 +107,12 @@ public:
 private:
     std::vector<T> elems;
     std::vector<size_type> indx;
-    static const T zero = T(0);
+    const T zero;
 };
 
 template <class T>
 Sp_vector<T>::Sp_vector(std::initializer_list<std::pair<T, size_type>> list)
-    : elems(list.size()), indx(list.size())
+    : elems(list.size()), indx(list.size()), zero(0)
 {
     size_type i = 0;
     for (const auto& il : list) {
@@ -128,6 +128,7 @@ Sp_vector<T>& Sp_vector<T>::operator=(
 {
     elems.resize(list.size());
     indx.resize(list.size());
+    zero = T(0);
 
     size_type i = 0;
     for (const auto& il : list) {
@@ -140,19 +141,17 @@ Sp_vector<T>& Sp_vector<T>::operator=(
 template <class T>
 inline T& Sp_vector<T>::at(size_type i)
 {
-    auto pos   = std::find(indx.begin(), indx.end(), i);
-    auto index = std::distance(indx.begin(), pos);
-    Expects(index >= 0 && index < gsl::narrow_cast<std::ptrdiff_t>(size()));
-    return elems[index];
+    auto pos        = std::find(indx.begin(), indx.end(), i);
+    size_type index = std::distance(indx.begin(), pos);
+    return index >= 0 && index < size() ? elems[index] : zero;
 }
 
 template <class T>
 inline const T& Sp_vector<T>::at(size_type i) const
 {
-    auto pos   = std::find(indx.begin(), indx.end(), i);
-    auto index = std::distance(indx.begin(), pos);
-    Expects(index >= 0 && index < gsl::narrow_cast<std::ptrdiff_t>(size()));
-    return elems[index];
+    auto pos        = std::find(indx.begin(), indx.end(), i);
+    size_type index = std::distance(indx.begin(), pos);
+    return index >= 0 && index < size() ? elems[index] : zero;
 }
 
 template <class T>
