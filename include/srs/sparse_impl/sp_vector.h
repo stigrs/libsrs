@@ -23,7 +23,7 @@
 #include <cmath>
 #include <cstddef>
 #include <gsl/gsl>
-#include <iterator>
+#include <initializer_list>
 #include <utility>
 #include <vector>
 
@@ -46,21 +46,25 @@ public:
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
 
-    Sp_vector() : elems(), indx() {}
+    // Constructors:
+
+    Sp_vector() : elems(), indx(), zero(0) {}
 
     explicit Sp_vector(size_type n) : elems(n), indx(n), zero(0) {}
 
     Sp_vector(const std::vector<T>& val, const std::vector<size_type>& loc)
         : elems(val), indx(loc), zero(0)
     {
+        Ensures(val.size() == indx.size());
     }
 
-    Sp_vector(std::initializer_list<std::pair<T, size_type>> list);
+    Sp_vector(std::initializer_list<std::pair<size_type, T>> list);
 
     // Assignment:
-    Sp_vector& operator=(std::initializer_list<std::pair<T, size_type>> list);
+    Sp_vector& operator=(std::initializer_list<std::pair<size_type, T>> list);
 
     // Iterators:
+
     iterator begin() { return elems.begin(); }
     const_iterator begin() const { return elems.begin(); }
 
@@ -75,8 +79,8 @@ public:
     T& at(size_type i);
     const T& at(size_type i) const;
 
-    T& operator()(size_type i) { return at(i); }
-    const T& operator()(size_type i) const { return at(i); }
+    T& operator()(size_type i);
+    const T& operator()(size_type i) const;
 
     // Capacity:
     bool empty() const { return elems.empty(); }
@@ -86,6 +90,7 @@ public:
     size_type capacity() const { return elems.capacity(); }
 
     // Modifiers:
+
     void clear();
     void insert(const T& value, size_type i);
     void swap(const Sp_vector& x);
@@ -114,8 +119,6 @@ public:
     template <class F>
     Sp_vector& apply(F f, const T& value);
 
-    Sp_vector& operator+=(const T& value);
-    Sp_vector& operator-=(const T& value);
     Sp_vector& operator*=(const T& value);
     Sp_vector& operator/=(const T& value);
     Sp_vector& operator-();
@@ -124,23 +127,26 @@ private:
     std::vector<T> elems;
     std::vector<size_type> indx;
     T zero;
+
+    T& ref(size_type i);
+    const T& ref(size_type i) const;
 };
 
 template <class T>
-Sp_vector<T>::Sp_vector(std::initializer_list<std::pair<T, size_type>> list)
+Sp_vector<T>::Sp_vector(std::initializer_list<std::pair<size_type, T>> list)
     : elems(list.size()), indx(list.size()), zero(0)
 {
     size_type i = 0;
     for (const auto& il : list) {
-        elems[i] = std::get<0>(il);
-        indx[i]  = std::get<1>(il);
+        elems[i] = std::get<1>(il);
+        indx[i]  = std::get<0>(il);
         ++i;
     }
 }
 
 template <class T>
 Sp_vector<T>& Sp_vector<T>::operator=(
-    std::initializer_list<std::pair<T, size_type>> list)
+    std::initializer_list<std::pair<size_type, T>> list)
 {
     elems.resize(list.size());
     indx.resize(list.size());
@@ -148,8 +154,8 @@ Sp_vector<T>& Sp_vector<T>::operator=(
 
     size_type i = 0;
     for (const auto& il : list) {
-        elems[i] = std::get<0>(il);
-        indx[i]  = std::get<1>(il);
+        elems[i] = std::get<1>(il);
+        indx[i]  = std::get<0>(il);
         ++i;
     }
 }
@@ -157,24 +163,44 @@ Sp_vector<T>& Sp_vector<T>::operator=(
 template <class T>
 inline auto Sp_vector<T>::loc(size_type i) const
 {
+#ifndef NDEBUG
     Expects(i >= 0 && i < num_nonzero());
+#endif
     return indx[i];
 }
 
 template <class T>
 inline T& Sp_vector<T>::at(size_type i)
 {
-    auto pos        = std::find(indx.begin(), indx.end(), i);
-    size_type index = std::distance(indx.begin(), pos);
-    return index >= 0 && index < num_nonzero() ? elems[index] : zero;
+    Expects(i >= 0);
+    return ref(i);
 }
 
 template <class T>
 inline const T& Sp_vector<T>::at(size_type i) const
 {
-    auto pos        = std::find(indx.begin(), indx.end(), i);
-    size_type index = std::distance(indx.begin(), pos);
-    return index >= 0 && index < num_nonzero() ? elems[index] : zero;
+    Expects(i >= 0);
+    return ref(i);
+}
+
+template <class T>
+inline T& Sp_vector<T>::operator()(size_type i)
+{
+#ifndef NDEBUG
+    return at(i);
+#else
+    return ref(i);
+#endif
+}
+
+template <class T>
+inline const T& Sp_vector<T>::operator()(size_type i) const
+{
+#ifndef NDEBUG
+    return at(i);
+#else
+    return ref(i);
+#endif
 }
 
 template <class T>
@@ -273,20 +299,6 @@ inline Sp_vector<T>& Sp_vector<T>::apply(F f, const T& value)
 }
 
 template <class T>
-inline Sp_vector<T>& Sp_vector<T>::operator+=(const T& value)
-{
-    apply(Add_assign<T>(), value);
-    return *this;
-}
-
-template <class T>
-inline Sp_vector<T>& Sp_vector<T>::operator-=(const T& value)
-{
-    apply(Minus_assign<T>(), value);
-    return *this;
-}
-
-template <class T>
 inline Sp_vector<T>& Sp_vector<T>::operator*=(const T& value)
 {
     apply(Mul_assign<T>(), value);
@@ -305,6 +317,22 @@ inline Sp_vector<T>& Sp_vector<T>::operator-()
 {
     apply(Unary_minus<T>());
     return *this;
+}
+
+template <class T>
+inline T& Sp_vector<T>::ref(size_type i)
+{
+    auto pos        = std::find(indx.begin(), indx.end(), i);
+    size_type index = std::distance(indx.begin(), pos);
+    return index >= 0 && index < num_nonzero() ? elems[index] : zero;
+}
+
+template <class T>
+inline const T& Sp_vector<T>::ref(size_type i) const
+{
+    auto pos        = std::find(indx.begin(), indx.end(), i);
+    size_type index = std::distance(indx.begin(), pos);
+    return index >= 0 && index < num_nonzero() ? elems[index] : zero;
 }
 
 }  // namespace srs
