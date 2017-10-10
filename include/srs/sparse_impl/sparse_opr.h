@@ -88,42 +88,6 @@ inline T dot(const std::vector<T>& y, const Sp_vector<T>& x)
 
 //------------------------------------------------------------------------------
 
-// Scalar addition:
-
-template <class T>
-Sp_vector<T> operator+(const Sp_vector<T>& x, const T& scalar)
-{
-    Sp_vector<T> result(x);
-    return result += scalar;
-}
-
-template <class T>
-Sp_vector<T> operator+(const T& scalar, const Sp_vector<T>& x)
-{
-    Sp_vector<T> result(x);
-    return result += scalar;
-}
-
-//------------------------------------------------------------------------------
-
-// Scalar subtraction:
-
-template <class T>
-Sp_vector<T> operator-(const Sp_vector<T>& x, const T& scalar)
-{
-    Sp_vector<T> result(x);
-    return result -= scalar;
-}
-
-template <class T>
-Sp_vector<T> operator-(const T& scalar, const Sp_vector<T>& x)
-{
-    Sp_vector<T> result(x);
-    return result -= scalar;
-}
-
-//------------------------------------------------------------------------------
-
 // Scalar multiplication:
 
 template <class T>
