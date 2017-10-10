@@ -22,7 +22,7 @@
 
 TEST_CASE("sp_vector")
 {
-    srs::Sp_vector<int> spvec = {{10, 1}, {20, 4}, {30, 9}};
+    srs::Sp_vector<int> spvec = {{1, 10}, {4, 20}, {9, 30}};
 
     SECTION("element_access")
     {
@@ -44,7 +44,7 @@ TEST_CASE("sp_vector")
 
     SECTION("swap")
     {
-        srs::Sp_vector<int> spv1 = {{20, 2}, {30, 4}, {40, 7}};
+        srs::Sp_vector<int> spv1 = {{2, 20}, {4, 30}, {7, 40}};
         srs::Sp_vector<int> spv2(spvec);
         std::swap(spv2, spv1);
         CHECK(spv2.num_nonzero() == 3);
