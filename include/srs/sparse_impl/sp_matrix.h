@@ -17,6 +17,7 @@
 #ifndef SRS_SP_MATRIX_H
 #define SRS_SP_MATRIX_H
 
+#include <srs/array_impl/functors.h>
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -36,13 +37,13 @@ public:
 
     // Constructors:
 
-    Sp_matrix() : elems(), cols(), row_indx(), zero(0) {}
+    Sp_matrix() : elems(), col_indx(), row_ptr(), zero(0) {}
 
     Sp_matrix(size_type nrows,
               size_type ncols,
               const std::vector<T>& elems_,
-              const std::vector<size_type>& cols_,
-              const std::vector<size_type>& row_indx_);
+              const std::vector<size_type>& col_indx_,
+              const std::vector<size_type>& row_ptr_);
 
     // Iterators:
 
@@ -57,8 +58,8 @@ public:
     T& at(size_type i, size_type j);
     const T& at(size_type i, size_type j) const;
 
-    T& operator()(size_type i, size_type j) { return at(i, j); }
-    const T& operator()(size_type i, size_type j) const { return at(i, j); }
+    T& operator()(size_type i, size_type j);
+    const T& operator()(size_type i, size_type j) const;
 
     // Capacity:
 
@@ -68,7 +69,7 @@ public:
     size_type cols() const { return extents[1]; }
     size_type dim1() const { return extents[0]; }
     size_type dim2() const { return extents[1]; }
-    size_type extent() const;
+    size_type extent(size_type dim) const;
     size_type size() const { return extents[0] * extents[1]; }
     size_type max_size() const { return elems.max_size(); }
     size_type capacity() const { return elems.capacity(); }
@@ -77,22 +78,35 @@ public:
 
     void clear();
     void swap(const Sp_matrix& m);
+    void insert(size_type i, size_type j, const T& value);
 
     // Access underlying arrays:
 
     T* data() { return elems.data(); }
     const T* data() const { return elems.data(); }
 
-    size_type* columns() { return cols.data(); }
-    const size_type* columns() const { return cols.data(); }
+    size_type* columns() { return col_indx.data(); }
+    const size_type* columns() const { return col_indx.data(); }
 
-    size_type* row_index() { return row_indx.data(); }
-    const size_type* row_index() const { return row_indx.data(); }
+    size_type* row_index() { return row_ptr.data(); }
+    const size_type* row_index() const { return row_ptr.data(); }
+
+    // Element-wise operations:
+
+    template <class F>
+    Sp_matrix& apply(F f);
+
+    template <class F>
+    Sp_matrix& apply(F f, const T& value);
+
+    Sp_matrix& operator*=(const T& value);
+    Sp_matrix& operator/=(const T& value);
+    Sp_matrix& operator-();
 
 private:
     std::vector<T> elems;
-    std::vector<size_type> cols;
-    std::vector<size_type> row_indx;
+    std::vector<size_type> col_indx;
+    std::vector<size_type> row_ptr;
     std::array<size_type, 2> extents;
     T zero;
 
@@ -104,16 +118,16 @@ template <class T>
 Sp_matrix<T>::Sp_matrix(size_type nrows,
                         size_type ncols,
                         const std::vector<T>& elems_,
-                        const std::vector<size_type>& cols_,
-                        const std::vector<size_type>& row_indx_)
+                        const std::vector<size_type>& col_indx_,
+                        const std::vector<size_type>& row_ptr_)
     : elems(elems_),
-      cols(cols_),
-      row_indx(row_indx_),
+      col_indx(col_indx_),
+      row_ptr(row_ptr_),
       extents{nrows, ncols},
       zero(0)
 {
-    Ensures(elems.size() == cols.size());
-    Ensures(row_indx.size() == nrows + 1);
+    Ensures(elems.size() == col_indx.size());
+    Ensures(row_ptr.size() == nrows + 1);
 }
 
 template <class T>
@@ -163,8 +177,8 @@ template <class T>
 inline void Sp_matrix<T>::clear()
 {
     elems.clear();
-    cols.clear();
-    row_indx.clear();
+    col_indx.clear();
+    row_ptr.clear();
     extents = {0, 0};
 }
 
@@ -172,35 +186,88 @@ template <class T>
 inline void Sp_matrix<T>::swap(const Sp_matrix& m)
 {
     elems.swap(m.elems);
-    cols.swap(m.cols);
-    row_indx.swap(m.row_indx);
+    col_indx.swap(m.cols);
+    row_ptr.swap(m.row_indx);
     std::swap(extents, m.extents);
+}
+
+template <class T>
+void Sp_matrix<T>::insert(size_type i, size_type j, const T& value)
+{
+    if (ref(i, j) == zero) {
+        auto pos = std::upper_bound(col_indx.begin() + row_ptr[i],
+                                    col_indx.begin() + row_ptr[i + 1],
+                                    j);
+        size_type index = std::distance(col_indx.begin(), pos);
+        elems.insert(elems.begin() + index, value);
+        col_indx.insert(pos, j);
+        for (size_type k = i + 1; k < row_ptr.size(); ++k) {
+            row_ptr[k]++;
+        }
+    }
+}
+
+template <class T>
+template <class F>
+Sp_matrix<T>& Sp_matrix<T>::apply(F f)
+{
+    for (auto& v : elems) {
+        f(v);
+    }
+    return *this;
+}
+
+template <class T>
+template <class F>
+Sp_matrix<T>& Sp_matrix<T>::apply(F f, const T& value)
+{
+    for (auto& v : elems) {
+        f(v, value);
+    }
+    return *this;
+}
+
+template <class T>
+inline Sp_matrix<T>& Sp_matrix<T>::operator*=(const T& value)
+{
+    apply(Mul_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Sp_matrix<T>& Sp_matrix<T>::operator/=(const T& value)
+{
+    apply(Div_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Sp_matrix<T>& Sp_matrix<T>::operator-()
+{
+    apply(Unary_minus<T>());
+    return *this;
 }
 
 template <class T>
 inline T& Sp_matrix<T>::ref(size_type i, size_type j)
 {
-    T result = zero;
-    for (size_type k = row_indx[i]; k < row_indx[i + 1]; ++k) {
-        if (cols[k] == j) {
-            result = elems[k];
-            break;
+    for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
+        if (col_indx[k] == j) {
+            return elems[k];
         }
     }
-    return result;
+    return zero;
 }
 
 template <class T>
 inline const T& Sp_matrix<T>::ref(size_type i, size_type j) const
 {
-    T result = zero;
-    for (size_type k = row_indx[i]; k < row_indx[i + 1]; ++k) {
-        if (cols[k] == j) {
-            result = elems[k];
-            break;
+    for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
+        if (col_indx[k] == j) {
+            return elems[k];
         }
     }
-    return result;
+    return zero;
 }
 
 }  // namespace srs

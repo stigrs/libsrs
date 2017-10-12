@@ -20,6 +20,7 @@
 //
 // Provides sparse vector and matrix class.
 //
+#include <srs/sparse_impl/sp_matrix.h>
 #include <srs/sparse_impl/sp_vector.h>
 #include <srs/sparse_impl/sparse_io.h>
 #include <srs/sparse_impl/sparse_opr.h>
