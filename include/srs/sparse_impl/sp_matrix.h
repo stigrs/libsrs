@@ -17,6 +17,7 @@
 #ifndef SRS_SP_MATRIX_H
 #define SRS_SP_MATRIX_H
 
+#include <srs/array.h>
 #include <srs/array_impl/functors.h>
 #include <algorithm>
 #include <array>
@@ -38,6 +39,8 @@ public:
     // Constructors:
 
     Sp_matrix() : elems(), col_indx(), row_ptr(), zero(0) {}
+
+    Sp_matrix(size_type nrows, size_type ncols, size_type nnz);
 
     Sp_matrix(size_type nrows,
               size_type ncols,
@@ -79,6 +82,10 @@ public:
     void clear();
     void swap(const Sp_matrix& m);
     void insert(size_type i, size_type j, const T& value);
+    void resize(size_type nrows, size_type ncols, size_type nnz);
+
+    // Matrix-vector multiplication.
+    Array<T, 1> mv_mul(const Array<T, 1>& x) const;
 
     // Access underlying arrays:
 
@@ -90,6 +97,12 @@ public:
 
     size_type* row_index() { return row_ptr.data(); }
     const size_type* row_index() const { return row_ptr.data(); }
+
+    size_type* pointer_b();
+    const size_type* pointer_b() const;
+
+    size_type* pointer_e();
+    const size_type* pointer_e() const;
 
     // Element-wise operations:
 
@@ -113,6 +126,16 @@ private:
     T& ref(size_type i, size_type j);
     const T& ref(size_type i, size_type j) const;
 };
+
+template <class T>
+Sp_matrix<T>::Sp_matrix(size_type nrows, size_type ncols, size_type nnz)
+    : elems(nnz),
+      col_indx(nnz),
+      row_ptr(nrows + 1),
+      extents{nrows, ncols},
+      zero(0)
+{
+}
 
 template <class T>
 Sp_matrix<T>::Sp_matrix(size_type nrows,
@@ -198,6 +221,7 @@ void Sp_matrix<T>::insert(size_type i, size_type j, const T& value)
         auto pos = std::upper_bound(col_indx.begin() + row_ptr[i],
                                     col_indx.begin() + row_ptr[i + 1],
                                     j);
+
         size_type index = std::distance(col_indx.begin(), pos);
         elems.insert(elems.begin() + index, value);
         col_indx.insert(pos, j);
@@ -205,6 +229,60 @@ void Sp_matrix<T>::insert(size_type i, size_type j, const T& value)
             row_ptr[k]++;
         }
     }
+}
+
+template <class T>
+void Sp_matrix<T>::resize(size_type nrows, size_type ncols, size_type nnz)
+{
+    elems.resize(nnz);
+    col_indx.resize(nnz);
+    row_ptr.resize(nrows + 1);
+    extents = {nrows, ncols};
+}
+
+template <class T>
+Array<T, 1> Sp_matrix<T>::mv_mul(const Array<T, 1>& x) const
+{
+    Expects(x.size() == extents[1]);
+
+    Array<T, 1> result(extents[1]);
+
+    for (size_type i = 0; i < row_ptr.size() - 1; ++i) {
+        T sum = T(0);
+        for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
+            sum += elems[k] * x(col_indx[k]);
+        }
+        result(i) = sum;
+    }
+    return result;
+}
+
+template <class T>
+inline std::size_t* Sp_matrix<T>::pointer_b()
+{
+    std::vector<size_type> result(row_ptr.begin(), row_ptr.end() - 1);
+    return result.data();
+}
+
+template <class T>
+inline const std::size_t* Sp_matrix<T>::pointer_b() const
+{
+    std::vector<size_type> result(row_ptr.begin(), row_ptr.end() - 1);
+    return result.data();
+}
+
+template <class T>
+inline std::size_t* Sp_matrix<T>::pointer_e()
+{
+    std::vector<size_type> result(row_ptr.begin() + 1, row_ptr.end());
+    return result.data();
+}
+
+template <class T>
+inline const std::size_t* Sp_matrix<T>::pointer_e() const
+{
+    std::vector<size_type> result(row_ptr.begin() + 1, row_ptr.end());
+    return result.data();
 }
 
 template <class T>

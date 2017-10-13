@@ -41,6 +41,30 @@ Sp_vector<T> sp_gather(const Array<T, 1>& y)
     return {val, loc};
 }
 
+// Gather a full-storage matrix into CSR3 format.
+template <class T>
+Sp_matrix<T> sp_gather(const Array<T, 2>& a)
+{
+    std::vector<T> elems;
+    std::vector<std::size_t> col_indx;
+    std::vector<std::size_t> row_ptr(a.rows() + 1);
+    std::size_t nnz = 0;
+    for (std::size_t i = 0; i < a.rows(); ++i) {
+        std::size_t inz = 0;
+        for (std::size_t j = 0; j < a.cols(); ++j) {
+            if (a(i, j) != T(0)) {
+                elems.push_back(a(i, j));
+                col_indx.push_back(j);
+                nnz++;
+                inz++;
+            }
+        }
+        row_ptr[i] = nnz - inz;
+    }
+    row_ptr[row_ptr.size() - 1] = nnz;
+    return {a.rows(), a.cols(), elems, col_indx, row_ptr};
+}
+
 // Scatter a sparse vector into full-storage form.
 template <class T>
 Array<T, 1> sp_scatter(const Sp_vector<T>& x)
@@ -48,6 +72,19 @@ Array<T, 1> sp_scatter(const Sp_vector<T>& x)
     Array<T, 1> result(x.size());
     for (std::size_t i = 0; i < result.size(); ++i) {
         result(i) = x(i);
+    }
+    return result;
+}
+
+// Scatter a sparse matrix into full-storage form.
+template <class T>
+Array<T, 2> sp_scatter(const Sp_matrix<T>& a)
+{
+    Array<T, 2> result(a.rows(), a.cols());
+    for (std::size_t i = 0; i < result.rows(); ++i) {
+        for (std::size_t j = 0; j < result.cols(); ++j) {
+            result(i, j) = a(i, j);
+        }
     }
     return result;
 }
@@ -101,6 +138,20 @@ template <class T>
 Sp_vector<T> operator*(const T& scalar, const Sp_vector<T>& x)
 {
     Sp_vector<T> result(x);
+    return result *= scalar;
+}
+
+template <class T>
+Sp_matrix<T> operator*(const Sp_matrix<T>& a, const T& scalar)
+{
+    Sp_matrix<T> result(a);
+    return result *= scalar;
+}
+
+template <class T>
+Sp_matrix<T> operator*(const T& scalar, const Sp_matrix<T>& a)
+{
+    Sp_matrix<T> result(a);
     return result *= scalar;
 }
 
@@ -162,6 +213,16 @@ Array<T, 1> operator-(const Array<T, 1>& y, const Sp_vector<T>& x)
         ++i;
     }
     return result;
+}
+
+//------------------------------------------------------------------------------
+
+// Matrix-vector product of a sparse matrix.
+template <class T>
+inline Array<T, 1> operator*(const Sp_matrix<T>& a, const Array<T, 1>& x)
+{
+    Expects(x.size() == a.cols());
+    return a.mv_mul(x);
 }
 
 }  // namespace srs

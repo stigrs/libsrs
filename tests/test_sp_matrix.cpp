@@ -21,11 +21,13 @@
 
 TEST_CASE("sp_matrix")
 {
-    std::vector<int> val = {1, 2, 4, 6, 7, 13, 14, 15, 16, 18, 19, 22, 25};
-    std::vector<std::size_t> col = {0, 1, 3, 0, 1, 2, 3, 4, 0, 2, 3, 1, 4};
-    std::vector<std::size_t> row = {0, 3, 5, 8, 11, 13};
+    srs::imatrix mat = {{1, 2, 0, 4, 0},
+                        {6, 7, 0, 0, 0},
+                        {0, 0, 13, 14, 15},
+                        {16, 0, 18, 19, 0},
+                        {0, 22, 0, 0, 25}};
 
-    srs::Sp_matrix<int> spmat(5, 5, val, col, row);
+    srs::Sp_matrix<int> spmat = srs::sp_gather(mat);
 
     SECTION("element_access")
     {
@@ -55,5 +57,28 @@ TEST_CASE("sp_matrix")
                 ++iter;
             }
         }
+    }
+
+    SECTION("resize")
+    {
+        srs::Sp_matrix<int> m;
+        m.resize(1000, 500, 3);
+
+        m.insert(0, 1, 1);
+        m.insert(100, 50, 2);
+        m.insert(300, 2, 3);
+        CHECK(m(0, 1) == 1);
+        CHECK(m(100, 50) == 2);
+        CHECK(m(300, 2) == 3);
+        CHECK(m(999, 499) == 0);
+    }
+
+    SECTION("scatter") { CHECK(srs::sp_scatter(spmat) == mat); }
+
+    SECTION("mv_mul")
+    {
+        srs::ivector x   = {1, 2, 3, 4, 5};
+        srs::ivector ans = {21, 20, 170, 146, 169};
+        CHECK(ans == spmat * x);
     }
 }
