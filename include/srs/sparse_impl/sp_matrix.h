@@ -84,25 +84,14 @@ public:
     void insert(size_type i, size_type j, const T& value);
     void resize(size_type nrows, size_type ncols, size_type nnz);
 
-    // Matrix-vector multiplication.
-    Array<T, 1> mv_mul(const Array<T, 1>& x) const;
-
     // Access underlying arrays:
 
     T* data() { return elems.data(); }
     const T* data() const { return elems.data(); }
 
-    size_type* columns() { return col_indx.data(); }
-    const size_type* columns() const { return col_indx.data(); }
-
-    size_type* row_index() { return row_ptr.data(); }
-    const size_type* row_index() const { return row_ptr.data(); }
-
-    size_type* pointer_b();
-    const size_type* pointer_b() const;
-
-    size_type* pointer_e();
-    const size_type* pointer_e() const;
+    const auto& values() const { return elems; }
+    const auto& columns() const { return col_indx; }
+    const auto& row_index() const { return row_ptr; }
 
     // Element-wise operations:
 
@@ -238,51 +227,6 @@ void Sp_matrix<T>::resize(size_type nrows, size_type ncols, size_type nnz)
     col_indx.resize(nnz);
     row_ptr.resize(nrows + 1);
     extents = {nrows, ncols};
-}
-
-template <class T>
-Array<T, 1> Sp_matrix<T>::mv_mul(const Array<T, 1>& x) const
-{
-    Expects(x.size() == extents[1]);
-
-    Array<T, 1> result(extents[1]);
-
-    for (size_type i = 0; i < row_ptr.size() - 1; ++i) {
-        T sum = T(0);
-        for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
-            sum += elems[k] * x(col_indx[k]);
-        }
-        result(i) = sum;
-    }
-    return result;
-}
-
-template <class T>
-inline std::size_t* Sp_matrix<T>::pointer_b()
-{
-    std::vector<size_type> result(row_ptr.begin(), row_ptr.end() - 1);
-    return result.data();
-}
-
-template <class T>
-inline const std::size_t* Sp_matrix<T>::pointer_b() const
-{
-    std::vector<size_type> result(row_ptr.begin(), row_ptr.end() - 1);
-    return result.data();
-}
-
-template <class T>
-inline std::size_t* Sp_matrix<T>::pointer_e()
-{
-    std::vector<size_type> result(row_ptr.begin() + 1, row_ptr.end());
-    return result.data();
-}
-
-template <class T>
-inline const std::size_t* Sp_matrix<T>::pointer_e() const
-{
-    std::vector<size_type> result(row_ptr.begin() + 1, row_ptr.end());
-    return result.data();
 }
 
 template <class T>

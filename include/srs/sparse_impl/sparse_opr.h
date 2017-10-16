@@ -222,7 +222,25 @@ template <class T>
 inline Array<T, 1> operator*(const Sp_matrix<T>& a, const Array<T, 1>& x)
 {
     Expects(x.size() == a.cols());
-    return a.mv_mul(x);
+    Array<T, 1> result(a.cols());
+    mv_mul(a, x, result);
+    return result;
+}
+
+// Matrix-vector product of a sparse matrix.
+template <class T>
+void mv_mul(const Sp_matrix<T>& a, const Array<T, 1>& x, Array<T, 1>& result)
+{
+    Expects(x.size() == a.cols());
+    result.resize(a.cols());
+
+    for (std::size_t i = 0; i < a.rows(); ++i) {
+        T sum = T(0);
+        for (std::size_t j = a.row_index()[i]; j < a.row_index()[i + 1]; ++j) {
+            sum += a.values()[j] * x(a.columns()[j]);
+        }
+        result(i) = sum;
+    }
 }
 
 }  // namespace srs
