@@ -108,8 +108,8 @@ public:
     T* data() { return elems.data(); }
     const T* data() const { return elems.data(); }
 
-    size_type* index() { return indx.data(); }
-    const size_type* index() const { return indx.data(); }
+    const auto& values() const { return elems; }
+    const auto& index() const { return indx; }
 
     // Element-wise operations:
 
