@@ -25,4 +25,14 @@
 #include <srs/sparse_impl/sparse_io.h>
 #include <srs/sparse_impl/sparse_opr.h>
 
+namespace srs {
+
+typedef Sp_vector<int> sp_ivector;
+typedef Sp_vector<double> sp_dvector;
+
+typedef Sp_matrix<int> sp_imatrix;
+typedef Sp_matrix<double> sp_dmatrix;
+
+}  // namespace srs
+
 #endif  // SRS_SPARSE_H
