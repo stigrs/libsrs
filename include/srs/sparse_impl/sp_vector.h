@@ -31,7 +31,7 @@
 namespace srs {
 
 //
-// Range-checked sparse vector class (zero-based).
+// Range-checked sparse vector class (zero-based indexing).
 //
 // Note:
 // - It is assumed that the sparse vector is initialized with element indices
