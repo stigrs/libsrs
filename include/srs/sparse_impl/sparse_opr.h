@@ -17,6 +17,7 @@
 #ifndef SRS_SPARSE_OPR_H
 #define SRS_SPARSE_OPR_H
 
+#include <mkl.h>
 #include <srs/array.h>
 #include <srs/sparse_impl/sp_vector.h>
 #include <vector>
@@ -46,8 +47,8 @@ template <class T>
 Sp_matrix<T> sp_gather(const Array<T, 2>& a)
 {
     std::vector<T> elems;
-    std::vector<std::size_t> col_indx;
-    std::vector<std::size_t> row_ptr(a.rows() + 1);
+    std::vector<MKL_INT> col_indx;
+    std::vector<MKL_INT> row_ptr(a.rows() + 1);
     std::size_t nnz = 0;
     for (std::size_t i = 0; i < a.rows(); ++i) {
         std::size_t inz = 0;
@@ -236,7 +237,7 @@ void mv_mul(const Sp_matrix<T>& a, const Array<T, 1>& x, Array<T, 1>& result)
 
     for (std::size_t i = 0; i < a.rows(); ++i) {
         T sum = T(0);
-        for (std::size_t j = a.row_index()[i]; j < a.row_index()[i + 1]; ++j) {
+        for (MKL_INT j = a.row_index()[i]; j < a.row_index()[i + 1]; ++j) {
             sum += a.values()[j] * x(a.columns()[j]);
         }
         result(i) = sum;

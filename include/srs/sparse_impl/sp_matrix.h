@@ -17,6 +17,7 @@
 #ifndef SRS_SP_MATRIX_H
 #define SRS_SP_MATRIX_H
 
+#include <mkl.h>
 #include <srs/array.h>
 #include <srs/array_impl/functors.h>
 #include <algorithm>
@@ -28,11 +29,24 @@
 
 namespace srs {
 
+//
+// Range-checked sparse matrix class (zero-based indexing).
+//
+// Note:
+// - Elements are stored in the three array variation of the compressed
+//   sparse row (CSR) format.
+// - It is assumed that the sparse vector is initialized with element indices
+//   sorted in ascending order.
+// - New elements are inserted so that the index order is preserved.
+// - This class provides a framework for implementing sparse matrix methods
+//   that utilize the Intel MKL sparse blas library.
+//
 template <class T>
 class Sp_matrix {
 public:
     typedef T value_type;
     typedef std::size_t size_type;
+    typedef MKL_INT integer;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
 
@@ -45,8 +59,8 @@ public:
     Sp_matrix(size_type nrows,
               size_type ncols,
               const std::vector<T>& elems_,
-              const std::vector<size_type>& col_indx_,
-              const std::vector<size_type>& row_ptr_);
+              const std::vector<integer>& col_indx_,
+              const std::vector<integer>& row_ptr_);
 
     // Iterators:
 
@@ -107,8 +121,8 @@ public:
 
 private:
     std::vector<T> elems;
-    std::vector<size_type> col_indx;
-    std::vector<size_type> row_ptr;
+    std::vector<integer> col_indx;
+    std::vector<integer> row_ptr;
     std::array<size_type, 2> extents;
     T zero;
 
@@ -130,8 +144,8 @@ template <class T>
 Sp_matrix<T>::Sp_matrix(size_type nrows,
                         size_type ncols,
                         const std::vector<T>& elems_,
-                        const std::vector<size_type>& col_indx_,
-                        const std::vector<size_type>& row_ptr_)
+                        const std::vector<integer>& col_indx_,
+                        const std::vector<integer>& row_ptr_)
     : elems(elems_),
       col_indx(col_indx_),
       row_ptr(row_ptr_),
@@ -273,8 +287,8 @@ inline Sp_matrix<T>& Sp_matrix<T>::operator-()
 template <class T>
 inline T& Sp_matrix<T>::ref(size_type i, size_type j)
 {
-    for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
-        if (col_indx[k] == j) {
+    for (integer k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
+        if (col_indx[k] == gsl::narrow_cast<integer>(j)) {
             return elems[k];
         }
     }
@@ -284,8 +298,8 @@ inline T& Sp_matrix<T>::ref(size_type i, size_type j)
 template <class T>
 inline const T& Sp_matrix<T>::ref(size_type i, size_type j) const
 {
-    for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
-        if (col_indx[k] == j) {
+    for (integer k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
+        if (col_indx[k] == gsl::narrow_cast<integer>(j)) {
             return elems[k];
         }
     }
