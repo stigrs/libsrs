@@ -17,6 +17,7 @@
 #ifndef SRS_ARRAY0_H
 #define SRS_ARRAY0_H
 
+
 namespace srs {
 
 //
@@ -26,10 +27,9 @@ namespace srs {
 template <class T>
 class Array<T, 0> {
 public:
-    static constexpr std::size_t rank = 0;
+    static constexpr int rank = 0;
 
     typedef T value_type;
-    typedef std::size_t size_type;
 
     Array() = default;
 

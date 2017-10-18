@@ -22,7 +22,7 @@
 TEST_CASE("test_array3")
 {
     // clang-format off
-    srs::Array<int, 3> m{
+    srs::Array<int, 3> m = {
         // depth 0
         {{1, 2, 3}, 
          {4, 5, 6}, 

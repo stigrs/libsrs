@@ -31,7 +31,7 @@ target_link_libraries(
 
 function(add_libsrs_test name)
     add_executable(${name} ${name}.cpp)
-    if(MSVC)
+    if(WIN32)
         target_link_libraries (
             ${program} 
             srs

@@ -29,17 +29,19 @@ namespace srs {
 template <class T>
 Array<T, 1> conv(const Array<T, 1>& a, const Array<T, 1>& b)
 {
+    using size_type = Array<T, 1>::size_type;
+
     const auto na = a.size();
     const auto nb = b.size();
     const auto nc = na + nb - 1;
 
     Array<T, 1> result(nc);
 
-    for (std::size_t i = 0; i < nc; ++i) {
+    for (size_type i = 0; i < nc; ++i) {
         result(i) = T(0);
         auto jmin = (i >= (nb - 1)) ? (i - (nb - 1)) : 0;
         auto jmax = (i < (na - 1)) ? i : (na - 1);
-        for (std::size_t j = jmin; j <= jmax; ++j) {
+        for (size_type j = jmin; j <= jmax; ++j) {
             result(i) += a(j) * b(i - j);
         }
     }

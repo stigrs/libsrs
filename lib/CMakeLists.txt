@@ -24,7 +24,7 @@ add_library(
     srs 
     ${SRC_FILES}
 )
-if(MSVC)
+if(WIN32)
     target_link_libraries(
         srs 
         mkl_intel_c.lib

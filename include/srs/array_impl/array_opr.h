@@ -24,37 +24,37 @@ namespace srs {
 
 // Comparison operators:
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline bool operator==(const Array<T, N>& a, const Array<T, N>& b)
 {
     return std::equal(a.begin(), a.end(), b.begin());
 }
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline bool operator!=(const Array<T, N>& a, const Array<T, N>& b)
 {
     return !(a == b);
 }
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline bool operator<(const Array<T, N>& a, const Array<T, N>& b)
 {
     return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
 }
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline bool operator>(const Array<T, N>& a, const Array<T, N>& b)
 {
     return (b < a);
 }
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline bool operator<=(const Array<T, N>& a, const Array<T, N>& b)
 {
     return !(a > b);
 }
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline bool operator>=(const Array<T, N>& a, const Array<T, N>& b)
 {
     return !(a < b);
@@ -64,21 +64,21 @@ inline bool operator>=(const Array<T, N>& a, const Array<T, N>& b)
 
 // Array addition:
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const Array<T, N>& a, const Array<T, N>& b)
 {
     Array<T, N> result(a);
     return result += b;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const Array_ref<T, N>& a, const Array_ref<T, N>& b)
 {
     Array<T, N> result(a);
     return result += b;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const Array_ref<const T, N>& a,
                              const Array_ref<const T, N>& b)
 {
@@ -90,21 +90,21 @@ inline Array<T, N> operator+(const Array_ref<const T, N>& a,
 
 // Array subtraction:
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const Array<T, N>& a, const Array<T, N>& b)
 {
     Array<T, N> result(a);
     return result -= b;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const Array_ref<T, N>& a, const Array_ref<T, N>& b)
 {
     Array<T, N> result(a);
     return result -= b;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const Array_ref<const T, N>& a,
                              const Array_ref<const T, N>& b)
 {
@@ -116,42 +116,42 @@ inline Array<T, N> operator-(const Array_ref<const T, N>& a,
 
 // Scalar addition:
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const Array<T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result += scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const T& scalar, const Array<T, N>& a)
 {
     Array<T, N> result(a);
     return result += scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const Array_ref<T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result += scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const T& scalar, const Array_ref<T, N>& a)
 {
     Array<T, N> result(a);
     return result += scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const Array_ref<const T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result += scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator+(const T& scalar, const Array_ref<const T, N>& a)
 {
     Array<T, N> result(a);
@@ -162,42 +162,42 @@ inline Array<T, N> operator+(const T& scalar, const Array_ref<const T, N>& a)
 
 // Scalar subtraction:
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const Array<T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result -= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const T& scalar, const Array<T, N>& a)
 {
     Array<T, N> result(a);
     return result -= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const Array_ref<T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result -= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const T& scalar, const Array_ref<T, N>& a)
 {
     Array<T, N> result(a);
     return result -= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const Array_ref<const T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result -= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator-(const T& scalar, const Array_ref<const T, N>& a)
 {
     Array<T, N> result(a);
@@ -208,42 +208,42 @@ inline Array<T, N> operator-(const T& scalar, const Array_ref<const T, N>& a)
 
 // Scalar multiplication:
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator*(const Array<T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result *= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator*(const T& scalar, const Array<T, N>& a)
 {
     Array<T, N> result(a);
     return result *= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator*(const Array_ref<T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result *= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator*(const T& scalar, const Array_ref<T, N>& a)
 {
     Array<T, N> result(a);
     return result *= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator*(const Array_ref<const T, N>& a, const T& scalar)
 {
     Array<T, N> result(a);
     return result *= scalar;
 }
 
-template <class T, std::size_t N>
+template <class T, int N>
 inline Array<T, N> operator*(const T& scalar, const Array_ref<const T, N>& a)
 {
     Array<T, N> result(a);
@@ -392,6 +392,7 @@ template <class A1, class A2, class A3>
 void mm_mul(const A1& a, const A2& b, A3& c)
 {
     using value_type = typename A1::value_type;
+    using size_type  = typename A1::size_type;
 
     Expects(A1::rank == 2);
     Expects(A2::rank == 2);
@@ -400,10 +401,10 @@ void mm_mul(const A1& a, const A2& b, A3& c)
 
     c.resize(a.rows(), b.cols());
 
-    for (std::size_t j = 0; j < b.cols(); ++j) {
-        for (std::size_t i = 0; i < a.rows(); ++i) {
+    for (size_type j = 0; j < b.cols(); ++j) {
+        for (size_type i = 0; i < a.rows(); ++i) {
             c(i, j) = value_type(0);
-            for (std::size_t k = 0; k < a.cols(); ++k) {
+            for (size_type k = 0; k < a.cols(); ++k) {
                 c(i, j) += a(i, k) * b(k, j);
             }
         }
@@ -416,6 +417,7 @@ template <class A1, class A2, class A3>
 void mv_mul(const A1& a, const A2& v, A3& w)
 {
     using value_type = typename A1::value_type;
+    using size_type  = typename A1::size_type;
 
     Expects(A1::rank == 2);
     Expects(A2::rank == 1);
@@ -425,8 +427,8 @@ void mv_mul(const A1& a, const A2& v, A3& w)
     w.resize(a.rows());
     w = value_type(0);
 
-    for (std::size_t j = 0; j < a.cols(); ++j) {
-        for (std::size_t i = 0; i < a.rows(); ++i) {
+    for (size_type j = 0; j < a.cols(); ++j) {
+        for (size_type i = 0; i < a.rows(); ++i) {
             w(i) += a(i, j) * v(j);
         }
     }
@@ -437,7 +439,7 @@ void mv_mul(const A1& a, const A2& v, A3& w)
 // Algorithms:
 
 // Swap arrays.
-template <class T, std::size_t N>
+template <class T, int N>
 inline void swap(Array<T, N>& a, Array<T, N>& b)
 {
     a.swap(b);
@@ -459,9 +461,11 @@ inline void sort(Array<T, 1>& vec, bool ascending = true)
 template <typename T>
 void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
 {
+    using size_type = typename Array<T, 2>::size_type;
+
     if (dim == 1) {  // sort elements along each row
         if (ascending) {
-            for (std::size_t i = 0; i < a.rows(); ++i) {
+            for (size_type i = 0; i < a.rows(); ++i) {
                 // This is not terribly elegant, but I don't know (yet) how
                 // to make a random access slice iterator.
                 Array<T, 1> ri = a.row(i);
@@ -470,7 +474,7 @@ void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
             }
         }
         else {
-            for (std::size_t i = 0; i < a.rows(); ++i) {
+            for (size_type i = 0; i < a.rows(); ++i) {
                 Array<T, 1> ri = a.row(i);
                 std::sort(ri.begin(), ri.end(), std::greater<T>());
                 a.row(i) = ri;
@@ -479,14 +483,14 @@ void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
     }
     else {  // sort elements along each column
         if (ascending) {
-            for (std::size_t j = 0; j < a.cols(); ++j) {
+            for (size_type j = 0; j < a.cols(); ++j) {
                 Array<T, 1> cj = a.column(j);
                 std::sort(cj.begin(), cj.end(), std::less<T>());
                 a.column(j) = cj;
             }
         }
         else {
-            for (std::size_t j = 0; j < a.cols(); ++j) {
+            for (size_type j = 0; j < a.cols(); ++j) {
                 Array<T, 1> cj = a.column(j);
                 std::sort(cj.begin(), cj.end(), std::greater<T>());
                 a.column(j) = cj;

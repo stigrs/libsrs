@@ -23,7 +23,7 @@ set(
 
 foreach(program ${PROGRAMS})
     add_executable(${program} ${program}.cpp)
-    if(MSVC)
+    if(WIN32)
         target_link_libraries (
             ${program} 
             srs

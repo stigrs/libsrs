@@ -18,6 +18,7 @@
 #define SRS_ARRAY_REF3_H
 
 #include <srs/array_impl/functors.h>
+#include <srs/types.h>
 #include <array>
 #include <gsl/gsl>
 
@@ -30,10 +31,10 @@ namespace srs {
 template <class T>
 class Array_ref<T, 3> {
 public:
-    static constexpr std::size_t rank = 3;
+    static constexpr int rank = 3;
 
     typedef T value_type;
-    typedef std::size_t size_type;
+    typedef Int_t size_type;
 
     // Constructors:
     Array_ref(size_type n1,

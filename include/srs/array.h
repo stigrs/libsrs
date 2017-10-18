@@ -18,7 +18,6 @@
 #define SRS_ARRAY_H
 
 #include <complex>
-#include <cstddef>
 #include <stdexcept>
 #include <string>
 
@@ -38,9 +37,10 @@ namespace srs {
 //
 // Note:
 // - The general Array_slice template exists only to allow specializations.
+// - Array indexing uses signed integers (int).
 // - Use e.g. Intel MKL for improved numerical performance.
 //
-template <class T, std::size_t N>
+template <class T, int N>
 class Array {
 private:
     Array();

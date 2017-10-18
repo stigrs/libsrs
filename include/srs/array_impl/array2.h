@@ -19,6 +19,7 @@
 
 #include <srs/array_impl/array_ref.h>
 #include <srs/array_impl/functors.h>
+#include <srs/types.h>
 #include <algorithm>
 #include <array>
 #include <gsl/gsl>
@@ -34,12 +35,14 @@ namespace srs {
 template <class T>
 class Array<T, 2> {
 public:
-    static constexpr std::size_t rank = 2;
+    static constexpr int rank = 2;
 
     typedef T value_type;
-    typedef typename std::vector<T>::size_type size_type;
+    typedef Int_t size_type;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
+    typedef typename std::initializer_list<std::initializer_list<T>>
+        initializer_list_2d;
 
     // Constructors:
 
@@ -57,10 +60,10 @@ public:
 
     Array(size_type nrows, size_type ncols, T* ptr);
 
-    template <std::size_t nrows, std::size_t ncols>
+    template <int nrows, int ncols>
     Array(const T (&a)[nrows][ncols]);
 
-    Array(std::initializer_list<std::initializer_list<T>> ilist);
+    Array(initializer_list_2d ilist) { assign(ilist); }
 
     // Copy elements referenced by array slice.
     template <class U>
@@ -183,6 +186,9 @@ private:
     std::vector<T> elems;  // storage
     std::array<size_type, 2> extents;
     size_type stride;
+
+    // Helper function for assigning initializer list.
+    void assign(initializer_list_2d ilist);
 };
 
 template <class T>
@@ -195,7 +201,7 @@ Array<T, 2>::Array(size_type nrows, size_type ncols, T* ptr)
 }
 
 template <class T>
-template <std::size_t nrows, std::size_t ncols>
+template <int nrows, int ncols>
 Array<T, 2>::Array(const T (&a)[nrows][ncols])
     : elems(nrows * ncols), extents{nrows, ncols}, stride(nrows)
 {
@@ -203,25 +209,6 @@ Array<T, 2>::Array(const T (&a)[nrows][ncols])
         for (size_type j = 0; j < extents[1]; ++j) {
             (*this)(i, j) = a[i][j];
         }
-    }
-}
-
-template <class T>
-Array<T, 2>::Array(std::initializer_list<std::initializer_list<T>> ilist)
-    : elems(ilist.size() * ilist.begin()->size()),
-      extents{ilist.size(), ilist.begin()->size()},
-      stride(ilist.size())
-{
-    size_type i = 0;
-    size_type j = 0;
-
-    for (const auto& il : ilist) {
-        for (const auto& v : il) {
-            elems[i + j * stride] = v;
-            ++j;
-        }
-        j = 0;
-        ++i;
     }
 }
 
@@ -274,24 +261,10 @@ Array<T, 2>& Array<T, 2>::operator=(const Array_ref<U, 2>& a)
 }
 
 template <class T>
-Array<T, 2>& Array<T, 2>::operator=(
+inline Array<T, 2>& Array<T, 2>::operator=(
     std::initializer_list<std::initializer_list<T>> ilist)
 {
-    resize(ilist.size() * ilist.begin()->size());
-    extents = {ilist.size(), ilist.begin()->size()};
-    stride  = ilist.size();
-
-    size_type i = 0;
-    size_type j = 0;
-
-    for (const auto& il : ilist) {
-        for (const auto& v : il) {
-            elems[i + j * stride] = v;
-            ++j;
-        }
-        j = 0;
-        ++i;
-    }
+    assign(ilist);
     return *this;
 }
 
@@ -598,6 +571,29 @@ Array<T, 2>& Array<T, 2>::operator-=(const Array<T, 2>& a)
     return *this;
 }
 
+template <class T>
+void Array<T, 2>::assign(initializer_list_2d ilist)
+{
+    size_type n1 = ilist.size();
+    size_type n2 = ilist.begin()->size();
+
+    elems.resize(n1 * n2);
+    extents = {n1, n2};
+    stride  = n1;
+
+    size_type i = 0;
+    size_type j = 0;
+
+    for (const auto& il : ilist) {
+        for (const auto& v : il) {
+            elems[i + j * stride] = v;
+            ++j;
+        }
+        j = 0;
+        ++i;
+    }
+}
+
 //------------------------------------------------------------------------------
 
 // Non-member function:
@@ -607,8 +603,8 @@ template <class T>
 inline Array<T, 2> transpose(const Array<T, 2>& a)
 {
     Array<T, 2> result(a.cols(), a.rows());
-    for (std::size_t j = 0; j < result.cols(); ++j) {
-        for (std::size_t i = 0; i < result.rows(); ++i) {
+    for (int j = 0; j < result.cols(); ++j) {
+        for (int i = 0; i < result.rows(); ++i) {
             result(i, j) = a.data()[i * a.rows() + j];
         }
     }

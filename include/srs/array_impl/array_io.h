@@ -28,7 +28,7 @@ namespace srs {
 template <typename T>
 std::ostream& operator<<(std::ostream& to, const Array<T, 1>& a)
 {
-    typedef typename Array<T, 1>::size_type size_type;
+    using size_type = typename Array<T, 1>::size_type;
 
     to << a.size() << '\n' << "[ ";
     for (size_type i = 0; i < a.size(); ++i) {
@@ -44,7 +44,7 @@ std::ostream& operator<<(std::ostream& to, const Array<T, 1>& a)
 template <typename T>
 std::ostream& operator<<(std::ostream& to, const Array_ref<T, 1>& a)
 {
-    typedef typename Array_ref<T, 1>::size_type size_type;
+    using size_type = typename Array_ref<T, 1>::size_type;
 
     to << a.size() << '\n' << "[ ";
     for (size_type i = 0; i < a.size(); ++i) {
@@ -60,7 +60,7 @@ std::ostream& operator<<(std::ostream& to, const Array_ref<T, 1>& a)
 template <typename T>
 std::istream& operator>>(std::istream& from, Array<T, 1>& a)
 {
-    typedef typename Array<T, 1>::size_type size_type;
+    using size_type = typename Array<T, 1>::size_type;
 
     size_type n;
     from >> n;
@@ -87,7 +87,7 @@ std::istream& operator>>(std::istream& from, Array<T, 1>& a)
 template <class T>
 std::ostream& operator<<(std::ostream& to, const Array<T, 2>& a)
 {
-    typedef typename Array<T, 2>::size_type size_type;
+    using size_type = typename Array<T, 2>::size_type;
 
     to << a.rows() << " x " << a.cols() << "\n[";
     for (size_type i = 0; i < a.rows(); ++i) {
@@ -105,7 +105,7 @@ std::ostream& operator<<(std::ostream& to, const Array<T, 2>& a)
 template <class T>
 std::ostream& operator<<(std::ostream& to, const Array_ref<T, 2>& a)
 {
-    typedef typename Array_ref<T, 2>::size_type size_type;
+    using size_type = typename Array_ref<T, 2>::size_type;
 
     to << a.rows() << " x " << a.cols() << "\n[";
     for (size_type i = 0; i < a.rows(); ++i) {
@@ -123,7 +123,7 @@ std::ostream& operator<<(std::ostream& to, const Array_ref<T, 2>& a)
 template <typename T>
 std::istream& operator>>(std::istream& from, Array<T, 2>& a)
 {
-    typedef typename Array<T, 2>::size_type size_type;
+    using size_type = typename Array<T, 2>::size_type;
 
     size_type m;
     size_type n;
@@ -157,7 +157,7 @@ std::istream& operator>>(std::istream& from, Array<T, 2>& a)
 template <typename T>
 std::ostream& operator<<(std::ostream& to, const Array<T, 3>& a)
 {
-    typedef typename Array<T, 3>::size_type size_type;
+    using size_type = typename Array<T, 3>::size_type;
 
     size_type n1 = a.rows();
     size_type n2 = a.cols();
@@ -184,7 +184,7 @@ std::ostream& operator<<(std::ostream& to, const Array<T, 3>& a)
 template <typename T>
 std::ostream& operator<<(std::ostream& to, const Array_ref<T, 3>& a)
 {
-    typedef typename Array_ref<T, 3>::size_type size_type;
+    using size_type = typename Array_ref<T, 3>::size_type;
 
     size_type n1 = a.rows();
     size_type n2 = a.cols();
@@ -211,7 +211,7 @@ std::ostream& operator<<(std::ostream& to, const Array_ref<T, 3>& a)
 template <typename T>
 std::istream& operator>>(std::istream& from, Array<T, 3>& a)
 {
-    typedef typename Array<T, 3>::size_type size_type;
+    using size_type = typename Array<T, 3>::size_type;
 
     size_type n1;
     size_type n2;

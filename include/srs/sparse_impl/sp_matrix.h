@@ -20,6 +20,7 @@
 #include <mkl.h>
 #include <srs/array.h>
 #include <srs/array_impl/functors.h>
+#include <srs/types.h>
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -45,8 +46,7 @@ template <class T>
 class Sp_matrix {
 public:
     typedef T value_type;
-    typedef std::size_t size_type;
-    typedef MKL_INT integer;
+    typedef Int_t size_type;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
 
@@ -59,8 +59,8 @@ public:
     Sp_matrix(size_type nrows,
               size_type ncols,
               const std::vector<T>& elems_,
-              const std::vector<integer>& col_indx_,
-              const std::vector<integer>& row_ptr_);
+              const std::vector<size_type>& col_indx_,
+              const std::vector<size_type>& row_ptr_);
 
     // Iterators:
 
@@ -121,8 +121,8 @@ public:
 
 private:
     std::vector<T> elems;
-    std::vector<integer> col_indx;
-    std::vector<integer> row_ptr;
+    std::vector<size_type> col_indx;
+    std::vector<size_type> row_ptr;
     std::array<size_type, 2> extents;
     T zero;
 
@@ -144,8 +144,8 @@ template <class T>
 Sp_matrix<T>::Sp_matrix(size_type nrows,
                         size_type ncols,
                         const std::vector<T>& elems_,
-                        const std::vector<integer>& col_indx_,
-                        const std::vector<integer>& row_ptr_)
+                        const std::vector<size_type>& col_indx_,
+                        const std::vector<size_type>& row_ptr_)
     : elems(elems_),
       col_indx(col_indx_),
       row_ptr(row_ptr_),
@@ -153,7 +153,7 @@ Sp_matrix<T>::Sp_matrix(size_type nrows,
       zero(0)
 {
     Ensures(elems.size() == col_indx.size());
-    Ensures(row_ptr.size() == nrows + 1);
+    Ensures(row_ptr.size() == gsl::narrow_cast<std::size_t>(nrows + 1));
 }
 
 template <class T>
@@ -193,7 +193,7 @@ inline const T& Sp_matrix<T>::operator()(size_type i, size_type j) const
 }
 
 template <class T>
-inline std::size_t Sp_matrix<T>::extent(size_type dim) const
+inline int Sp_matrix<T>::extent(size_type dim) const
 {
     Expects(dim >= 0 && dim < 2);
     return extents[dim];
@@ -228,7 +228,7 @@ void Sp_matrix<T>::insert(size_type i, size_type j, const T& value)
         size_type index = std::distance(col_indx.begin(), pos);
         elems.insert(elems.begin() + index, value);
         col_indx.insert(pos, j);
-        for (size_type k = i + 1; k < row_ptr.size(); ++k) {
+        for (std::size_t k = i + 1; k < row_ptr.size(); ++k) {
             row_ptr[k]++;
         }
     }
@@ -287,8 +287,8 @@ inline Sp_matrix<T>& Sp_matrix<T>::operator-()
 template <class T>
 inline T& Sp_matrix<T>::ref(size_type i, size_type j)
 {
-    for (integer k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
-        if (col_indx[k] == gsl::narrow_cast<integer>(j)) {
+    for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
+        if (col_indx[k] == j) {
             return elems[k];
         }
     }
@@ -298,8 +298,8 @@ inline T& Sp_matrix<T>::ref(size_type i, size_type j)
 template <class T>
 inline const T& Sp_matrix<T>::ref(size_type i, size_type j) const
 {
-    for (integer k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
-        if (col_indx[k] == gsl::narrow_cast<integer>(j)) {
+    for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
+        if (col_indx[k] == j) {
             return elems[k];
         }
     }

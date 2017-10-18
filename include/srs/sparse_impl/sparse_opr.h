@@ -31,8 +31,10 @@ namespace srs {
 template <class T>
 Sp_vector<T> sp_gather(const Array<T, 1>& y)
 {
+    using size_type = Sp_vector<T>::size_type;
+
     std::vector<T> val;
-    std::vector<std::size_t> loc;
+    std::vector<size_type> loc;
     for (std::size_t i = 0; i < y.size(); ++i) {
         if (y(i) != T(0)) {
             val.push_back(y(i));
@@ -46,13 +48,15 @@ Sp_vector<T> sp_gather(const Array<T, 1>& y)
 template <class T>
 Sp_matrix<T> sp_gather(const Array<T, 2>& a)
 {
+    using size_type = Sp_matrix<T>::size_type;
+
     std::vector<T> elems;
-    std::vector<MKL_INT> col_indx;
-    std::vector<MKL_INT> row_ptr(a.rows() + 1);
-    std::size_t nnz = 0;
-    for (std::size_t i = 0; i < a.rows(); ++i) {
-        std::size_t inz = 0;
-        for (std::size_t j = 0; j < a.cols(); ++j) {
+    std::vector<size_type> col_indx;
+    std::vector<size_type> row_ptr(a.rows() + 1);
+    size_type nnz = 0;
+    for (size_type i = 0; i < a.rows(); ++i) {
+        size_type inz = 0;
+        for (size_type j = 0; j < a.cols(); ++j) {
             if (a(i, j) != T(0)) {
                 elems.push_back(a(i, j));
                 col_indx.push_back(j);
@@ -70,8 +74,10 @@ Sp_matrix<T> sp_gather(const Array<T, 2>& a)
 template <class T>
 Array<T, 1> sp_scatter(const Sp_vector<T>& x)
 {
+    using size_type = Sp_vector<T>::size_type;
+
     Array<T, 1> result(x.size());
-    for (std::size_t i = 0; i < result.size(); ++i) {
+    for (size_type i = 0; i < result.size(); ++i) {
         result(i) = x(i);
     }
     return result;
@@ -81,9 +87,11 @@ Array<T, 1> sp_scatter(const Sp_vector<T>& x)
 template <class T>
 Array<T, 2> sp_scatter(const Sp_matrix<T>& a)
 {
+    using size_type = Sp_matrix<T>::size_type;
+
     Array<T, 2> result(a.rows(), a.cols());
-    for (std::size_t i = 0; i < result.rows(); ++i) {
-        for (std::size_t j = 0; j < result.cols(); ++j) {
+    for (size_type i = 0; i < result.rows(); ++i) {
+        for (size_type j = 0; j < result.cols(); ++j) {
             result(i, j) = a(i, j);
         }
     }
@@ -164,8 +172,11 @@ template <class T>
 Array<T, 1> operator+(const Sp_vector<T>& x, const Array<T, 1>& y)
 {
     Expects(x.size() <= y.size());
+
+    using size_type = Sp_vector<T>::size_type;
+
     Array<T, 1> result(y);
-    std::size_t i = 0;
+    size_type i = 0;
     for (const auto& v : x) {
         result(x.loc(i)) += v;
         ++i;
@@ -177,8 +188,11 @@ template <class T>
 Array<T, 1> operator+(const Array<T, 1>& y, const Sp_vector<T>& x)
 {
     Expects(x.size() <= y.size());
+
+    using size_type = Sp_vector<T>::size_type;
+
     Array<T, 1> result(y);
-    std::size_t i = 0;
+    size_type i = 0;
     for (const auto& v : x) {
         result(x.loc(i)) += v;
         ++i;
@@ -194,8 +208,11 @@ template <class T>
 Array<T, 1> operator-(const Sp_vector<T>& x, const Array<T, 1>& y)
 {
     Expects(x.size() <= y.size());
+
+    using size_type = Sp_vector<T>::size_type;
+
     Array<T, 1> result(y);
-    std::size_t i = 0;
+    size_type i = 0;
     for (const auto& v : x) {
         result(x.loc(i)) -= v;
         ++i;
@@ -207,8 +224,11 @@ template <class T>
 Array<T, 1> operator-(const Array<T, 1>& y, const Sp_vector<T>& x)
 {
     Expects(x.size() <= y.size());
+
+    using size_type = Sp_vector<T>::size_type;
+
     Array<T, 1> result(y);
-    std::size_t i = 0;
+    size_type i = 0;
     for (const auto& v : x) {
         result(x.loc(i)) -= v;
         ++i;
@@ -233,11 +253,14 @@ template <class T>
 void mv_mul(const Sp_matrix<T>& a, const Array<T, 1>& x, Array<T, 1>& result)
 {
     Expects(x.size() == a.cols());
+
+    using size_type = Array<T, 1>::size_type;
+
     result.resize(a.cols());
 
-    for (std::size_t i = 0; i < a.rows(); ++i) {
+    for (size_type i = 0; i < a.rows(); ++i) {
         T sum = T(0);
-        for (MKL_INT j = a.row_index()[i]; j < a.row_index()[i + 1]; ++j) {
+        for (size_type j = a.row_index()[i]; j < a.row_index()[i + 1]; ++j) {
             sum += a.values()[j] * x(a.columns()[j]);
         }
         result(i) = sum;

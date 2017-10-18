@@ -17,7 +17,7 @@
 #ifndef SRS_SLICE_ITER
 #define SRS_SLICE_ITER
 
-#include <cstddef>
+#include <srs/types.h>
 #include <gsl/gsl>
 #include <iterator>
 
@@ -28,14 +28,16 @@ namespace srs {
 // Slice descriptor.
 //
 struct Slice {
-    Slice(std::size_t start_, std::size_t size_, std::size_t stride_)
+    typedef Int_t size_type;
+
+    Slice(size_type start_, size_type size_, size_type stride_)
         : start{start_}, size{size_}, stride{stride_}
     {
     }
 
-    std::size_t start;
-    std::size_t size;
-    std::size_t stride;
+    size_type start;
+    size_type size;
+    size_type stride;
 };
 
 //------------------------------------------------------------------------------
@@ -66,7 +68,7 @@ public:
     typedef T value_type;
     typedef T* pointer;
     typedef T& reference;
-    typedef std::size_t size_type;
+    typedef Int_t size_type;
     typedef std::bidirectional_iterator_tag iterator_category;
 
     Slice_iter(T* p, const srs::Slice& s) : ptr(p), desc(s), curr(s.start) {}
@@ -112,9 +114,9 @@ public:
 private:
     T* ptr;
     srs::Slice desc;
-    std::size_t curr;
+    size_type curr;
 
-    reference ref(std::size_t i) const
+    reference ref(size_type i) const
     {
 #ifndef NDEBUG
         Expects(i >= 0 && i < desc.size);

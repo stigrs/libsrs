@@ -49,10 +49,10 @@ TEST_CASE("test_array4")
         CHECK(m.dim3() == 2);
         CHECK(m.dim4() == 2);
         int iter = 1;
-        for (std::size_t l = 0; l < m.dim4(); ++l) {
-            for (std::size_t k = 0; k < m.dim3(); ++k) {
-                for (std::size_t i = 0; i < m.dim1(); ++i) {
-                    for (std::size_t j = 0; j < m.dim2(); ++j) {
+        for (int l = 0; l < m.dim4(); ++l) {
+            for (int k = 0; k < m.dim3(); ++k) {
+                for (int i = 0; i < m.dim1(); ++i) {
+                    for (int j = 0; j < m.dim2(); ++j) {
                         CHECK(m(i, j, k, l) == iter);
                         ++iter;
                     }

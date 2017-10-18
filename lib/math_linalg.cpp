@@ -22,19 +22,19 @@
 #include <random>
 
 
-srs::dmatrix srs::hilbert(std::size_t n)
+srs::dmatrix srs::hilbert(int n)
 {
     Expects(n > 0);
     srs::dmatrix result(n, n);
-    for (std::size_t j = 0; j < n; ++j) {
-        for (std::size_t i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+        for (int i = 0; i < n; ++i) {
             result(i, j) = 1.0 / static_cast<double>(i + j + 1.0);
         }
     }
     return result;
 }
 
-srs::ivector srs::randi(std::size_t n, int a, int b)
+srs::ivector srs::randi(int n, int a, int b)
 {
     srs::ivector result(n);
 
@@ -42,13 +42,13 @@ srs::ivector srs::randi(std::size_t n, int a, int b)
     std::mt19937_64 mt(rd());
     std::uniform_int_distribution<> rdist(a, b);
 
-    for (std::size_t i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         result(i) = rdist(mt);
     }
     return result;
 }
 
-srs::dvector srs::randu(std::size_t n)
+srs::dvector srs::randu(int n)
 {
     srs::dvector result(n);
 
@@ -56,13 +56,13 @@ srs::dvector srs::randu(std::size_t n)
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<> rdist;
 
-    for (std::size_t i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         result(i) = rdist(mt);
     }
     return result;
 }
 
-srs::imatrix srs::randi(std::size_t m, std::size_t n, int a, int b)
+srs::imatrix srs::randi(int m, int n, int a, int b)
 {
     srs::imatrix result(m, n);
 
@@ -70,13 +70,13 @@ srs::imatrix srs::randi(std::size_t m, std::size_t n, int a, int b)
     std::mt19937_64 mt(rd());
     std::uniform_int_distribution<> rdist(a, b);
 
-    for (std::size_t i = 0; i < result.size(); ++i) {
+    for (int i = 0; i < result.size(); ++i) {
         result.data()[i] = rdist(mt);
     }
     return result;
 }
 
-srs::dmatrix srs::randu(std::size_t m, std::size_t n)
+srs::dmatrix srs::randu(int m, int n)
 {
     srs::dmatrix result(m, n);
 
@@ -84,7 +84,7 @@ srs::dmatrix srs::randu(std::size_t m, std::size_t n)
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<> rdist;
 
-    for (std::size_t i = 0; i < result.size(); ++i) {
+    for (int i = 0; i < result.size(); ++i) {
         result.data()[i] = rdist(mt);
     }
     return result;
@@ -96,8 +96,10 @@ double srs::det(const srs::dmatrix& a)
 {
     Expects(a.rows() == a.cols());
 
+    using size_type = srs::dmatrix::size_type;
+
     double ddet;
-    long n = a.rows();
+    size_type n = a.rows();
 
     if (n == 1) {
         ddet = a(0, 0);
@@ -115,15 +117,15 @@ double srs::det(const srs::dmatrix& a)
         srs::ivector ipiv;
         lu(tmp, ipiv);
 
-        long permut = 0;
-        for (long i = 1; i <= n; ++i) {
+        int permut = 0;
+        for (size_type i = 1; i <= n; ++i) {
             if (i != ipiv(i - 1)) {  // Fortran uses base 1
                 permut++;
             }
         }
         ddet   = 1.0;
         auto d = tmp.diag();
-        for (std::size_t i = 0; i < d.size(); ++i) {
+        for (size_type i = 0; i < d.size(); ++i) {
             ddet *= d(i);
         }
         ddet *= std::pow(-1.0, static_cast<double>(permut));
@@ -222,10 +224,10 @@ void srs::eig(srs::dmatrix& a, srs::zmatrix& v, srs::zvector& w)
     if (info != 0) {
         throw Math_error("dgeev failed");
     }
-    for (std::size_t i = 0; i < vr.rows(); ++i) {  // can this be done faster?
+    for (int i = 0; i < vr.rows(); ++i) {  // can this be done faster?
         std::complex<double> wii(wr(i), wi(i));
         w(i) = wii;
-        for (std::size_t j = 0; j < vr.cols(); j += 2) {
+        for (int j = 0; j < vr.cols(); j += 2) {
             std::complex<double> v1 = {vr(i, j), 0.0};
             std::complex<double> v2 = {vr(i, j + 1), 0.0};
             if (wi(j) != 0.0) {
@@ -253,7 +255,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
     //
     // Note: No check of symmetry is done.
 
-    std::size_t n = a.cols();
+    int n = a.cols();
 
     Expects(n == a.rows());
 
@@ -285,8 +287,8 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         // Test for convergence:
         double so = 0.0;
 
-        for (std::size_t p = 0; p < n; ++p) {
-            for (std::size_t q = p + 1; q < n; ++q) {
+        for (int p = 0; p < n; ++p) {
+            for (int q = p + 1; q < n; ++q) {
                 so += std::abs(a(p, q));
             }
         }
@@ -305,8 +307,8 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
 
         // Do sweeps:
 
-        for (std::size_t p = 0; p < n; ++p) {
-            for (std::size_t q = p + 1; q < n; ++q) {
+        for (int p = 0; p < n; ++p) {
+            for (int q = p + 1; q < n; ++q) {
                 double theta;
                 double g;
                 double h;
@@ -346,26 +348,26 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     wr(p) -= z;
                     wr(q) += z;
 
-                    for (std::size_t r = 0; r < p; ++r) {
-                        t       = a(r, p);
+                    for (int r = 0; r < p; ++r) {
+                        t = a(r, p);
                         a(r, p) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
-                    for (std::size_t r = p + 1; r < q; ++r) {
-                        t       = a(p, r);
+                    for (int r = p + 1; r < q; ++r) {
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
-                    for (std::size_t r = q + 1; r < n; ++r) {
-                        t       = a(p, r);
+                    for (int r = q + 1; r < n; ++r) {
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(q, r);
                         a(q, r) = s * t + c * a(q, r);
                     }
 
                     // Update eigenvectors:
 
-                    for (std::size_t r = 0; r < n; ++r) {
-                        t        = vr(r, p);
+                    for (int r = 0; r < n; ++r) {
+                        t = vr(r, p);
                         vr(r, p) = c * t - s * vr(r, q);
                         vr(r, q) = s * t + c * vr(r, q);
                     }
@@ -379,11 +381,11 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
 
     // Sort eigenvalues in descending order:
 
-    for (std::size_t ii = 1; ii < n; ++ii) {
-        std::size_t i = ii - 1;
-        std::size_t k = i;
-        double p      = wr(i);
-        for (std::size_t j = ii; j < n; ++j) {
+    for (int ii = 1; ii < n; ++ii) {
+        int i    = ii - 1;
+        int k    = i;
+        double p = wr(i);
+        for (int j = ii; j < n; ++j) {
             if (wr(j) >= p) {
                 continue;
             }
@@ -395,8 +397,8 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         }
         wr(k) = wr(i);
         wr(i) = p;
-        for (std::size_t j = 0; j < n; ++j) {
-            p        = vr(j, i);
+        for (int j = 0; j < n; ++j) {
+            p = vr(j, i);
             vr(j, i) = vr(j, k);
             vr(j, k) = p;
         }

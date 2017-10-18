@@ -99,17 +99,19 @@ inline bool approx_equal(double a,
     return equal;
 }
 
-template <std::size_t N>
+template <int N>
 bool approx_equal(const Array<double, N>& a,
                   const Array<double, N>& b,
                   double tol,
                   const std::string& method = "absdiff")
 {
+    using size_type = typename Array<double, N>::size_type;
+
     bool equal = false;
     if (a.size() != b.size()) {
         equal = false;
     }
-    for (std::size_t i = 0; i < a.size(); ++i) {
+    for (size_type i = 0; i < a.size(); ++i) {
         equal = approx_equal(a.data()[i], b.data()[i], tol, method);
     }
     return equal;

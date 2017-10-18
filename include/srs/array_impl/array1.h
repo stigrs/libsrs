@@ -19,6 +19,7 @@
 
 #include <srs/array_impl/array_ref.h>
 #include <srs/array_impl/functors.h>
+#include <srs/types.h>
 #include <algorithm>
 #include <gsl/gsl>
 #include <initializer_list>
@@ -33,10 +34,10 @@ namespace srs {
 template <class T>
 class Array<T, 1> {
 public:
-    static constexpr std::size_t rank = 1;
+    static constexpr int rank = 1;
 
     typedef T value_type;
-    typedef typename std::vector<T>::size_type size_type;
+    typedef Int_t size_type;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
 
@@ -50,7 +51,7 @@ public:
 
     Array(size_type n, T* ptr);
 
-    template <std::size_t n>
+    template <int n>
     Array(const T (&a)[n]);
 
     Array(std::initializer_list<T> ilist) : elems(ilist) {}
@@ -172,7 +173,7 @@ Array<T, 1>::Array(size_type n, T* ptr) : elems(n)
 }
 
 template <class T>
-template <std::size_t n>
+template <int n>
 Array<T, 1>::Array(const T (&a)[n]) : elems(n)
 {
     for (size_type i = 0; i < size(); ++i) {

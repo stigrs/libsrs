@@ -56,13 +56,13 @@ TEST_CASE("test_input")
     CHECK(d == 2.0);
     CHECK(s == "hello");
 
-    for (std::size_t it = 0; it < iv_ans.size(); ++it) {
+    for (int it = 0; it < iv_ans.size(); ++it) {
         CHECK(iv(it) == iv_ans(it));
     }
-    for (std::size_t it = 0; it < uv_ans.size(); ++it) {
+    for (int it = 0; it < uv_ans.size(); ++it) {
         CHECK(uv(it) == uv_ans(it));
     }
-    for (std::size_t it = 0; it < dv_ans.size(); ++it) {
+    for (int it = 0; it < dv_ans.size(); ++it) {
         CHECK(dv(it) == dv_ans(it));
     }
 }

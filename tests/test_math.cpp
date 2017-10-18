@@ -139,7 +139,7 @@ TEST_CASE("test_math")
         CHECK(srs::approx_equal(
             srs::norm(v2, 40), arma::norm(v1, "inf"), 1.0e-12));
 
-        for (std::size_t i = 0; i < v2.size(); ++i) {
+        for (int i = 0; i < v2.size(); ++i) {
             CHECK(srs::approx_equal(n1(i), n2(i), 1.0e-18));
         }
 
@@ -182,7 +182,7 @@ TEST_CASE("test_math")
         arma::vec b2 = {4.0, 5.0, 6.0};
         arma::vec b3 = arma::cross(b1, b2);
 
-        for (std::size_t i = 0; i < a3.size(); ++i) {
+        for (int i = 0; i < a3.size(); ++i) {
             CHECK(srs::approx_equal(a3(i), b3(i), 1.0e-18));
         }
     }
@@ -232,11 +232,11 @@ TEST_CASE("test_math")
         srs::dvector wr(5);
         srs::jacobi(a, wr);
 
-        for (std::size_t i = 0; i < wr.size(); ++i) {
+        for (int i = 0; i < wr.size(); ++i) {
             CHECK(srs::approx_equal(wr(i), eigval(i), 1.0e-12));
         }
-        for (std::size_t j = 0; j < a.cols(); ++j) {
-            for (std::size_t i = 0; i < a.rows(); ++i) {
+        for (int j = 0; j < a.cols(); ++j) {
+            for (int i = 0; i < a.rows(); ++i) {
                 CHECK(srs::approx_equal(
                     std::abs(a(i, j)), std::abs(eigvec(i, j)), 1.0e-12));
             }
@@ -259,11 +259,11 @@ TEST_CASE("test_math")
         srs::dvector wr(5);
         srs::eigs(a, wr);
 
-        for (std::size_t i = 0; i < wr.size(); ++i) {
+        for (int i = 0; i < wr.size(); ++i) {
             CHECK(srs::approx_equal(wr(i), eigval(i), 1.0e-12));
         }
-        for (std::size_t j = 0; j < a.cols(); ++j) {
-            for (std::size_t i = 0; i < a.rows(); ++i) {
+        for (int j = 0; j < a.cols(); ++j) {
+            for (int i = 0; i < a.rows(); ++i) {
                 CHECK(srs::approx_equal(
                     std::abs(a(i, j)), std::abs(eigvec(i, j)), 1.0e-12));
             }
@@ -289,12 +289,12 @@ TEST_CASE("test_math")
         srs::zvector w(4);
         srs::eig(a2, v, w);
 
-        for (std::size_t i = 0; i < w.size(); ++i) {
+        for (int i = 0; i < w.size(); ++i) {
             CHECK(srs::approx_equal(w(i).real(), eigval(i).real(), 1.0e-12));
             CHECK(srs::approx_equal(w(i).imag(), eigval(i).imag(), 1.0e-12));
         }
-        for (std::size_t j = 0; j < v.cols(); ++j) {
-            for (std::size_t i = 0; i < v.rows(); ++i) {
+        for (int j = 0; j < v.cols(); ++j) {
+            for (int i = 0; i < v.rows(); ++i) {
                 CHECK(srs::approx_equal(
                     v(i, j).real(), eigvec(i, j).real(), 1.0e-12));
                 CHECK(srs::approx_equal(
@@ -318,8 +318,8 @@ TEST_CASE("test_math")
         aa = arma::inv(aa);
         srs::inv(a);
 
-        for (std::size_t j = 0; j < a.cols(); ++j) {
-            for (std::size_t i = 0; i < a.rows(); ++i) {
+        for (int j = 0; j < a.cols(); ++j) {
+            for (int i = 0; i < a.rows(); ++i) {
                 CHECK(srs::approx_equal(a(i, j), aa(i, j), 1.0e-12));
             }
         }
@@ -336,8 +336,8 @@ TEST_CASE("test_math")
         arma::mat AA(3, 3);
         arma::vec BB = {14.0, 20.0, 14.0};
 
-        for (std::size_t j = 0; j < A.cols(); ++j) {
-            for (std::size_t i = 0; i < A.rows(); ++i) {
+        for (int j = 0; j < A.cols(); ++j) {
+            for (int i = 0; i < A.rows(); ++i) {
                 AA(i, j) = A(i, j);
             }
         }
@@ -345,7 +345,7 @@ TEST_CASE("test_math")
         arma::vec x = arma::solve(AA, BB);
         srs::linsolve(A, B);
 
-        for (std::size_t i = 0; i < B.rows(); ++i) {
+        for (int i = 0; i < B.rows(); ++i) {
             CHECK(srs::approx_equal(B(i, 0), x(i), 1.0e-12));
         }
     }

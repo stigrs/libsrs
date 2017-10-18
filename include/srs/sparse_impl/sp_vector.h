@@ -19,6 +19,7 @@
 
 #include <srs/array.h>
 #include <srs/array_impl/functors.h>
+#include <srs/types.h>
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -42,7 +43,7 @@ template <class T>
 class Sp_vector {
 public:
     typedef T value_type;
-    typedef std::size_t size_type;
+    typedef Int_t size_type;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
 
@@ -204,7 +205,7 @@ inline const T& Sp_vector<T>::operator()(size_type i) const
 }
 
 template <class T>
-inline std::size_t Sp_vector<T>::size() const
+inline Int_t Sp_vector<T>::size() const
 {
     return *std::max_element(indx.begin(), indx.end()) + 1;
 }

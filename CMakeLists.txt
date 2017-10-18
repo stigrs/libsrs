@@ -14,7 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Enforce C++14 standard (needed for GSL).
 set(CMAKE_CXX_STANDARD 14)
 
-if(MSVC)
+if(WIN32)
     option(BUILD_SHARED_LIBS "Compile shared libraries." OFF)
 else()
     option(BUILD_SHARED_LIBS "Compile shared libraries." ON)
@@ -51,7 +51,7 @@ add_compile_options(
 )
 
 # Boost library is required.
-if(MSVC)
+if(WIN32)
     set(Boost_USE_STATIC_LIBS ON)
 endif()
 find_package(Boost 1.65.0 REQUIRED)
@@ -61,7 +61,7 @@ find_path(GSL_INCLUDE_DIR gsl HINTS $ENV{HOME}/include /usr/include /usr/local/i
 
 # Intel MKL is required.
 find_path(MKL_INCLUDE_DIR mkl.h HINTS $ENV{MKL_INCLUDE_DIR} /opt/intel/mkl/include)
-if (MSVC)
+if (WIN32)
     find_path(MKL_LIB_DIR mkl_core.lib HINTS $ENV{MKL_LIB_DIR})
 else()
     find_path(MKL_LIB_DIR libmkl_core.a HINTS $ENV{MKL_LIB_DIR} /opt/intel/mkl/lib /opt/intel/mkl/lib/intel64)
@@ -88,7 +88,7 @@ add_subdirectory(lib)
 
 if(BUILD_TESTS)
     # Armadillo library is required.
-    if(MSVC)
+    if(WIN32)
         find_path(ARMADILLO_INCLUDE_DIRS armadillo HINTS $ENV{HOME}/include)
         add_definitions(-DARMA_USE_BLAS)
         add_definitions(-DARMA_USE_LAPACK)

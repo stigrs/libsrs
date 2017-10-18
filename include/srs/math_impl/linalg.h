@@ -19,7 +19,7 @@
 
 #include <mkl.h>
 #include <srs/array.h>
-#include <srs/math_impl/norm_type.h>
+#include <srs/types.h>
 #include <algorithm>
 #include <gsl/gsl>
 #include <limits>
@@ -34,7 +34,7 @@ namespace srs {
 // Create special vectors and matrices:
 
 // Create identity matrix.
-inline dmatrix identity(std::size_t n)
+inline dmatrix identity(int n)
 {
     Expects(n > 0);
     dmatrix result(n, n, 0.0);
@@ -43,28 +43,23 @@ inline dmatrix identity(std::size_t n)
 }
 
 // Create Hilbert matrix.
-dmatrix hilbert(std::size_t n);
+dmatrix hilbert(int n);
 
 // Create a vector with elements set to random integer values in the
 // interval [a, b].
-ivector randi(std::size_t n,
-              int a = 0,
-              int b = std::numeric_limits<int>::max());
+ivector randi(int n, int a = 0, int b = std::numeric_limits<int>::max());
 
 // Create a vector with elements set to real random uniform distribution values
 // in the interval [0, 1).
-dvector randu(std::size_t n);
+dvector randu(int n);
 
 // Create a M x N matrix with elements set to random integer values in the
 // interval [a, b].
-imatrix randi(std::size_t m,
-              std::size_t n,
-              int a = 0,
-              int b = std::numeric_limits<int>::max());
+imatrix randi(int m, int n, int a = 0, int b = std::numeric_limits<int>::max());
 
 // Create a M x N matrix with elements set to real random uniform distribution
 // values in the interval [0, 1).
-dmatrix randu(std::size_t m, std::size_t n);
+dmatrix randu(int m, int n);
 
 //------------------------------------------------------------------------------
 
@@ -85,17 +80,19 @@ inline T min(const Array<T, 1>& vec)
 template <class T>
 Array<T, 1> max(const Array<T, 2>& a, int dim = 2)
 {
+    using size_type = typename Array<T, 2>::size_type;
+
     Array<T, 1> result;
     if (dim == 1) {  // row
         result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
+        for (size_type i = 0; i < a.rows(); ++i) {
             auto ri   = a.row(i);
             result(i) = *std::max_element(ri.begin(), ri.end());
         }
     }
     else {  // column
         result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
+        for (size_type j = 0; j < a.cols(); ++j) {
             auto rj   = a.column(j);
             result(j) = *std::max_element(rj.begin(), rj.end());
         }
@@ -106,17 +103,19 @@ Array<T, 1> max(const Array<T, 2>& a, int dim = 2)
 template <class T>
 Array<T, 1> min(const Array<T, 2>& a, int dim = 2)
 {
+    using size_type = typename Array<T, 2>::size_type;
+
     Array<T, 1> result;
     if (dim == 1) {
         result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
+        for (size_type i = 0; i < a.rows(); ++i) {
             auto ri   = a.row(i);
             result(i) = *std::min_element(ri.begin(), ri.end());
         }
     }
     else {
         result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
+        for (size_type j = 0; j < a.cols(); ++j) {
             auto rj   = a.column(j);
             result(j) = *std::min_element(rj.begin(), rj.end());
         }
@@ -145,16 +144,18 @@ inline T sum(const Array_ref<const T, 1>& vec)
 template <class T>
 Array<T, 1> sum(const Array<T, 2>& a, int dim = 2)
 {
+    using size_type = typename Array<T, 2>::size_type;
+
     Array<T, 1> result;
     if (dim == 1) {  // sum element along each row
         result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
+        for (size_type i = 0; i < a.rows(); ++i) {
             result(i) = sum(a.row(i));
         }
     }
     else {  // sum element along each column
         result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
+        for (size_type j = 0; j < a.cols(); ++j) {
             result(j) = sum(a.column(j));
         }
     }
@@ -182,16 +183,18 @@ inline T prod(const Array_ref<const T, 1>& vec)
 template <class T>
 Array<T, 1> prod(const Array<T, 2>& a, int dim = 2)
 {
+    using size_type = typename Array<T, 2>::size_type;
+
     Array<T, 1> result;
     if (dim == 1) {  // product of elements along each row
         result.resize(a.rows());
-        for (std::size_t i = 0; i < a.rows(); ++i) {
+        for (size_type i = 0; i < a.rows(); ++i) {
             result(i) = prod(a.row(i));
         }
     }
     else {  // product of elements along each column
         result.resize(a.cols());
-        for (std::size_t j = 0; j < a.cols(); ++j) {
+        for (size_type j = 0; j < a.cols(); ++j) {
             result(j) = prod(a.column(j));
         }
     }
@@ -268,20 +271,22 @@ inline T norm(const Array<T, 1>& vec, int p = srs::L2)
 template <class T>
 T norm(const Array<T, 2>& a, int p = srs::Fro)
 {
+    using size_type = typename Array<T, 2>::size_type;
+
     T pnorm = T(0);
     T tsum  = T(0);
 
     if (!a.empty()) {
         if (p == srs::Fro) {  // Frobenius norm
-            for (std::size_t j = 0; j < a.cols(); ++j) {
-                for (std::size_t i = 0; i < a.rows(); ++i) {
+            for (size_type j = 0; j < a.cols(); ++j) {
+                for (size_type i = 0; i < a.rows(); ++i) {
                     tsum += a(i, j) * a(i, j);
                 }
             }
             pnorm = std::sqrt(tsum);
         }
         else if (p == srs::L1) {  // maximum absolute column sum norm (L1 norm)
-            for (std::size_t j = 0; j < a.cols(); ++j) {
+            for (size_type j = 0; j < a.cols(); ++j) {
                 tsum    = T(0);
                 auto cj = a.column(j);
                 for (const auto& v : cj) {
@@ -293,7 +298,7 @@ T norm(const Array<T, 2>& a, int p = srs::Fro)
             }
         }
         else {  // maximum absolute row sum norm (L-infinity norm)
-            for (std::size_t i = 0; i < a.rows(); ++i) {
+            for (size_type i = 0; i < a.rows(); ++i) {
                 tsum    = T(0);
                 auto ri = a.row(i);
                 for (const auto& v : ri) {
@@ -347,7 +352,10 @@ template <class T>
 void axpy(const T& a, const Array<T, 1>& x, Array<T, 1>& y)
 {
     Expects(x.size() == y.size());
-    for (std::size_t i = 0; i < x.size(); ++i) {
+
+    using size_type = typename Array<T, 1>::size_type;
+
+    for (size_type i = 0; i < x.size(); ++i) {
         y(i) = a * x(i) + y(i);
     }
 }
@@ -429,10 +437,10 @@ void mkl_dgemv(const std::string& transa,
 // Matrix transpose.
 inline void mkl_transpose(const dmatrix& a, dmatrix& b)
 {
-    std::size_t nrows = a.cols();
-    std::size_t ncols = a.rows();
-    std::size_t lda   = a.rows();
-    std::size_t ldb   = ncols;
+    MKL_INT nrows = a.cols();
+    MKL_INT ncols = a.rows();
+    MKL_INT lda   = a.rows();
+    MKL_INT ldb   = ncols;
 
     b.resize(nrows, ncols);
     mkl_domatcopy('C', 'T', nrows, ncols, 1.0, a.data(), lda, b.data(), ldb);

@@ -19,6 +19,7 @@
 
 #include <srs/array_impl/array_ref.h>
 #include <srs/array_impl/functors.h>
+#include <srs/types.h>
 #include <algorithm>
 #include <array>
 #include <gsl/gsl>
@@ -34,15 +35,15 @@ namespace srs {
 template <class T>
 class Array<T, 3> {
 public:
-    static constexpr std::size_t rank = 3;
+    static constexpr int rank = 3;
 
     typedef T value_type;
-    typedef typename std::vector<T>::size_type size_type;
+    typedef Int_t size_type;
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
-    typedef typename std::initializer_list<
-        std::initializer_list<std::initializer_list<T>>>
-        initializer_list_3d;
+    typedef typename std::
+        initializer_list<std::initializer_list<std::initializer_list<T>>>
+            initializer_list_3d;
 
     // Constructors:
 
@@ -60,7 +61,7 @@ public:
 
     Array(size_type n1, size_type n2, size_type n3, T* ptr);
 
-    template <std::size_t n1, std::size_t n2, std::size_t n3>
+    template <int n1, int n2, int n3>
     Array(const T (&a)[n1][n2][n3]);
 
     Array(initializer_list_3d ilist) { assign(ilist); }
@@ -186,7 +187,7 @@ private:
     std::array<size_type, 2> strides;
 
     // Compute index.
-    std::size_t index(size_type i, size_type j, size_type k) const;
+    int index(size_type i, size_type j, size_type k) const;
 
     // Helper function for assigning initializer list.
     void assign(initializer_list_3d ilist);
@@ -202,7 +203,7 @@ Array<T, 3>::Array(size_type n1, size_type n2, size_type n3, T* ptr)
 }
 
 template <class T>
-template <std::size_t n1, std::size_t n2, std::size_t n3>
+template <int n1, int n2, int n3>
 Array<T, 3>::Array(const T (&a)[n1][n2][n3])
     : elems(n1 * n2 * n3), extents{n1, n2, n3}, strides{n1, n1 * n2}
 {
@@ -532,9 +533,7 @@ Array<T, 3>& Array<T, 3>::operator-=(const Array<T, 3>& a)
 }
 
 template <class T>
-inline std::size_t Array<T, 3>::index(size_type i,
-                                      size_type j,
-                                      size_type k) const
+inline int Array<T, 3>::index(size_type i, size_type j, size_type k) const
 {
     return i + j * strides[0] + k * strides[1];
 }

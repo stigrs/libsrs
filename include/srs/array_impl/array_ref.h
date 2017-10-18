@@ -30,7 +30,7 @@ namespace srs {
 //   array or that the array goes out of scope).
 // - The general Array_ref template exists only to allow specializations.
 //
-template <class T, std::size_t N>
+template <class T, int N>
 class Array_ref {
 private:
     Array_ref();
