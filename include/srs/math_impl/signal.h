@@ -29,7 +29,7 @@ namespace srs {
 template <class T>
 Array<T, 1> conv(const Array<T, 1>& a, const Array<T, 1>& b)
 {
-    using size_type = Array<T, 1>::size_type;
+    using size_type = typename Array<T, 1>::size_type;
 
     const auto na = a.size();
     const auto nb = b.size();

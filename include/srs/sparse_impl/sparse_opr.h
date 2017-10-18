@@ -31,7 +31,7 @@ namespace srs {
 template <class T>
 Sp_vector<T> sp_gather(const Array<T, 1>& y)
 {
-    using size_type = Sp_vector<T>::size_type;
+    using size_type = typename Sp_vector<T>::size_type;
 
     std::vector<T> val;
     std::vector<size_type> loc;
@@ -48,7 +48,7 @@ Sp_vector<T> sp_gather(const Array<T, 1>& y)
 template <class T>
 Sp_matrix<T> sp_gather(const Array<T, 2>& a)
 {
-    using size_type = Sp_matrix<T>::size_type;
+    using size_type = typename Sp_matrix<T>::size_type;
 
     std::vector<T> elems;
     std::vector<size_type> col_indx;
@@ -74,7 +74,7 @@ Sp_matrix<T> sp_gather(const Array<T, 2>& a)
 template <class T>
 Array<T, 1> sp_scatter(const Sp_vector<T>& x)
 {
-    using size_type = Sp_vector<T>::size_type;
+    using size_type = typename Sp_vector<T>::size_type;
 
     Array<T, 1> result(x.size());
     for (size_type i = 0; i < result.size(); ++i) {
@@ -87,7 +87,7 @@ Array<T, 1> sp_scatter(const Sp_vector<T>& x)
 template <class T>
 Array<T, 2> sp_scatter(const Sp_matrix<T>& a)
 {
-    using size_type = Sp_matrix<T>::size_type;
+    using size_type = typename Sp_matrix<T>::size_type;
 
     Array<T, 2> result(a.rows(), a.cols());
     for (size_type i = 0; i < result.rows(); ++i) {
@@ -173,7 +173,7 @@ Array<T, 1> operator+(const Sp_vector<T>& x, const Array<T, 1>& y)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = Sp_vector<T>::size_type;
+    using size_type = typename Sp_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -189,7 +189,7 @@ Array<T, 1> operator+(const Array<T, 1>& y, const Sp_vector<T>& x)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = Sp_vector<T>::size_type;
+    using size_type = typename Sp_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -209,7 +209,7 @@ Array<T, 1> operator-(const Sp_vector<T>& x, const Array<T, 1>& y)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = Sp_vector<T>::size_type;
+    using size_type = typename Sp_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -225,7 +225,7 @@ Array<T, 1> operator-(const Array<T, 1>& y, const Sp_vector<T>& x)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = Sp_vector<T>::size_type;
+    using size_type = typename Sp_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -254,7 +254,7 @@ void mv_mul(const Sp_matrix<T>& a, const Array<T, 1>& x, Array<T, 1>& result)
 {
     Expects(x.size() == a.cols());
 
-    using size_type = Array<T, 1>::size_type;
+    using size_type = typename Array<T, 1>::size_type;
 
     result.resize(a.cols());
 
