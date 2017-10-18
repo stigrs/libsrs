@@ -14,20 +14,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_NORM_TYPE_H
-#define SRS_MATH_NORM_TYPE_H
+#ifndef SRS_TYPES_H
+#define SRS_TYPES_H
 
-//
-// Provides vector and matrix norm types.
-//
+
 namespace srs {
 
+// Integer type.
+#ifdef MKL_INT
+typedef MKL_INT Int_t;
+#else
+typedef int Int_t;
+#endif
+
+//------------------------------------------------------------------------------
+
+// Vector and matrix norm types.
 enum Norm_t {
     Fro = 0,
     L1  = 1,
     L2  = 2,
     Inf = 100,
 };
-}
 
-#endif  // SRS_MATH_NORM_TYPE_H
+}  // namespace srs
+
+#endif  // SRS_TYPES_H
