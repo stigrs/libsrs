@@ -14,6 +14,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <srs/math.h>
 #include <srs/sparse.h>
 #include <catch/catch.hpp>
 #include <vector>
@@ -80,5 +81,29 @@ TEST_CASE("sp_matrix")
         srs::ivector x   = {1, 2, 3, 4, 5};
         srs::ivector ans = {21, 20, 170, 146, 169};
         CHECK(ans == spmat * x);
+    }
+
+    SECTION("linsolve")
+    {
+        // Example taken from Intel MKL.
+
+        using size_type = srs::dvector::size_type;
+
+        srs::dmatrix m = {{1, -1, 0, -3, 0},
+                          {-2, 5, 0, 0, 0},
+                          {0, 0, 4, 6, 4},
+                          {-4, 0, 2, 7, 0},
+                          {0, 8, 0, 0, -5}};
+
+        srs::dvector yans = {1.0, 7.0, 1.0, 6.0, -55.0};
+
+        srs::sp_dmatrix a = srs::sp_gather(m);
+        srs::dvector x    = {1.0, 5.0, 1.0, 4.0, 1.0};
+        srs::dvector y(x.size());
+        srs::linsolve(a, x, y);
+
+        for (size_type i = 0; i < y.size(); ++i) {
+            CHECK(srs::approx_equal(y(i), yans(i), 1.0e-12));
+        }
     }
 }

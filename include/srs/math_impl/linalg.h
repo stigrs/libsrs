@@ -19,6 +19,7 @@
 
 #include <mkl.h>
 #include <srs/array.h>
+#include <srs/sparse.h>
 #include <srs/types.h>
 #include <algorithm>
 #include <gsl/gsl>
@@ -392,6 +393,9 @@ void jacobi(dmatrix& a, dvector& wr);
 
 // Solve linear system of equations.
 void linsolve(dmatrix& a, dmatrix& b);
+
+// Solve linear system of equations for a sparse matrix.
+void linsolve(const sp_dmatrix& a, const dvector& x, dvector& y);
 
 //------------------------------------------------------------------------------
 

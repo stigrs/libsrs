@@ -349,17 +349,17 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     wr(q) += z;
 
                     for (int r = 0; r < p; ++r) {
-                        t = a(r, p);
+                        t       = a(r, p);
                         a(r, p) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = p + 1; r < q; ++r) {
-                        t = a(p, r);
+                        t       = a(p, r);
                         a(p, r) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = q + 1; r < n; ++r) {
-                        t = a(p, r);
+                        t       = a(p, r);
                         a(p, r) = c * t - s * a(q, r);
                         a(q, r) = s * t + c * a(q, r);
                     }
@@ -367,7 +367,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     // Update eigenvectors:
 
                     for (int r = 0; r < n; ++r) {
-                        t = vr(r, p);
+                        t        = vr(r, p);
                         vr(r, p) = c * t - s * vr(r, q);
                         vr(r, q) = s * t + c * vr(r, q);
                     }
@@ -398,7 +398,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         wr(k) = wr(i);
         wr(i) = p;
         for (int j = 0; j < n; ++j) {
-            p = vr(j, i);
+            p        = vr(j, i);
             vr(j, i) = vr(j, k);
             vr(j, k) = p;
         }
@@ -425,6 +425,22 @@ void srs::linsolve(srs::dmatrix& a, srs::dmatrix& b)
     if (info != 0) {
         throw Math_error("dgesv: factor U is singular");
     }
+}
+
+void srs::linsolve(const srs::sp_dmatrix& a,
+                   const srs::dvector& x,
+                   srs::dvector& y)
+{
+    Expects(x.size() == a.rows());
+    y.resize(x.size());
+
+    MKL_INT m = a.rows();
+
+    // clang-format off
+    mkl_cspblas_dcsrtrsv(
+        "L", "N", "U", &m, a.data(), a.row_index().data(), 
+        a.columns().data(), x.data(), y.data());
+    // clang-format on
 }
 
 //------------------------------------------------------------------------------
