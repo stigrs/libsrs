@@ -22,7 +22,6 @@
 #include <srs/types.h>
 #include <algorithm>
 #include <cmath>
-#include <cstddef>
 #include <gsl/gsl>
 #include <initializer_list>
 #include <utility>
@@ -38,6 +37,7 @@ namespace srs {
 // - It is assumed that the sparse vector is initialized with element indices
 //   sorted in ascending order.
 // - New elements are inserted so that the index order is preserved.
+// - Array indexing uses signed integers (int).
 //
 template <class T>
 class Sp_vector {

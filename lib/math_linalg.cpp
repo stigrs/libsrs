@@ -349,17 +349,17 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     wr(q) += z;
 
                     for (int r = 0; r < p; ++r) {
-                        t       = a(r, p);
+                        t = a(r, p);
                         a(r, p) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = p + 1; r < q; ++r) {
-                        t       = a(p, r);
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = q + 1; r < n; ++r) {
-                        t       = a(p, r);
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(q, r);
                         a(q, r) = s * t + c * a(q, r);
                     }
@@ -367,7 +367,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     // Update eigenvectors:
 
                     for (int r = 0; r < n; ++r) {
-                        t        = vr(r, p);
+                        t = vr(r, p);
                         vr(r, p) = c * t - s * vr(r, q);
                         vr(r, q) = s * t + c * vr(r, q);
                     }
@@ -398,7 +398,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         wr(k) = wr(i);
         wr(i) = p;
         for (int j = 0; j < n; ++j) {
-            p        = vr(j, i);
+            p = vr(j, i);
             vr(j, i) = vr(j, k);
             vr(j, k) = p;
         }
@@ -427,20 +427,41 @@ void srs::linsolve(srs::dmatrix& a, srs::dmatrix& b)
     }
 }
 
-void srs::linsolve(const srs::sp_dmatrix& a,
-                   const srs::dvector& x,
-                   srs::dvector& y)
+void srs::linsolve(const srs::sp_dmatrix& a, srs::dvector& b, srs::dvector& x)
 {
-    Expects(x.size() == a.rows());
-    y.resize(x.size());
+    Expects(b.size() == a.rows());
+    x.resize(b.size());
 
-    MKL_INT m = a.rows();
+    // Initialize PARDISO:
+
+    void* pt[64];         // internal solver memory pointer
+    MKL_INT iparm[64];    // PARDISO control parameters
+    MKL_INT mtype  = 11;  // real and nonsymmetric matrix
+    MKL_INT maxfct = 1;   // max factors kept in memory
+    MKL_INT mnum   = 1;   // which matrix to factorize
+    MKL_INT phase  = 13;  // analysis, numerical factorization, solve
+    MKL_INT nrhs   = 1;   // number of rhs that need to be solved for
+    MKL_INT msglvl = 0;   // no print of statistical information
+    MKL_INT error  = 0;   // initialize error flag
+
+    pardisoinit(pt, &mtype, iparm);  // set default values
+    iparm[34] = 1;                   // zero-based indexing
+
+    // Solve linear system of equations:
+
+    MKL_INT n = b.size();
+    srs::ivector perm(n);
 
     // clang-format off
-    mkl_cspblas_dcsrtrsv(
-        "L", "N", "U", &m, a.data(), a.row_index().data(), 
-        a.columns().data(), x.data(), y.data());
+    pardiso(
+        pt, &maxfct, &mnum, &mtype, &phase, &n, a.data(), a.row_index().data(),
+        a.columns().data(), perm.data(), &nrhs, iparm, &msglvl, b.data(), 
+        x.data(), &error);
     // clang-format on
+
+    if (error != 0) {
+        throw Math_error("could not solve sparse linear system of equations");
+    }
 }
 
 //------------------------------------------------------------------------------

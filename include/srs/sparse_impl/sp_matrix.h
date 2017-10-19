@@ -23,7 +23,6 @@
 #include <srs/types.h>
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <gsl/gsl>
 #include <vector>
 
@@ -39,8 +38,9 @@ namespace srs {
 // - It is assumed that the sparse vector is initialized with element indices
 //   sorted in ascending order.
 // - New elements are inserted so that the index order is preserved.
+// - Array indexing uses signed integers (int).
 // - This class provides a framework for implementing sparse matrix methods
-//   that utilize the Intel MKL sparse blas library.
+//   that utilize the Intel MKL library.
 //
 template <class T>
 class Sp_matrix {

@@ -394,8 +394,8 @@ void jacobi(dmatrix& a, dvector& wr);
 // Solve linear system of equations.
 void linsolve(dmatrix& a, dmatrix& b);
 
-// Solve linear system of equations for a sparse matrix.
-void linsolve(const sp_dmatrix& a, const dvector& x, dvector& y);
+// Solve linear system of equations for a real, nonsymmetric sparse matrix.
+void linsolve(const sp_dmatrix& a, dvector& b, dvector& x);
 
 //------------------------------------------------------------------------------
 
