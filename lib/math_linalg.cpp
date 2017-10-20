@@ -19,6 +19,7 @@
 #include <srs/math_impl/linalg.h>
 #include <cmath>
 #include <gsl/gsl>
+#include <iostream>
 #include <random>
 
 
@@ -238,6 +239,53 @@ void srs::eig(srs::dmatrix& a, srs::zmatrix& v, srs::zvector& w)
             v(i, j + 1) = v2;
         }
     }
+}
+
+void srs::sp_eig(double emin,
+                 double emax,
+                 const srs::sp_dmatrix& a,
+                 srs::dmatrix& v,
+                 srs::dvector& w)
+{
+    // Initialize FEAST:
+
+    MKL_INT fpm[128];
+    feastinit(fpm);
+#ifndef NDEBUG
+    fpm[0] = 1;  // print runtime status
+#endif
+
+    // Solve eigenvalue problem:
+
+    MKL_INT n    = a.cols();  // size of the problem
+    MKL_INT m0   = n;         // initial guess for subspace dimension
+    MKL_INT loop = 0;         // number of refinement loops
+    MKL_INT m    = m0;        // total number of eigenvalues found
+    MKL_INT info = 0;         // error code
+
+    auto ia = a.row_index_one_based();  // FEAST only support one-based indexing
+    auto ja = a.columns_one_based();
+
+    double epsout = 0.0;   // relative error on the trace (not returned)
+    srs::dvector res(m0);  // residual vector (not returned)
+
+    v.resize(n, m0);
+    w.resize(m0);
+
+    // clang-format off
+    dfeast_scsrev(
+        "F", &n, a.data(), ia.data(), ja.data(), fpm, &epsout, &loop, &emin, 
+        &emax, &m0, w.data(), v.data(), &m, res.data(), &info);
+    // clang-format on
+
+    if (info != 0) {
+        throw Math_error("Sparse eigensolver failed");
+    }
+
+    // Return the m first eigenvalues and eigenvectors:
+
+    w = w.head(m - 1);
+    v = v.slice(0, n - 1, 0, m - 1);
 }
 
 void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)

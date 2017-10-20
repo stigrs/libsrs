@@ -386,6 +386,11 @@ void eigs(dmatrix& a, dvector& wr);
 // Compute eigenvalues and eigenvectors of a real non-symmetric matrix.
 void eig(dmatrix& a, zmatrix& v, zvector& w);
 
+// Compute eigenvalues and eigenvectors in the interval [emin, emax] for
+// a real sparse matrix.
+void sp_eig(
+    double emin, double emax, const sp_dmatrix& a, dmatrix& v, dvector& w);
+
 // Compute eigenvalues and eigenvectors of a real symmetric matrix.
 void jacobi(dmatrix& a, dvector& wr);
 
