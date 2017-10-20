@@ -25,7 +25,7 @@ namespace srs {
 
 // Non-member I/O operators for Array<T, N>:
 
-template <typename T>
+template <class T>
 std::ostream& operator<<(std::ostream& to, const Array<T, 1>& a)
 {
     using size_type = typename Array<T, 1>::size_type;
@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream& to, const Array<T, 1>& a)
     return to;
 }
 
-template <typename T>
+template <class T>
 std::ostream& operator<<(std::ostream& to, const Array_ref<T, 1>& a)
 {
     using size_type = typename Array_ref<T, 1>::size_type;
@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& to, const Array_ref<T, 1>& a)
     return to;
 }
 
-template <typename T>
+template <class T>
 std::istream& operator>>(std::istream& from, Array<T, 1>& a)
 {
     using size_type = typename Array<T, 1>::size_type;
@@ -120,7 +120,7 @@ std::ostream& operator<<(std::ostream& to, const Array_ref<T, 2>& a)
     return to;
 }
 
-template <typename T>
+template <class T>
 std::istream& operator>>(std::istream& from, Array<T, 2>& a)
 {
     using size_type = typename Array<T, 2>::size_type;
@@ -154,7 +154,7 @@ std::istream& operator>>(std::istream& from, Array<T, 2>& a)
     return from;
 }
 
-template <typename T>
+template <class T>
 std::ostream& operator<<(std::ostream& to, const Array<T, 3>& a)
 {
     using size_type = typename Array<T, 3>::size_type;
@@ -181,7 +181,7 @@ std::ostream& operator<<(std::ostream& to, const Array<T, 3>& a)
     return to;
 }
 
-template <typename T>
+template <class T>
 std::ostream& operator<<(std::ostream& to, const Array_ref<T, 3>& a)
 {
     using size_type = typename Array_ref<T, 3>::size_type;
@@ -208,7 +208,7 @@ std::ostream& operator<<(std::ostream& to, const Array_ref<T, 3>& a)
     return to;
 }
 
-template <typename T>
+template <class T>
 std::istream& operator>>(std::istream& from, Array<T, 3>& a)
 {
     using size_type = typename Array<T, 3>::size_type;
