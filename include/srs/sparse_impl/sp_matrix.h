@@ -59,8 +59,15 @@ public:
     Sp_matrix(size_type nrows,
               size_type ncols,
               const std::vector<T>& elems_,
-              const std::vector<size_type>& col_indx_,
-              const std::vector<size_type>& row_ptr_);
+              const std::vector<size_type>& colind,
+              const std::vector<size_type>& rowptr);
+
+    template <Int_t n, Int_t nnz>
+    Sp_matrix(size_type nrows,
+              size_type ncols,
+              const T (&val)[n],
+              const Int_t (&colind)[n],
+              const Int_t (&rowptr)[nnz]);
 
     // Iterators:
 
@@ -106,6 +113,8 @@ public:
     const auto& values() const { return elems; }
     const auto& columns() const { return col_indx; }
     const auto& row_index() const { return row_ptr; }
+    auto columns_one_based() const;
+    auto row_index_one_based() const;
 
     // Element-wise operations:
 
@@ -144,15 +153,34 @@ template <class T>
 Sp_matrix<T>::Sp_matrix(size_type nrows,
                         size_type ncols,
                         const std::vector<T>& elems_,
-                        const std::vector<size_type>& col_indx_,
-                        const std::vector<size_type>& row_ptr_)
+                        const std::vector<size_type>& colind,
+                        const std::vector<size_type>& rowptr)
     : elems(elems_),
-      col_indx(col_indx_),
-      row_ptr(row_ptr_),
+      col_indx(colind),
+      row_ptr(rowptr),
       extents{nrows, ncols},
       zero(0)
 {
     Ensures(elems.size() == col_indx.size());
+    Ensures(row_ptr.size() == gsl::narrow_cast<std::size_t>(nrows + 1));
+}
+
+template <class T>
+template <Int_t n, Int_t nnz>
+Sp_matrix<T>::Sp_matrix(size_type nrows,
+                        size_type ncols,
+                        const T (&val)[n],
+                        const Int_t (&colind)[n],
+                        const Int_t (&rowptr)[nnz])
+    : elems(n), col_indx(n), row_ptr(nnz), extents{nrows, ncols}, zero(0)
+{
+    for (size_type i = 0; i < n; ++i) {
+        elems[i]    = val[i];
+        col_indx[i] = colind[i];
+    }
+    for (size_type i = 0; i < nnz; ++i) {
+        row_ptr[i] = rowptr[i];
+    }
     Ensures(row_ptr.size() == gsl::narrow_cast<std::size_t>(nrows + 1));
 }
 
@@ -241,6 +269,26 @@ void Sp_matrix<T>::resize(size_type nrows, size_type ncols, size_type nnz)
     col_indx.resize(nnz);
     row_ptr.resize(nrows + 1);
     extents = {nrows, ncols};
+}
+
+template <class T>
+auto Sp_matrix<T>::columns_one_based() const
+{
+    auto result = col_indx;
+    for (auto& i : result) {
+        i += 1;
+    }
+    return result;
+}
+
+template <class T>
+auto Sp_matrix<T>::row_index_one_based() const
+{
+    auto result = row_ptr;
+    for (auto& i : result) {
+        i += 1;
+    }
+    return result;
 }
 
 template <class T>

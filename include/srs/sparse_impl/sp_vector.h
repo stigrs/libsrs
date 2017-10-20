@@ -59,6 +59,9 @@ public:
         Ensures(val.size() == indx.size());
     }
 
+    template <Int_t n>
+    Sp_vector(const T (&val)[n], const Int_t (&loc)[n]);
+
     Sp_vector(std::initializer_list<std::pair<size_type, T>> list);
 
     // Assignment:
@@ -111,6 +114,8 @@ public:
 
     const auto& values() const { return elems; }
     const auto& index() const { return indx; }
+    const auto& index_zero_based() const { return indx; }
+    auto index_one_based() const;
 
     // Element-wise operations:
 
@@ -132,6 +137,17 @@ private:
     T& ref(size_type i);
     const T& ref(size_type i) const;
 };
+
+template <class T>
+template <Int_t n>
+Sp_vector<T>::Sp_vector(const T (&val)[n], const Int_t (&loc)[n])
+    : elems(n), indx(n), zero(0)
+{
+    for (size_type i = 0; i < n; ++i) {
+        elems[i] = val[i];
+        indx[i]  = loc[i];
+    }
+}
 
 template <class T>
 Sp_vector<T>::Sp_vector(std::initializer_list<std::pair<size_type, T>> list)
@@ -275,6 +291,16 @@ T Sp_vector<T>::dot(const std::vector<T>& y)
     for (const auto& v : elems) {
         result += v * y[indx[i]];
         ++i;
+    }
+    return result;
+}
+
+template <class T>
+auto Sp_vector<T>::index_one_based() const
+{
+    auto result = indx;
+    for (auto& i : result) {
+        i += 1;
     }
     return result;
 }
