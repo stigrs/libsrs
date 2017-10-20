@@ -388,4 +388,80 @@ TEST_CASE("test_math")
         CHECK(srs::trace(a) == -2);
         CHECK(srs::trace(asub) == 4);
     }
+
+    SECTION("sp_linsolve")
+    {
+        using size_type = srs::dvector::size_type;
+
+        srs::dmatrix m = {{1, -1, 0, -3, 0},
+                          {-2, 5, 0, 0, 0},
+                          {0, 0, 4, 6, 4},
+                          {-4, 0, 2, 7, 0},
+                          {0, 8, 0, 0, -5}};
+
+        // Armadillo:
+        srs::dvector xans = {-2.0015, 0.1994, 1.7314, -1.0670, 0.1190};
+
+        srs::sp_dmatrix a = srs::sp_gather(m);
+        srs::dvector b    = {1.0, 5.0, 1.0, 4.0, 1.0};
+        srs::dvector x(b.size());
+        srs::linsolve(a, b, x);
+
+        for (size_type i = 0; i < x.size(); ++i) {
+            CHECK(srs::approx_equal(x(i), xans(i), 1.0e-4));
+        }
+    }
+
+    SECTION("sp_eig")
+    {
+        // Example from Intel MKL:
+
+        // clang-format off
+        int rows[12] = {0, 4, 9, 15, 22, 29, 36, 43, 50, 56, 61, 65};
+        int cols[65] = {0,   1,   2,   3,
+                        0,   1,   2,   3,   4,
+                        0,   1,   2,   3,   4,   5,
+                        0,   1,   2,   3,   4,   5,   6,
+                             1,   2,   3,   4,   5,   6,   7,
+                                  2,   3,   4,   5,   6,   7,   8,
+                                       3,   4,   5,   6,   7,   8,  9,
+                                            4,   5,   6,   7,   8,  9,  10,
+                                                 5,   6,   7,   8,  9,  10,
+                                                      6,   7,   8,  9,  10,
+                                                           7,   8,  9,  10
+        };
+        double val[65] = {5.0, 2.0, 1.0, 1.0,
+                          2.0, 6.0, 3.0, 1.0, 1.0,
+                          1.0, 3.0, 6.0, 3.0, 1.0, 1.0,
+                          1.0, 1.0, 3.0, 6.0, 3.0, 1.0, 1.0,
+                               1.0, 1.0, 3.0, 6.0, 3.0, 1.0, 1.0,
+                                    1.0, 1.0, 3.0, 6.0, 3.0, 1.0, 1.0,
+                                         1.0, 1.0, 3.0, 6.0, 3.0, 1.0, 1.0,
+                                              1.0, 1.0, 3.0, 6.0, 3.0, 1.0, 1.0,
+                                                   1.0, 1.0, 3.0, 6.0, 3.0, 1.0,
+                                                        1.0, 1.0, 3.0, 6.0, 2.0,
+                                                             1.0, 1.0, 2.0, 5.0
+        };
+        // clang-format on
+
+        double eig[6];
+        eig[0] = 3.1715728752538100;
+        eig[1] = 4.0000000000000000;
+        eig[2] = 4.0000000000000000;
+        eig[3] = 4.1292484841890931;
+        eig[4] = 4.4066499006731521;
+        eig[5] = 6.0000000000000000;
+
+        srs::sp_dmatrix a(11, 11, val, cols, rows);
+        srs::dmatrix v(a.rows(), a.cols());
+        srs::dvector w(a.cols());
+
+        double emin = 3.0;
+        double emax = 7.0;
+
+        srs::sp_eig(emin, emax, a, v, w);
+        for (int i = 0; i < 6; ++i) {
+            CHECK(srs::approx_equal(w(i), eig[i], 1.0e-12));
+        }
+    }
 }
