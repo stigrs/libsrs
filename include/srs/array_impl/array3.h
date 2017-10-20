@@ -61,7 +61,7 @@ public:
 
     Array(size_type n1, size_type n2, size_type n3, T* ptr);
 
-    template <int n1, int n2, int n3>
+    template <Int_t n1, Int_t n2, Int_t n3>
     Array(const T (&a)[n1][n2][n3]);
 
     Array(initializer_list_3d ilist) { assign(ilist); }
@@ -187,7 +187,7 @@ private:
     std::array<size_type, 2> strides;
 
     // Compute index.
-    int index(size_type i, size_type j, size_type k) const;
+    Int_t index(size_type i, size_type j, size_type k) const;
 
     // Helper function for assigning initializer list.
     void assign(initializer_list_3d ilist);
@@ -203,7 +203,7 @@ Array<T, 3>::Array(size_type n1, size_type n2, size_type n3, T* ptr)
 }
 
 template <class T>
-template <int n1, int n2, int n3>
+template <Int_t n1, Int_t n2, Int_t n3>
 Array<T, 3>::Array(const T (&a)[n1][n2][n3])
     : elems(n1 * n2 * n3), extents{n1, n2, n3}, strides{n1, n1 * n2}
 {
@@ -533,7 +533,7 @@ Array<T, 3>& Array<T, 3>::operator-=(const Array<T, 3>& a)
 }
 
 template <class T>
-inline int Array<T, 3>::index(size_type i, size_type j, size_type k) const
+inline Int_t Array<T, 3>::index(size_type i, size_type j, size_type k) const
 {
     return i + j * strides[0] + k * strides[1];
 }

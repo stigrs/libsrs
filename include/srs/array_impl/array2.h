@@ -60,7 +60,7 @@ public:
 
     Array(size_type nrows, size_type ncols, T* ptr);
 
-    template <int nrows, int ncols>
+    template <Int_t nrows, Int_t ncols>
     Array(const T (&a)[nrows][ncols]);
 
     Array(initializer_list_2d ilist) { assign(ilist); }
@@ -201,7 +201,7 @@ Array<T, 2>::Array(size_type nrows, size_type ncols, T* ptr)
 }
 
 template <class T>
-template <int nrows, int ncols>
+template <Int_t nrows, Int_t ncols>
 Array<T, 2>::Array(const T (&a)[nrows][ncols])
     : elems(nrows * ncols), extents{nrows, ncols}, stride(nrows)
 {
@@ -248,7 +248,7 @@ template <class T>
 template <class U>
 Array<T, 2>& Array<T, 2>::operator=(const Array_ref<U, 2>& a)
 {
-    resize(a.rows() * a.cols());
+    resize(a.rows(), a.cols());
     extents = {a.rows(), a.cols()};
     stride  = a.rows();
 
@@ -602,9 +602,11 @@ void Array<T, 2>::assign(initializer_list_2d ilist)
 template <class T>
 inline Array<T, 2> transpose(const Array<T, 2>& a)
 {
+    using size_type = typename Array<T, 2>::size_type;
+
     Array<T, 2> result(a.cols(), a.rows());
-    for (int j = 0; j < result.cols(); ++j) {
-        for (int i = 0; i < result.rows(); ++i) {
+    for (size_type j = 0; j < result.cols(); ++j) {
+        for (size_type i = 0; i < result.rows(); ++i) {
             result(i, j) = a.data()[i * a.rows() + j];
         }
     }

@@ -51,7 +51,7 @@ public:
 
     Array(size_type n, T* ptr);
 
-    template <int n>
+    template <Int_t n>
     Array(const T (&a)[n]);
 
     Array(std::initializer_list<T> ilist) : elems(ilist) {}
@@ -173,7 +173,7 @@ Array<T, 1>::Array(size_type n, T* ptr) : elems(n)
 }
 
 template <class T>
-template <int n>
+template <Int_t n>
 Array<T, 1>::Array(const T (&a)[n]) : elems(n)
 {
     for (size_type i = 0; i < size(); ++i) {
