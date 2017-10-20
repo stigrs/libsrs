@@ -17,6 +17,7 @@
 #ifndef SRS_ARRAY_OPR_H
 #define SRS_ARRAY_OPR_H
 
+#include <algorithm>
 #include <gsl/gsl>
 
 
@@ -30,31 +31,31 @@ inline bool operator==(const Array<T, N>& a, const Array<T, N>& b)
     return std::equal(a.begin(), a.end(), b.begin());
 }
 
-template <typename T, int N>
+template <class T, int N>
 inline bool operator!=(const Array<T, N>& a, const Array<T, N>& b)
 {
     return !(a == b);
 }
 
-template <typename T, int N>
+template <class T, int N>
 inline bool operator<(const Array<T, N>& a, const Array<T, N>& b)
 {
     return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
 }
 
-template <typename T, int N>
+template <class T, int N>
 inline bool operator>(const Array<T, N>& a, const Array<T, N>& b)
 {
     return (b < a);
 }
 
-template <typename T, int N>
+template <class T, int N>
 inline bool operator<=(const Array<T, N>& a, const Array<T, N>& b)
 {
     return !(a > b);
 }
 
-template <typename T, int N>
+template <class T, int N>
 inline bool operator>=(const Array<T, N>& a, const Array<T, N>& b)
 {
     return !(a < b);

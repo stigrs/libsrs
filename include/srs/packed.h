@@ -22,6 +22,7 @@
 //
 #include <srs/packed_impl/packed_io.h>
 #include <srs/packed_impl/packed_matrix.h>
+#include <srs/packed_impl/packed_opr.h>
 
 namespace srs {
 
