@@ -82,27 +82,4 @@ TEST_CASE("sp_matrix")
         srs::ivector ans = {21, 20, 170, 146, 169};
         CHECK(ans == spmat * x);
     }
-
-    SECTION("linsolve")
-    {
-        using size_type = srs::dvector::size_type;
-
-        srs::dmatrix m = {{1, -1, 0, -3, 0},
-                          {-2, 5, 0, 0, 0},
-                          {0, 0, 4, 6, 4},
-                          {-4, 0, 2, 7, 0},
-                          {0, 8, 0, 0, -5}};
-
-        // Armadillo:
-        srs::dvector xans = {-2.0015, 0.1994, 1.7314, -1.0670, 0.1190};
-
-        srs::sp_dmatrix a = srs::sp_gather(m);
-        srs::dvector b    = {1.0, 5.0, 1.0, 4.0, 1.0};
-        srs::dvector x(b.size());
-        srs::linsolve(a, b, x);
-
-        for (size_type i = 0; i < x.size(); ++i) {
-            CHECK(srs::approx_equal(x(i), xans(i), 1.0e-4));
-        }
-    }
 }
