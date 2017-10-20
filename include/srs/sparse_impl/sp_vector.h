@@ -114,6 +114,7 @@ public:
 
     const auto& values() const { return elems; }
     const auto& index() const { return indx; }
+
     const auto& index_zero_based() const { return indx; }
     auto index_one_based() const;
 

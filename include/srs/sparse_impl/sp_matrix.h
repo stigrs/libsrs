@@ -113,6 +113,10 @@ public:
     const auto& values() const { return elems; }
     const auto& columns() const { return col_indx; }
     const auto& row_index() const { return row_ptr; }
+
+    const auto& columns_zero_based() const { return col_indx; }
+    const auto& row_index_zero_based() const { return row_ptr; }
+
     auto columns_one_based() const;
     auto row_index_one_based() const;
 
