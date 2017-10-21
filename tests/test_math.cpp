@@ -282,7 +282,6 @@ TEST_CASE("test_math")
         arma::vec eigval;
         arma::eig_sym(eigval, eigvec, aa);
 
-        // clang-forma off
         double val[15] = {1.,
                           1. / 2.,
                           1. / 3.,
