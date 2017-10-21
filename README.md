@@ -1,7 +1,9 @@
 # LIBSRS
 
-LIBSRS extents the C++ STL with N-dimensional arrays, mathematical functions
-and other utility methods.
+LIBSRS extents the C++ STL with N-dimensional dense arrays, packed matrix 
+storage, sparse vectors and matrices, mathematical functions and other 
+utility methods. The array, vector, and matrix classes are intended to
+facilitate easy integration with Intel MKL for fast numerical performance.
 
 ## Code of Conduct
 
