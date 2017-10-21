@@ -270,6 +270,51 @@ TEST_CASE("test_math")
         }
     }
 
+    SECTION("eigs_packed")
+    {
+        arma::mat aa = {{1.0, 0.5, 1. / 3., 1. / 4., 1. / 5},
+                        {0.5, 1. / 3., 1. / 4., 1. / 5., 1. / 6.},
+                        {1. / 3., 1. / 4., 1. / 5., 1. / 6., 1. / 7.},
+                        {1. / 4., 1. / 5., 1. / 6., 1. / 7., 1. / 8.},
+                        {1. / 5., 1. / 6., 1. / 7., 1. / 8., 1. / 9.}};
+
+        arma::mat eigvec;
+        arma::vec eigval;
+        arma::eig_sym(eigval, eigvec, aa);
+
+        // clang-forma off
+        double val[15] = {1.,
+                          1. / 2.,
+                          1. / 3.,
+                          1. / 3.,
+                          1. / 4.,
+                          1. / 5.,
+                          1. / 4.,
+                          1. / 5.,
+                          1. / 6.,
+                          1. / 7.,
+                          1. / 5.,
+                          1. / 6.,
+                          1. / 7.,
+                          1. / 8.,
+                          1. / 9.};
+
+        srs::packed_dmatrix ap(5, val);
+        srs::dvector w(5);
+        srs::dmatrix v(5, 5);
+        srs::eigs(ap, v, w);
+
+        for (int i = 0; i < w.size(); ++i) {
+            CHECK(srs::approx_equal(w(i), eigval(i), 1.0e-12));
+        }
+        for (int j = 0; j < v.cols(); ++j) {
+            for (int i = 0; i < v.rows(); ++i) {
+                CHECK(srs::approx_equal(
+                    std::abs(v(i, j)), std::abs(eigvec(i, j)), 1.0e-12));
+            }
+        }
+    }
+
     SECTION("eig")
     {
         arma::mat a1 = {{1.0, 5.0, 4.0, 2.0},
