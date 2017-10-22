@@ -14,8 +14,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_SP_MATRIX_H
-#define SRS_SP_MATRIX_H
+#ifndef SRS_SPARSE_MATRIX_H
+#define SRS_SPARSE_MATRIX_H
 
 #include <mkl.h>
 #include <srs/array.h>
@@ -43,7 +43,7 @@ namespace srs {
 //   that utilize the Intel MKL library.
 //
 template <class T>
-class Sp_matrix {
+class Sparse_matrix {
 public:
     typedef T value_type;
     typedef Int_t size_type;
@@ -52,22 +52,22 @@ public:
 
     // Constructors:
 
-    Sp_matrix() : elems(), col_indx(), row_ptr(), zero(0) {}
+    Sparse_matrix() : elems(), col_indx(), row_ptr(), zero(0) {}
 
-    Sp_matrix(size_type nrows, size_type ncols, size_type nnz);
+    Sparse_matrix(size_type nrows, size_type ncols, size_type nnz);
 
-    Sp_matrix(size_type nrows,
-              size_type ncols,
-              const std::vector<T>& elems_,
-              const std::vector<size_type>& colind,
-              const std::vector<size_type>& rowptr);
+    Sparse_matrix(size_type nrows,
+                  size_type ncols,
+                  const std::vector<T>& elems_,
+                  const std::vector<size_type>& colind,
+                  const std::vector<size_type>& rowptr);
 
     template <Int_t n, Int_t nnz>
-    Sp_matrix(size_type nrows,
-              size_type ncols,
-              const T (&val)[n],
-              const Int_t (&colind)[n],
-              const Int_t (&rowptr)[nnz]);
+    Sparse_matrix(size_type nrows,
+                  size_type ncols,
+                  const T (&val)[n],
+                  const Int_t (&colind)[n],
+                  const Int_t (&rowptr)[nnz]);
 
     // Iterators:
 
@@ -101,7 +101,7 @@ public:
     // Modifiers:
 
     void clear();
-    void swap(const Sp_matrix& m);
+    void swap(const Sparse_matrix& m);
     void insert(size_type i, size_type j, const T& value);
     void resize(size_type nrows, size_type ncols, size_type nnz);
 
@@ -123,14 +123,14 @@ public:
     // Element-wise operations:
 
     template <class F>
-    Sp_matrix& apply(F f);
+    Sparse_matrix& apply(F f);
 
     template <class F>
-    Sp_matrix& apply(F f, const T& value);
+    Sparse_matrix& apply(F f, const T& value);
 
-    Sp_matrix& operator*=(const T& value);
-    Sp_matrix& operator/=(const T& value);
-    Sp_matrix& operator-();
+    Sparse_matrix& operator*=(const T& value);
+    Sparse_matrix& operator/=(const T& value);
+    Sparse_matrix& operator-();
 
 private:
     std::vector<T> elems;
@@ -144,7 +144,7 @@ private:
 };
 
 template <class T>
-Sp_matrix<T>::Sp_matrix(size_type nrows, size_type ncols, size_type nnz)
+Sparse_matrix<T>::Sparse_matrix(size_type nrows, size_type ncols, size_type nnz)
     : elems(nnz),
       col_indx(nnz),
       row_ptr(nrows + 1),
@@ -154,11 +154,11 @@ Sp_matrix<T>::Sp_matrix(size_type nrows, size_type ncols, size_type nnz)
 }
 
 template <class T>
-Sp_matrix<T>::Sp_matrix(size_type nrows,
-                        size_type ncols,
-                        const std::vector<T>& elems_,
-                        const std::vector<size_type>& colind,
-                        const std::vector<size_type>& rowptr)
+Sparse_matrix<T>::Sparse_matrix(size_type nrows,
+                                size_type ncols,
+                                const std::vector<T>& elems_,
+                                const std::vector<size_type>& colind,
+                                const std::vector<size_type>& rowptr)
     : elems(elems_),
       col_indx(colind),
       row_ptr(rowptr),
@@ -171,11 +171,11 @@ Sp_matrix<T>::Sp_matrix(size_type nrows,
 
 template <class T>
 template <Int_t n, Int_t nnz>
-Sp_matrix<T>::Sp_matrix(size_type nrows,
-                        size_type ncols,
-                        const T (&val)[n],
-                        const Int_t (&colind)[n],
-                        const Int_t (&rowptr)[nnz])
+Sparse_matrix<T>::Sparse_matrix(size_type nrows,
+                                size_type ncols,
+                                const T (&val)[n],
+                                const Int_t (&colind)[n],
+                                const Int_t (&rowptr)[nnz])
     : elems(n), col_indx(n), row_ptr(nnz), extents{nrows, ncols}, zero(0)
 {
     for (size_type i = 0; i < n; ++i) {
@@ -189,7 +189,7 @@ Sp_matrix<T>::Sp_matrix(size_type nrows,
 }
 
 template <class T>
-inline T& Sp_matrix<T>::at(size_type i, size_type j)
+inline T& Sparse_matrix<T>::at(size_type i, size_type j)
 {
     Expects(i >= 0 && i < extents[0]);
     Expects(j >= 0 && j < extents[1]);
@@ -197,7 +197,7 @@ inline T& Sp_matrix<T>::at(size_type i, size_type j)
 }
 
 template <class T>
-inline const T& Sp_matrix<T>::at(size_type i, size_type j) const
+inline const T& Sparse_matrix<T>::at(size_type i, size_type j) const
 {
     Expects(i >= 0 && i < extents[0]);
     Expects(j >= 0 && j < extents[1]);
@@ -205,7 +205,7 @@ inline const T& Sp_matrix<T>::at(size_type i, size_type j) const
 }
 
 template <class T>
-inline T& Sp_matrix<T>::operator()(size_type i, size_type j)
+inline T& Sparse_matrix<T>::operator()(size_type i, size_type j)
 {
 #ifndef NDEBUG
     return at(i, j);
@@ -215,7 +215,7 @@ inline T& Sp_matrix<T>::operator()(size_type i, size_type j)
 }
 
 template <class T>
-inline const T& Sp_matrix<T>::operator()(size_type i, size_type j) const
+inline const T& Sparse_matrix<T>::operator()(size_type i, size_type j) const
 {
 #ifndef NDEBUG
     return at(i, j);
@@ -225,14 +225,14 @@ inline const T& Sp_matrix<T>::operator()(size_type i, size_type j) const
 }
 
 template <class T>
-inline int Sp_matrix<T>::extent(size_type dim) const
+inline int Sparse_matrix<T>::extent(size_type dim) const
 {
     Expects(dim >= 0 && dim < 2);
     return extents[dim];
 }
 
 template <class T>
-inline void Sp_matrix<T>::clear()
+inline void Sparse_matrix<T>::clear()
 {
     elems.clear();
     col_indx.clear();
@@ -241,7 +241,7 @@ inline void Sp_matrix<T>::clear()
 }
 
 template <class T>
-inline void Sp_matrix<T>::swap(const Sp_matrix& m)
+inline void Sparse_matrix<T>::swap(const Sparse_matrix& m)
 {
     elems.swap(m.elems);
     col_indx.swap(m.cols);
@@ -250,7 +250,7 @@ inline void Sp_matrix<T>::swap(const Sp_matrix& m)
 }
 
 template <class T>
-void Sp_matrix<T>::insert(size_type i, size_type j, const T& value)
+void Sparse_matrix<T>::insert(size_type i, size_type j, const T& value)
 {
     if (ref(i, j) == zero) {
         auto pos = std::upper_bound(col_indx.begin() + row_ptr[i],
@@ -267,7 +267,7 @@ void Sp_matrix<T>::insert(size_type i, size_type j, const T& value)
 }
 
 template <class T>
-void Sp_matrix<T>::resize(size_type nrows, size_type ncols, size_type nnz)
+void Sparse_matrix<T>::resize(size_type nrows, size_type ncols, size_type nnz)
 {
     elems.resize(nnz);
     col_indx.resize(nnz);
@@ -276,7 +276,7 @@ void Sp_matrix<T>::resize(size_type nrows, size_type ncols, size_type nnz)
 }
 
 template <class T>
-auto Sp_matrix<T>::columns_one_based() const
+auto Sparse_matrix<T>::columns_one_based() const
 {
     auto result = col_indx;
     for (auto& i : result) {
@@ -286,7 +286,7 @@ auto Sp_matrix<T>::columns_one_based() const
 }
 
 template <class T>
-auto Sp_matrix<T>::row_index_one_based() const
+auto Sparse_matrix<T>::row_index_one_based() const
 {
     auto result = row_ptr;
     for (auto& i : result) {
@@ -297,7 +297,7 @@ auto Sp_matrix<T>::row_index_one_based() const
 
 template <class T>
 template <class F>
-Sp_matrix<T>& Sp_matrix<T>::apply(F f)
+Sparse_matrix<T>& Sparse_matrix<T>::apply(F f)
 {
     for (auto& v : elems) {
         f(v);
@@ -307,7 +307,7 @@ Sp_matrix<T>& Sp_matrix<T>::apply(F f)
 
 template <class T>
 template <class F>
-Sp_matrix<T>& Sp_matrix<T>::apply(F f, const T& value)
+Sparse_matrix<T>& Sparse_matrix<T>::apply(F f, const T& value)
 {
     for (auto& v : elems) {
         f(v, value);
@@ -316,28 +316,28 @@ Sp_matrix<T>& Sp_matrix<T>::apply(F f, const T& value)
 }
 
 template <class T>
-inline Sp_matrix<T>& Sp_matrix<T>::operator*=(const T& value)
+inline Sparse_matrix<T>& Sparse_matrix<T>::operator*=(const T& value)
 {
     apply(Mul_assign<T>(), value);
     return *this;
 }
 
 template <class T>
-inline Sp_matrix<T>& Sp_matrix<T>::operator/=(const T& value)
+inline Sparse_matrix<T>& Sparse_matrix<T>::operator/=(const T& value)
 {
     apply(Div_assign<T>(), value);
     return *this;
 }
 
 template <class T>
-inline Sp_matrix<T>& Sp_matrix<T>::operator-()
+inline Sparse_matrix<T>& Sparse_matrix<T>::operator-()
 {
     apply(Unary_minus<T>());
     return *this;
 }
 
 template <class T>
-inline T& Sp_matrix<T>::ref(size_type i, size_type j)
+inline T& Sparse_matrix<T>::ref(size_type i, size_type j)
 {
     for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
         if (col_indx[k] == j) {
@@ -348,7 +348,7 @@ inline T& Sp_matrix<T>::ref(size_type i, size_type j)
 }
 
 template <class T>
-inline const T& Sp_matrix<T>::ref(size_type i, size_type j) const
+inline const T& Sparse_matrix<T>::ref(size_type i, size_type j) const
 {
     for (size_type k = row_ptr[i]; k < row_ptr[i + 1]; ++k) {
         if (col_indx[k] == j) {
@@ -360,4 +360,4 @@ inline const T& Sp_matrix<T>::ref(size_type i, size_type j) const
 
 }  // namespace srs
 
-#endif  // SRS_SP_MATRIX_H
+#endif  // SRS_SPARSE_MATRIX_H

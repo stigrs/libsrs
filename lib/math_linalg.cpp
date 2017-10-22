@@ -258,11 +258,11 @@ void srs::eig(srs::dmatrix& a, srs::zmatrix& v, srs::zvector& w)
     }
 }
 
-void srs::sp_eig(double emin,
-                 double emax,
-                 const srs::sp_dmatrix& a,
-                 srs::dmatrix& v,
-                 srs::dvector& w)
+void srs::eig(double emin,
+              double emax,
+              const srs::sparse_dmatrix& a,
+              srs::dmatrix& v,
+              srs::dvector& w)
 {
     // Initialize FEAST:
 
@@ -492,7 +492,9 @@ void srs::linsolve(srs::dmatrix& a, srs::dmatrix& b)
     }
 }
 
-void srs::linsolve(const srs::sp_dmatrix& a, srs::dvector& b, srs::dvector& x)
+void srs::linsolve(const srs::sparse_dmatrix& a,
+                   srs::dvector& b,
+                   srs::dvector& x)
 {
     Expects(b.size() == a.rows());
     x.resize(b.size());

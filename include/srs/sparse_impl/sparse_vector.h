@@ -14,8 +14,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_SP_VECTOR_H
-#define SRS_SP_VECTOR_H
+#ifndef SRS_SPARSE_VECTOR_H
+#define SRS_SPARSE_VECTOR_H
 
 #include <srs/array.h>
 #include <srs/array_impl/functors.h>
@@ -40,7 +40,7 @@ namespace srs {
 // - Array indexing uses signed integers (int).
 //
 template <class T>
-class Sp_vector {
+class Sparse_vector {
 public:
     typedef T value_type;
     typedef Int_t size_type;
@@ -49,23 +49,24 @@ public:
 
     // Constructors:
 
-    Sp_vector() : elems(), indx(), zero(0) {}
+    Sparse_vector() : elems(), indx(), zero(0) {}
 
-    explicit Sp_vector(size_type n) : elems(n), indx(n), zero(0) {}
+    explicit Sparse_vector(size_type n) : elems(n), indx(n), zero(0) {}
 
-    Sp_vector(const std::vector<T>& val, const std::vector<size_type>& loc)
+    Sparse_vector(const std::vector<T>& val, const std::vector<size_type>& loc)
         : elems(val), indx(loc), zero(0)
     {
         Ensures(val.size() == indx.size());
     }
 
     template <Int_t n>
-    Sp_vector(const T (&val)[n], const Int_t (&loc)[n]);
+    Sparse_vector(const T (&val)[n], const Int_t (&loc)[n]);
 
-    Sp_vector(std::initializer_list<std::pair<size_type, T>> list);
+    Sparse_vector(std::initializer_list<std::pair<size_type, T>> list);
 
     // Assignment:
-    Sp_vector& operator=(std::initializer_list<std::pair<size_type, T>> list);
+    Sparse_vector& operator=(
+        std::initializer_list<std::pair<size_type, T>> list);
 
     // Iterators:
 
@@ -97,7 +98,7 @@ public:
 
     void clear();
     void insert(const T& value, size_type i);
-    void swap(const Sp_vector& x);
+    void swap(const Sparse_vector& x);
     void resize(size_type n);
 
     // Euclidean norm.
@@ -121,14 +122,14 @@ public:
     // Element-wise operations:
 
     template <class F>
-    Sp_vector& apply(F f);
+    Sparse_vector& apply(F f);
 
     template <class F>
-    Sp_vector& apply(F f, const T& value);
+    Sparse_vector& apply(F f, const T& value);
 
-    Sp_vector& operator*=(const T& value);
-    Sp_vector& operator/=(const T& value);
-    Sp_vector& operator-();
+    Sparse_vector& operator*=(const T& value);
+    Sparse_vector& operator/=(const T& value);
+    Sparse_vector& operator-();
 
 private:
     std::vector<T> elems;
@@ -141,7 +142,7 @@ private:
 
 template <class T>
 template <Int_t n>
-Sp_vector<T>::Sp_vector(const T (&val)[n], const Int_t (&loc)[n])
+Sparse_vector<T>::Sparse_vector(const T (&val)[n], const Int_t (&loc)[n])
     : elems(n), indx(n), zero(0)
 {
     for (size_type i = 0; i < n; ++i) {
@@ -151,7 +152,8 @@ Sp_vector<T>::Sp_vector(const T (&val)[n], const Int_t (&loc)[n])
 }
 
 template <class T>
-Sp_vector<T>::Sp_vector(std::initializer_list<std::pair<size_type, T>> list)
+Sparse_vector<T>::Sparse_vector(
+    std::initializer_list<std::pair<size_type, T>> list)
     : elems(list.size()), indx(list.size()), zero(0)
 {
     size_type i = 0;
@@ -163,7 +165,7 @@ Sp_vector<T>::Sp_vector(std::initializer_list<std::pair<size_type, T>> list)
 }
 
 template <class T>
-Sp_vector<T>& Sp_vector<T>::operator=(
+Sparse_vector<T>& Sparse_vector<T>::operator=(
     std::initializer_list<std::pair<size_type, T>> list)
 {
     elems.resize(list.size());
@@ -179,7 +181,7 @@ Sp_vector<T>& Sp_vector<T>::operator=(
 }
 
 template <class T>
-inline auto Sp_vector<T>::loc(size_type i) const
+inline auto Sparse_vector<T>::loc(size_type i) const
 {
 #ifndef NDEBUG
     Expects(i >= 0 && i < num_nonzero());
@@ -188,21 +190,21 @@ inline auto Sp_vector<T>::loc(size_type i) const
 }
 
 template <class T>
-inline T& Sp_vector<T>::at(size_type i)
+inline T& Sparse_vector<T>::at(size_type i)
 {
     Expects(i >= 0);
     return ref(i);
 }
 
 template <class T>
-inline const T& Sp_vector<T>::at(size_type i) const
+inline const T& Sparse_vector<T>::at(size_type i) const
 {
     Expects(i >= 0);
     return ref(i);
 }
 
 template <class T>
-inline T& Sp_vector<T>::operator()(size_type i)
+inline T& Sparse_vector<T>::operator()(size_type i)
 {
 #ifndef NDEBUG
     return at(i);
@@ -212,7 +214,7 @@ inline T& Sp_vector<T>::operator()(size_type i)
 }
 
 template <class T>
-inline const T& Sp_vector<T>::operator()(size_type i) const
+inline const T& Sparse_vector<T>::operator()(size_type i) const
 {
 #ifndef NDEBUG
     return at(i);
@@ -222,20 +224,20 @@ inline const T& Sp_vector<T>::operator()(size_type i) const
 }
 
 template <class T>
-inline Int_t Sp_vector<T>::size() const
+inline Int_t Sparse_vector<T>::size() const
 {
     return *std::max_element(indx.begin(), indx.end()) + 1;
 }
 
 template <class T>
-inline void Sp_vector<T>::clear()
+inline void Sparse_vector<T>::clear()
 {
     elems.clear();
     indx.clear();
 }
 
 template <class T>
-inline void Sp_vector<T>::insert(const T& value, size_type i)
+inline void Sparse_vector<T>::insert(const T& value, size_type i)
 {
     Expects(value != T(0));  // zero values should not be stored
 
@@ -249,21 +251,21 @@ inline void Sp_vector<T>::insert(const T& value, size_type i)
 }
 
 template <class T>
-inline void Sp_vector<T>::swap(const Sp_vector<T>& x)
+inline void Sparse_vector<T>::swap(const Sparse_vector<T>& x)
 {
     elems.swap(x.elems);
     indx.swap(x.indx);
 }
 
 template <class T>
-inline void Sp_vector<T>::resize(size_type n)
+inline void Sparse_vector<T>::resize(size_type n)
 {
     elems.resize(n);
     indx.resize(n);
 }
 
 template <class T>
-T Sp_vector<T>::norm() const
+T Sparse_vector<T>::norm() const
 {
     T result(0);
     for (const auto& v : elems) {
@@ -273,7 +275,7 @@ T Sp_vector<T>::norm() const
 }
 
 template <class T>
-T Sp_vector<T>::dot(const srs::Array<T, 1>& y)
+T Sparse_vector<T>::dot(const srs::Array<T, 1>& y)
 {
     T result(0);
     size_type i = 0;
@@ -285,7 +287,7 @@ T Sp_vector<T>::dot(const srs::Array<T, 1>& y)
 }
 
 template <class T>
-T Sp_vector<T>::dot(const std::vector<T>& y)
+T Sparse_vector<T>::dot(const std::vector<T>& y)
 {
     T result(0);
     size_type i = 0;
@@ -297,7 +299,7 @@ T Sp_vector<T>::dot(const std::vector<T>& y)
 }
 
 template <class T>
-auto Sp_vector<T>::index_one_based() const
+auto Sparse_vector<T>::index_one_based() const
 {
     auto result = indx;
     for (auto& i : result) {
@@ -308,7 +310,7 @@ auto Sp_vector<T>::index_one_based() const
 
 template <class T>
 template <class F>
-inline Sp_vector<T>& Sp_vector<T>::apply(F f)
+inline Sparse_vector<T>& Sparse_vector<T>::apply(F f)
 {
     for (auto& v : elems) {
         f(v);
@@ -318,7 +320,7 @@ inline Sp_vector<T>& Sp_vector<T>::apply(F f)
 
 template <class T>
 template <class F>
-inline Sp_vector<T>& Sp_vector<T>::apply(F f, const T& value)
+inline Sparse_vector<T>& Sparse_vector<T>::apply(F f, const T& value)
 {
     for (auto& v : elems) {
         f(v, value);
@@ -327,28 +329,28 @@ inline Sp_vector<T>& Sp_vector<T>::apply(F f, const T& value)
 }
 
 template <class T>
-inline Sp_vector<T>& Sp_vector<T>::operator*=(const T& value)
+inline Sparse_vector<T>& Sparse_vector<T>::operator*=(const T& value)
 {
     apply(Mul_assign<T>(), value);
     return *this;
 }
 
 template <class T>
-inline Sp_vector<T>& Sp_vector<T>::operator/=(const T& value)
+inline Sparse_vector<T>& Sparse_vector<T>::operator/=(const T& value)
 {
     apply(Div_assign<T>(), value);
     return *this;
 }
 
 template <class T>
-inline Sp_vector<T>& Sp_vector<T>::operator-()
+inline Sparse_vector<T>& Sparse_vector<T>::operator-()
 {
     apply(Unary_minus<T>());
     return *this;
 }
 
 template <class T>
-inline T& Sp_vector<T>::ref(size_type i)
+inline T& Sparse_vector<T>::ref(size_type i)
 {
     auto pos        = std::find(indx.begin(), indx.end(), i);
     size_type index = std::distance(indx.begin(), pos);
@@ -356,7 +358,7 @@ inline T& Sp_vector<T>::ref(size_type i)
 }
 
 template <class T>
-inline const T& Sp_vector<T>::ref(size_type i) const
+inline const T& Sparse_vector<T>::ref(size_type i) const
 {
     auto pos        = std::find(indx.begin(), indx.end(), i);
     size_type index = std::distance(indx.begin(), pos);
@@ -365,4 +367,4 @@ inline const T& Sp_vector<T>::ref(size_type i) const
 
 }  // namespace srs
 
-#endif  // SRS_SP_VECTOR_H
+#endif  // SRS_SPARSE_VECTOR_H

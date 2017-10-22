@@ -28,7 +28,7 @@ TEST_CASE("sp_matrix")
                         {16, 0, 18, 19, 0},
                         {0, 22, 0, 0, 25}};
 
-    srs::Sp_matrix<int> spmat = srs::sp_gather(mat);
+    srs::Sparse_matrix<int> spmat = srs::sp_gather(mat);
 
     SECTION("element_access")
     {
@@ -62,7 +62,7 @@ TEST_CASE("sp_matrix")
 
     SECTION("resize")
     {
-        srs::Sp_matrix<int> m;
+        srs::Sparse_matrix<int> m;
         m.resize(1000, 500, 3);
 
         m.insert(0, 1, 1);

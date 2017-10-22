@@ -446,8 +446,8 @@ TEST_CASE("test_math")
         // Armadillo:
         srs::dvector xans = {-2.0015, 0.1994, 1.7314, -1.0670, 0.1190};
 
-        srs::sp_dmatrix a = srs::sp_gather(m);
-        srs::dvector b    = {1.0, 5.0, 1.0, 4.0, 1.0};
+        srs::sparse_dmatrix a = srs::sp_gather(m);
+        srs::dvector b        = {1.0, 5.0, 1.0, 4.0, 1.0};
         srs::dvector x(b.size());
         srs::linsolve(a, b, x);
 
@@ -456,7 +456,7 @@ TEST_CASE("test_math")
         }
     }
 
-    SECTION("sp_eig")
+    SECTION("sparse_eig")
     {
         // Example from Intel MKL:
 
@@ -496,14 +496,14 @@ TEST_CASE("test_math")
         eig[4] = 4.4066499006731521;
         eig[5] = 6.0000000000000000;
 
-        srs::sp_dmatrix a(11, 11, val, cols, rows);
+        srs::sparse_dmatrix a(11, 11, val, cols, rows);
         srs::dmatrix v(a.rows(), a.cols());
         srs::dvector w(a.cols());
 
         double emin = 3.0;
         double emax = 7.0;
 
-        srs::sp_eig(emin, emax, a, v, w);
+        srs::eig(emin, emax, a, v, w);
         for (int i = 0; i < 6; ++i) {
             CHECK(srs::approx_equal(w(i), eig[i], 1.0e-12));
         }

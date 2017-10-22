@@ -19,7 +19,8 @@
 
 #include <mkl.h>
 #include <srs/array.h>
-#include <srs/sparse_impl/sp_vector.h>
+#include <srs/sparse_impl/sparse_matrix.h>
+#include <srs/sparse_impl/sparse_vector.h>
 #include <vector>
 
 
@@ -29,9 +30,9 @@ namespace srs {
 
 // Gather a full-storage vector into compressed form.
 template <class T>
-Sp_vector<T> sp_gather(const Array<T, 1>& y)
+Sparse_vector<T> sp_gather(const Array<T, 1>& y)
 {
-    using size_type = typename Sp_vector<T>::size_type;
+    using size_type = typename Sparse_vector<T>::size_type;
 
     std::vector<T> val;
     std::vector<size_type> loc;
@@ -46,9 +47,9 @@ Sp_vector<T> sp_gather(const Array<T, 1>& y)
 
 // Gather a full-storage matrix into CSR3 format.
 template <class T>
-Sp_matrix<T> sp_gather(const Array<T, 2>& a)
+Sparse_matrix<T> sp_gather(const Array<T, 2>& a)
 {
-    using size_type = typename Sp_matrix<T>::size_type;
+    using size_type = typename Sparse_matrix<T>::size_type;
 
     std::vector<T> elems;
     std::vector<size_type> col_indx;
@@ -72,9 +73,9 @@ Sp_matrix<T> sp_gather(const Array<T, 2>& a)
 
 // Scatter a sparse vector into full-storage form.
 template <class T>
-Array<T, 1> sp_scatter(const Sp_vector<T>& x)
+Array<T, 1> sp_scatter(const Sparse_vector<T>& x)
 {
-    using size_type = typename Sp_vector<T>::size_type;
+    using size_type = typename Sparse_vector<T>::size_type;
 
     Array<T, 1> result(x.size());
     for (size_type i = 0; i < result.size(); ++i) {
@@ -85,9 +86,9 @@ Array<T, 1> sp_scatter(const Sp_vector<T>& x)
 
 // Scatter a sparse matrix into full-storage form.
 template <class T>
-Array<T, 2> sp_scatter(const Sp_matrix<T>& a)
+Array<T, 2> sp_scatter(const Sparse_matrix<T>& a)
 {
-    using size_type = typename Sp_matrix<T>::size_type;
+    using size_type = typename Sparse_matrix<T>::size_type;
 
     Array<T, 2> result(a.rows(), a.cols());
     for (size_type i = 0; i < result.rows(); ++i) {
@@ -103,31 +104,31 @@ Array<T, 2> sp_scatter(const Sp_matrix<T>& a)
 // Sparse vector math functions:
 
 template <class T>
-inline T norm(const Sp_vector<T>& x)
+inline T norm(const Sparse_vector<T>& x)
 {
     return x.norm();
 }
 
 template <class T>
-inline T dot(const Sp_vector<T>& x, const Array<T, 1>& y)
+inline T dot(const Sparse_vector<T>& x, const Array<T, 1>& y)
 {
     return x.dot(y);
 }
 
 template <class T>
-inline T dot(const Array<T, 1>& y, const Sp_vector<T>& x)
+inline T dot(const Array<T, 1>& y, const Sparse_vector<T>& x)
 {
     return x.dot(y);
 }
 
 template <class T>
-inline T dot(const Sp_vector<T>& x, const std::vector<T>& y)
+inline T dot(const Sparse_vector<T>& x, const std::vector<T>& y)
 {
     return x.dot(y);
 }
 
 template <class T>
-inline T dot(const std::vector<T>& y, const Sp_vector<T>& x)
+inline T dot(const std::vector<T>& y, const Sparse_vector<T>& x)
 {
     return x.dot(y);
 }
@@ -137,30 +138,30 @@ inline T dot(const std::vector<T>& y, const Sp_vector<T>& x)
 // Scalar multiplication:
 
 template <class T>
-Sp_vector<T> operator*(const Sp_vector<T>& x, const T& scalar)
+Sparse_vector<T> operator*(const Sparse_vector<T>& x, const T& scalar)
 {
-    Sp_vector<T> result(x);
+    Sparse_vector<T> result(x);
     return result *= scalar;
 }
 
 template <class T>
-Sp_vector<T> operator*(const T& scalar, const Sp_vector<T>& x)
+Sparse_vector<T> operator*(const T& scalar, const Sparse_vector<T>& x)
 {
-    Sp_vector<T> result(x);
+    Sparse_vector<T> result(x);
     return result *= scalar;
 }
 
 template <class T>
-Sp_matrix<T> operator*(const Sp_matrix<T>& a, const T& scalar)
+Sparse_matrix<T> operator*(const Sparse_matrix<T>& a, const T& scalar)
 {
-    Sp_matrix<T> result(a);
+    Sparse_matrix<T> result(a);
     return result *= scalar;
 }
 
 template <class T>
-Sp_matrix<T> operator*(const T& scalar, const Sp_matrix<T>& a)
+Sparse_matrix<T> operator*(const T& scalar, const Sparse_matrix<T>& a)
 {
-    Sp_matrix<T> result(a);
+    Sparse_matrix<T> result(a);
     return result *= scalar;
 }
 
@@ -169,11 +170,11 @@ Sp_matrix<T> operator*(const T& scalar, const Sp_matrix<T>& a)
 // Vector addition:
 
 template <class T>
-Array<T, 1> operator+(const Sp_vector<T>& x, const Array<T, 1>& y)
+Array<T, 1> operator+(const Sparse_vector<T>& x, const Array<T, 1>& y)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = typename Sp_vector<T>::size_type;
+    using size_type = typename Sparse_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -185,11 +186,11 @@ Array<T, 1> operator+(const Sp_vector<T>& x, const Array<T, 1>& y)
 }
 
 template <class T>
-Array<T, 1> operator+(const Array<T, 1>& y, const Sp_vector<T>& x)
+Array<T, 1> operator+(const Array<T, 1>& y, const Sparse_vector<T>& x)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = typename Sp_vector<T>::size_type;
+    using size_type = typename Sparse_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -205,11 +206,11 @@ Array<T, 1> operator+(const Array<T, 1>& y, const Sp_vector<T>& x)
 // Vector subtraction:
 
 template <class T>
-Array<T, 1> operator-(const Sp_vector<T>& x, const Array<T, 1>& y)
+Array<T, 1> operator-(const Sparse_vector<T>& x, const Array<T, 1>& y)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = typename Sp_vector<T>::size_type;
+    using size_type = typename Sparse_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -221,11 +222,11 @@ Array<T, 1> operator-(const Sp_vector<T>& x, const Array<T, 1>& y)
 }
 
 template <class T>
-Array<T, 1> operator-(const Array<T, 1>& y, const Sp_vector<T>& x)
+Array<T, 1> operator-(const Array<T, 1>& y, const Sparse_vector<T>& x)
 {
     Expects(x.size() <= y.size());
 
-    using size_type = typename Sp_vector<T>::size_type;
+    using size_type = typename Sparse_vector<T>::size_type;
 
     Array<T, 1> result(y);
     size_type i = 0;
@@ -240,7 +241,7 @@ Array<T, 1> operator-(const Array<T, 1>& y, const Sp_vector<T>& x)
 
 // Matrix-vector product of a sparse matrix.
 template <class T>
-inline Array<T, 1> operator*(const Sp_matrix<T>& a, const Array<T, 1>& x)
+inline Array<T, 1> operator*(const Sparse_matrix<T>& a, const Array<T, 1>& x)
 {
     Expects(x.size() == a.cols());
     Array<T, 1> result(a.cols());
@@ -250,7 +251,9 @@ inline Array<T, 1> operator*(const Sp_matrix<T>& a, const Array<T, 1>& x)
 
 // Matrix-vector product of a sparse matrix.
 template <class T>
-void mv_mul(const Sp_matrix<T>& a, const Array<T, 1>& x, Array<T, 1>& result)
+void mv_mul(const Sparse_matrix<T>& a,
+            const Array<T, 1>& x,
+            Array<T, 1>& result)
 {
     Expects(x.size() == a.cols());
 

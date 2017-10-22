@@ -393,8 +393,8 @@ void eig(dmatrix& a, zmatrix& v, zvector& w);
 
 // Compute eigenvalues and eigenvectors in the interval [emin, emax] for
 // a real sparse matrix.
-void sp_eig(
-    double emin, double emax, const sp_dmatrix& a, dmatrix& v, dvector& w);
+void eig(
+    double emin, double emax, const sparse_dmatrix& a, dmatrix& v, dvector& w);
 
 // Compute eigenvalues and eigenvectors of a real symmetric matrix.
 void jacobi(dmatrix& a, dvector& wr);
@@ -405,7 +405,7 @@ void jacobi(dmatrix& a, dvector& wr);
 void linsolve(dmatrix& a, dmatrix& b);
 
 // Solve linear system of equations for a real, nonsymmetric sparse matrix.
-void linsolve(const sp_dmatrix& a, dvector& b, dvector& x);
+void linsolve(const sparse_dmatrix& a, dvector& b, dvector& x);
 
 //------------------------------------------------------------------------------
 

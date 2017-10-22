@@ -17,8 +17,8 @@
 #ifndef SRS_SPARSE_IO_H
 #define SRS_SPARSE_IO_H
 
-#include <srs/sparse_impl/sp_matrix.h>
-#include <srs/sparse_impl/sp_vector.h>
+#include <srs/sparse_impl/sparse_matrix.h>
+#include <srs/sparse_impl/sparse_vector.h>
 #include <iostream>
 
 
@@ -26,9 +26,9 @@ namespace srs {
 
 // Output stream operator for sparse vectors.
 template <class T>
-std::ostream& operator<<(std::ostream& to, const Sp_vector<T>& vec)
+std::ostream& operator<<(std::ostream& to, const Sparse_vector<T>& vec)
 {
-    typedef typename Sp_vector<T>::size_type size_type;
+    typedef typename Sparse_vector<T>::size_type size_type;
     size_type i = 0;
     to << "[number of non-zero elements: " << vec.num_nonzero() << "]\n\n";
     for (const auto& v : vec) {
@@ -41,9 +41,9 @@ std::ostream& operator<<(std::ostream& to, const Sp_vector<T>& vec)
 
 // Output stream operator for sparse matrices.
 template <class T>
-std::ostream& operator<<(std::ostream& to, const Sp_matrix<T>& mat)
+std::ostream& operator<<(std::ostream& to, const Sparse_matrix<T>& mat)
 {
-    typedef typename Sp_matrix<T>::size_type size_type;
+    typedef typename Sparse_matrix<T>::size_type size_type;
     to << "[matrix size: " << mat.rows() << " x " << mat.cols()
        << "; number of non-zero elements: " << mat.num_nonzero() << "]\n\n";
     for (size_type i = 0; i < mat.rows(); ++i) {

@@ -20,18 +20,18 @@
 //
 // Provides sparse vector and matrix class.
 //
-#include <srs/sparse_impl/sp_matrix.h>
-#include <srs/sparse_impl/sp_vector.h>
 #include <srs/sparse_impl/sparse_io.h>
+#include <srs/sparse_impl/sparse_matrix.h>
 #include <srs/sparse_impl/sparse_opr.h>
+#include <srs/sparse_impl/sparse_vector.h>
 
 namespace srs {
 
-typedef Sp_vector<int> sp_ivector;
-typedef Sp_vector<double> sp_dvector;
+typedef Sparse_vector<int> sparse_ivector;
+typedef Sparse_vector<double> sparse_dvector;
 
-typedef Sp_matrix<int> sp_imatrix;
-typedef Sp_matrix<double> sp_dmatrix;
+typedef Sparse_matrix<int> sparse_imatrix;
+typedef Sparse_matrix<double> sparse_dmatrix;
 
 }  // namespace srs
 
