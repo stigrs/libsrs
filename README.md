@@ -2,8 +2,15 @@
 
 LIBSRS extents the C++ STL with N-dimensional dense arrays, packed matrix 
 storage, sparse vectors and matrices, mathematical functions and other 
-utility methods. The array, vector, and matrix classes are intended to
-facilitate easy integration with Intel MKL for fast numerical performance.
+utility methods. 
+
+The design criteria for the array, vector, and matrix classes have been 
+numerical correctness, ease of implementation, flexibility, ease of use, 
+and easy integration with the Intel MKL. No efforts have been attempted to 
+avoid the creation of temporaries during arithmetic operations since this
+significantly adds to the code complexity. If fast numerical performance is 
+needed, the performance-critical parts of the code, identified through 
+profiling, code should be replaced with Intel MKL functions. 
 
 ## Code of Conduct
 
