@@ -51,10 +51,10 @@ public:
 
     Sparse_vector() : elems(), indx(), zero(0) {}
 
-    explicit Sparse_vector(size_type n) : elems(n), indx(n), zero(0) {}
+    explicit Sparse_vector(size_type n) : elems(n), indx(n), zero{T(0)} {}
 
     Sparse_vector(const std::vector<T>& val, const std::vector<size_type>& loc)
-        : elems(val), indx(loc), zero(0)
+        : elems(val), indx(loc), zero{T(0)}
     {
         Ensures(val.size() == indx.size());
     }
@@ -143,7 +143,7 @@ private:
 template <class T>
 template <Int_t n>
 Sparse_vector<T>::Sparse_vector(const T (&val)[n], const Int_t (&loc)[n])
-    : elems(n), indx(n), zero(0)
+    : elems(n), indx(n), zero{T(0)}
 {
     for (size_type i = 0; i < n; ++i) {
         elems[i] = val[i];
@@ -154,7 +154,7 @@ Sparse_vector<T>::Sparse_vector(const T (&val)[n], const Int_t (&loc)[n])
 template <class T>
 Sparse_vector<T>::Sparse_vector(
     std::initializer_list<std::pair<size_type, T>> list)
-    : elems(list.size()), indx(list.size()), zero(0)
+    : elems(list.size()), indx(list.size()), zero{T(0)}
 {
     size_type i = 0;
     for (const auto& il : list) {
