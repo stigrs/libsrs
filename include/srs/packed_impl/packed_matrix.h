@@ -17,6 +17,7 @@
 #ifndef SRS_PACKED_MATRIX_H
 #define SRS_PACKED_MATRIX_H
 
+#include <srs/array.h>
 #include <srs/array_impl/functors.h>
 #include <srs/types.h>
 #include <gsl/gsl>
@@ -44,10 +45,10 @@ public:
     {
     }
 
-    Packed_matrix(size_type n, T* ptr);
-
     template <Int_t np>
     Packed_matrix(size_type n, const T (&a)[np]);
+
+    Packed_matrix(const Array<T, 2>& a);
 
     // Iterators:
 
@@ -118,22 +119,25 @@ private:
 };
 
 template <class T>
-Packed_matrix<T>::Packed_matrix(size_type n, T* ptr)
-    : elems(n * (n + 1) / 2), extent{n}
-{
-    for (size_type i = 0; i < size(); ++i) {
-        elems[i] = ptr[i];
-    }
-}
-
-template <class T>
 template <Int_t np>
 Packed_matrix<T>::Packed_matrix(size_type n, const T (&a)[np])
     : elems(np), extent{n}
 {
-    Expects(np == n * (n + 1) / 2);
+    Expects(np >= n * (n + 1) / 2);
     for (size_type i = 0; i < size(); ++i) {
         elems[i] = a[i];
+    }
+}
+
+template <class T>
+Packed_matrix<T>::Packed_matrix(const Array<T, 2>& a)
+    : elems(a.rows() * (a.rows() + 1) / 2), extent{a.rows()}
+{
+    Expects(a.rows() == a.cols());
+    for (size_type j = 0; j < a.cols(); ++j) {
+        for (size_type i = 0; i < a.rows(); ++i) {
+            (*this)(i, j) = a(i, j);
+        }
     }
 }
 
