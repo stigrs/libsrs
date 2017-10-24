@@ -19,9 +19,11 @@
 
 #include <srs/array.h>
 #include <srs/types.h>
+#include <algorithm>
 #include <array>
 #include <gsl/gsl>
 #include <vector>
+
 
 
 namespace srs {
