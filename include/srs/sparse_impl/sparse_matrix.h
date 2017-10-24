@@ -52,7 +52,7 @@ public:
 
     // Constructors:
 
-    Sparse_matrix() : elems(), col_indx(), row_ptr(), zero(0) {}
+    Sparse_matrix() : elems(), col_indx(), row_ptr(), zero{T(0)} {}
 
     Sparse_matrix(size_type nrows, size_type ncols, size_type nnz);
 
@@ -149,7 +149,7 @@ Sparse_matrix<T>::Sparse_matrix(size_type nrows, size_type ncols, size_type nnz)
       col_indx(nnz),
       row_ptr(nrows + 1),
       extents{nrows, ncols},
-      zero(0)
+      zero{T(0)}
 {
 }
 
@@ -163,7 +163,7 @@ Sparse_matrix<T>::Sparse_matrix(size_type nrows,
       col_indx(colind),
       row_ptr(rowptr),
       extents{nrows, ncols},
-      zero(0)
+      zero{T(0)}
 {
     Ensures(elems.size() == col_indx.size());
     Ensures(row_ptr.size() == gsl::narrow_cast<std::size_t>(nrows + 1));
@@ -176,7 +176,7 @@ Sparse_matrix<T>::Sparse_matrix(size_type nrows,
                                 const T (&val)[n],
                                 const Int_t (&colind)[n],
                                 const Int_t (&rowptr)[nnz])
-    : elems(n), col_indx(n), row_ptr(nnz), extents{nrows, ncols}, zero(0)
+    : elems(n), col_indx(n), row_ptr(nnz), extents{nrows, ncols}, zero{T(0)}
 {
     for (size_type i = 0; i < n; ++i) {
         elems[i]    = val[i];
