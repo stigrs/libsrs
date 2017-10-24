@@ -20,7 +20,7 @@
 #include <vector>
 
 
-TEST_CASE("sp_matrix")
+TEST_CASE("sparse_matrix")
 {
     srs::imatrix mat = {{1, 2, 0, 4, 0},
                         {6, 7, 0, 0, 0},
@@ -28,7 +28,7 @@ TEST_CASE("sp_matrix")
                         {16, 0, 18, 19, 0},
                         {0, 22, 0, 0, 25}};
 
-    srs::Sparse_matrix<int> spmat = srs::sp_gather(mat);
+    srs::Sparse_matrix<int> spmat = srs::sparse_gather(mat);
 
     SECTION("element_access")
     {
@@ -74,7 +74,7 @@ TEST_CASE("sp_matrix")
         CHECK(m(999, 499) == 0);
     }
 
-    SECTION("scatter") { CHECK(srs::sp_scatter(spmat) == mat); }
+    SECTION("scatter") { CHECK(srs::sparse_scatter(spmat) == mat); }
 
     SECTION("mv_mul")
     {

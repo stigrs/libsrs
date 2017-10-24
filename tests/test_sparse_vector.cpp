@@ -20,7 +20,7 @@
 #include <catch/catch.hpp>
 
 
-TEST_CASE("sp_vector")
+TEST_CASE("sparse_vector")
 {
     srs::Sparse_vector<int> spvec = {{1, 10}, {4, 20}, {9, 30}};
 
@@ -71,9 +71,9 @@ TEST_CASE("sp_vector")
         CHECK(y(9) == 61);
     }
 
-    SECTION("scatter")
+    SECTION("sparse_scatter")
     {
-        srs::ivector y = srs::sp_scatter(spvec);
+        srs::ivector y = srs::sparse_scatter(spvec);
         CHECK(y(0) == 0);
         CHECK(y(1) == 10);
         CHECK(y(2) == 0);

@@ -282,23 +282,7 @@ TEST_CASE("test_math")
         arma::vec eigval;
         arma::eig_sym(eigval, eigvec, aa);
 
-        double val[15] = {1.,
-                          1. / 2.,
-                          1. / 3.,
-                          1. / 3.,
-                          1. / 4.,
-                          1. / 5.,
-                          1. / 4.,
-                          1. / 5.,
-                          1. / 6.,
-                          1. / 7.,
-                          1. / 5.,
-                          1. / 6.,
-                          1. / 7.,
-                          1. / 8.,
-                          1. / 9.};
-
-        srs::packed_dmatrix ap(5, val);
+        srs::packed_dmatrix ap(srs::hilbert(5));
         srs::dvector w(5);
         srs::dmatrix v(5, 5);
         srs::eigs(ap, v, w);
@@ -433,7 +417,7 @@ TEST_CASE("test_math")
         CHECK(srs::trace(asub) == 4);
     }
 
-    SECTION("sp_linsolve")
+    SECTION("sparse_linsolve")
     {
         using size_type = srs::dvector::size_type;
 
@@ -446,7 +430,7 @@ TEST_CASE("test_math")
         // Armadillo:
         srs::dvector xans = {-2.0015, 0.1994, 1.7314, -1.0670, 0.1190};
 
-        srs::sparse_dmatrix a = srs::sp_gather(m);
+        srs::sparse_dmatrix a = srs::sparse_gather(m);
         srs::dvector b        = {1.0, 5.0, 1.0, 4.0, 1.0};
         srs::dvector x(b.size());
         srs::linsolve(a, b, x);

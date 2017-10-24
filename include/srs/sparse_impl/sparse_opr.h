@@ -28,9 +28,9 @@ namespace srs {
 
 // Convert formats:
 
-// Gather a full-storage vector into compressed form.
+// Gather a sparse full-storage vector into compressed form.
 template <class T>
-Sparse_vector<T> sp_gather(const Array<T, 1>& y)
+Sparse_vector<T> sparse_gather(const Array<T, 1>& y)
 {
     using size_type = typename Sparse_vector<T>::size_type;
 
@@ -45,9 +45,9 @@ Sparse_vector<T> sp_gather(const Array<T, 1>& y)
     return {val, loc};
 }
 
-// Gather a full-storage matrix into CSR3 format.
+// Gather a sparse full-storage matrix into sparse CSR3 format.
 template <class T>
-Sparse_matrix<T> sp_gather(const Array<T, 2>& a)
+Sparse_matrix<T> sparse_gather(const Array<T, 2>& a)
 {
     using size_type = typename Sparse_matrix<T>::size_type;
 
@@ -73,7 +73,7 @@ Sparse_matrix<T> sp_gather(const Array<T, 2>& a)
 
 // Scatter a sparse vector into full-storage form.
 template <class T>
-Array<T, 1> sp_scatter(const Sparse_vector<T>& x)
+Array<T, 1> sparse_scatter(const Sparse_vector<T>& x)
 {
     using size_type = typename Sparse_vector<T>::size_type;
 
@@ -86,7 +86,7 @@ Array<T, 1> sp_scatter(const Sparse_vector<T>& x)
 
 // Scatter a sparse matrix into full-storage form.
 template <class T>
-Array<T, 2> sp_scatter(const Sparse_matrix<T>& a)
+Array<T, 2> sparse_scatter(const Sparse_matrix<T>& a)
 {
     using size_type = typename Sparse_matrix<T>::size_type;
 
