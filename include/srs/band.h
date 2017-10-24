@@ -20,6 +20,9 @@
 //
 // Provides band matrix storage format.
 //
+// Note:
+// - Elements are stored in column-major format.
+//
 #include <srs/band_impl/band_io.h>
 #include <srs/band_impl/band_matrix.h>
 

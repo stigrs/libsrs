@@ -25,9 +25,14 @@
 #include <vector>
 
 
-
 namespace srs {
 
+//
+// Range-checked band matrix storage (zero-based indexing).
+//
+// Note:
+// - Elements are stored in column-major format.
+//
 template <class T>
 class Band_matrix {
 public:
@@ -99,10 +104,36 @@ public:
     size_type lower() const { return bwidth[0]; }
     size_type upper() const { return bwidth[1]; }
 
+    // Modifiers:
+
+    void clear();
+    void swap(const Band_matrix& ab);
+    void resize(size_type m, size_type n, size_type kl, size_type ku);
+
     // Access underlying array:
 
     T* data() { return elems.data(); }
     const T* data() const { return elems.data(); }
+
+    // Element-wise operations:
+
+    template <class F>
+    Band_matrix& apply(F f);
+
+    template <class F>
+    Band_matrix& apply(F f, const T& value);
+
+    Band_matrix& operator=(const T& value);
+
+    Band_matrix& operator*=(const T& value);
+    Band_matrix& operator/=(const T& value);
+    Band_matrix& operator+=(const T& value);
+    Band_matrix& operator-=(const T& value);
+
+    Band_matrix& operator-();
+
+    Band_matrix& operator+=(const Band_matrix& ab);
+    Band_matrix& operator-=(const Band_matrix& ab);
 
 private:
     std::vector<T> elems;
@@ -206,6 +237,117 @@ inline const T& Band_matrix<T>::operator()(size_type i, size_type j) const
 #else
     return at(i, j);
 #endif
+}
+
+template <class T>
+void Band_matrix<T>::clear()
+{
+    elems.clear();
+    extents = {0, 0};
+    bwidth  = {0, 0};
+    stride  = 0;
+}
+
+template <class T>
+void Band_matrix<T>::swap(const Band_matrix<T>& ab)
+{
+    elems.swap(ab.elems);
+    std::swap(extents, ab.extents);
+    std::swap(bwidth, ab.bwidth);
+    std::swap(stride, ab.stride);
+}
+
+template <class T>
+void Band_matrix<T>::resize(size_type m,
+                            size_type n,
+                            size_type kl,
+                            size_type ku)
+{
+    elems.resize((kl + ku + 1) * n);
+    extents = {m, n};
+    stride  = {kl + ku + 1};
+}
+
+template <class T>
+template <class F>
+Band_matrix<T>& Band_matrix<T>::apply(F f)
+{
+    for (auto& v : elems) {
+        f(v);
+    }
+    return *this;
+}
+
+template <class T>
+template <class F>
+Band_matrix<T>& Band_matrix<T>::apply(F f, const T& value)
+{
+    for (auto& v : elems) {
+        f(v, value);
+    }
+    return *this;
+}
+
+template <class T>
+inline Band_matrix<T>& Band_matrix<T>::operator=(const T& value)
+{
+    apply(Assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Band_matrix<T>& Band_matrix<T>::operator*=(const T& value)
+{
+    apply(Mul_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Band_matrix<T>& Band_matrix<T>::operator/=(const T& value)
+{
+    apply(Div_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Band_matrix<T>& Band_matrix<T>::operator+=(const T& value)
+{
+    apply(Add_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Band_matrix<T>& Band_matrix<T>::operator-=(const T& value)
+{
+    apply(Minus_assign<T>(), value);
+    return *this;
+}
+
+template <class T>
+inline Band_matrix<T>& Band_matrix<T>::operator-()
+{
+    apply(Unary_minus<T>());
+    return *this;
+}
+
+template <class T>
+Band_matrix<T>& Band_matrix<T>::operator+=(const Band_matrix<T>& ab)
+{
+    Expects(extents == ab.extents);
+    for (size_type i = 0; i < size(); ++i) {
+        elems[i] += ab.data()[i];
+    }
+    return *this;
+}
+
+template <class T>
+Band_matrix<T>& Band_matrix<T>::operator-=(const Band_matrix<T>& ab)
+{
+    Expects(extents == ab.extents);
+    for (size_type i = 0; i < size(); ++i) {
+        elems[i] -= ab.data()[i];
+    }
+    return *this;
 }
 
 template <class T>
