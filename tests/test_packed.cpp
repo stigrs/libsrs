@@ -16,7 +16,6 @@
 
 #include <srs/packed.h>
 #include <catch/catch.hpp>
-#include <iostream>
 
 
 TEST_CASE("test_packed")
