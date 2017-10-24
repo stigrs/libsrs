@@ -26,6 +26,12 @@
 
 namespace srs {
 
+//
+// Range-checked packed matrix storage (zero-based indexing).
+//
+// Note:
+// - Elements are stored in column-major format.
+//
 template <class T>
 class Packed_matrix {
 public:

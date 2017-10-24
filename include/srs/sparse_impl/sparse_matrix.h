@@ -34,7 +34,7 @@ namespace srs {
 //
 // Note:
 // - Elements are stored in the three array variation of the compressed
-//   sparse row (CSR) format.
+//   sparse row (CSR3) format.
 // - It is assumed that the sparse vector is initialized with element indices
 //   sorted in ascending order.
 // - New elements are inserted so that the index order is preserved.
