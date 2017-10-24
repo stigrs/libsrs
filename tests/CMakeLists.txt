@@ -80,6 +80,7 @@ set(PROGRAMS
     test_array2
     test_array3
     test_array4
+    test_band
     test_datum
     test_format
     test_input
