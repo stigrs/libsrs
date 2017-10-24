@@ -132,9 +132,6 @@ public:
 
     Band_matrix& operator-();
 
-    Band_matrix& operator+=(const Band_matrix& ab);
-    Band_matrix& operator-=(const Band_matrix& ab);
-
 private:
     std::vector<T> elems;
     std::array<size_type, 2> extents;
@@ -327,26 +324,6 @@ template <class T>
 inline Band_matrix<T>& Band_matrix<T>::operator-()
 {
     apply(Unary_minus<T>());
-    return *this;
-}
-
-template <class T>
-Band_matrix<T>& Band_matrix<T>::operator+=(const Band_matrix<T>& ab)
-{
-    Expects(extents == ab.extents);
-    for (size_type i = 0; i < size(); ++i) {
-        elems[i] += ab.data()[i];
-    }
-    return *this;
-}
-
-template <class T>
-Band_matrix<T>& Band_matrix<T>::operator-=(const Band_matrix<T>& ab)
-{
-    Expects(extents == ab.extents);
-    for (size_type i = 0; i < size(); ++i) {
-        elems[i] -= ab.data()[i];
-    }
     return *this;
 }
 
