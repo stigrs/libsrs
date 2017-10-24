@@ -15,7 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef SRS_BAND_H
-#define SRS_BANDED_H
+#define SRS_BAND_H
 
 //
 // Provides band matrix storage format.
