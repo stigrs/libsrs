@@ -94,6 +94,7 @@ public:
     // Capacity:
 
     bool empty() const { return elems.empty(); }
+    size_type leading_dim() const { return bwidth[0] + bwidth[1] + 1; }
     size_type rows() const { return extents[0]; }
     size_type cols() const { return extents[1]; }
     size_type dim1() const { return extents[0]; }

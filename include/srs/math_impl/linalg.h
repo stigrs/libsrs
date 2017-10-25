@@ -19,6 +19,7 @@
 
 #include <mkl.h>
 #include <srs/array.h>
+#include <srs/band.h>
 #include <srs/packed.h>
 #include <srs/sparse.h>
 #include <srs/types.h>
@@ -384,12 +385,20 @@ void lu(dmatrix& a, ivector& ipiv);
 // Compute eigenvalues and eigenvectors of a real symmetric matrix.
 void eigs(dmatrix& a, dvector& wr);
 
+// Compute eigenvalues and eigenvectors of a real symmetric band matrix.
+void eigs(band_dmatrix& ab, dmatrix& v, dvector& w);
+
 // Compute eigenvalues and eigenvectors of a real symmetric matrix held in
 // packed storage format.
 void eigs(packed_dmatrix& ap, dmatrix& v, dvector& w);
 
 // Compute eigenvalues and eigenvectors of a real non-symmetric matrix.
 void eig(dmatrix& a, zmatrix& v, zvector& w);
+
+// Compute eigenvalues and eigenvectors in the interval [emin, emax] for
+// a real band matrix.
+void eig(
+    double emin, double emax, const band_dmatrix& ab, dmatrix& v, dvector& w);
 
 // Compute eigenvalues and eigenvectors in the interval [emin, emax] for
 // a real sparse matrix.

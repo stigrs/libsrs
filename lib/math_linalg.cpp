@@ -200,10 +200,36 @@ void srs::eigs(srs::dmatrix& a, srs::dvector& wr)
     a = z;
 }
 
+void srs::eigs(srs::band_dmatrix& ab, srs::dmatrix& v, srs::dvector& w)
+{
+    Expects(ab.rows() == ab.cols());
+    Expects(ab.upper() == ab.lower());
+
+    v.resize(ab.rows(), ab.cols());
+    w.resize(ab.cols());
+
+    MKL_INT n    = ab.cols();
+    MKL_INT kd   = ab.upper();
+    MKL_INT ldab = ab.leading_dim();
+    MKL_INT ldz  = ab.cols();
+    MKL_INT info = 0;
+
+    // clang-format off
+    info = LAPACKE_dsbev(
+        LAPACK_COL_MAJOR, 'V', 'U', n, kd, ab.data(), ldab, 
+        w.data(), v.data(), ldz);
+    // clang-format on
+    if (info != 0) {
+        throw Math_error("dsbev failed");
+    }
+}
+
 void srs::eigs(srs::packed_dmatrix& ap, srs::dmatrix& v, srs::dvector& w)
 {
+    Expects(ap.rows() == ap.cols());
+
     v.resize(ap.rows(), ap.cols());
-    w.resize(ap.rows());
+    w.resize(ap.cols());
 
     MKL_INT n    = ap.cols();
     MKL_INT ldz  = ap.rows();
@@ -260,6 +286,51 @@ void srs::eig(srs::dmatrix& a, srs::zmatrix& v, srs::zvector& w)
 
 void srs::eig(double emin,
               double emax,
+              const srs::band_dmatrix& ab,
+              dmatrix& v,
+              dvector& w)
+{
+    // Initialize FEAST:
+
+    MKL_INT fpm[128];
+    feastinit(fpm);
+#ifndef NDEBUG
+    fpm[0] = 1;  // print runtime status
+#endif
+
+    // Solve eigenvalue problem:
+
+    MKL_INT n    = ab.cols();   // size of the problem
+    MKL_INT kla  = ab.upper();  // number of sub- or super-diagonals within band
+    MKL_INT lda  = ab.leading_dim();  // leading dimension of A
+    MKL_INT m0   = n;                 // initial guess for subspace dimension
+    MKL_INT loop = 0;                 // number of refinement loops
+    MKL_INT m    = m0;                // total number of eigenvalues found
+    MKL_INT info = 0;                 // error code
+
+    double epsout = 0.0;   // relative error on the trace (not returned)
+    srs::dvector res(m0);  // residual vector (not returned)
+
+    v.resize(n, m0);
+    w.resize(m0);
+
+    // clang-format off
+    dfeast_sbev(
+        "F", &n, &kla, ab.data(), &lda, fpm, &epsout, &loop, &emin, &emax,
+        &m0, w.data(), v.data(), &m, res.data(), &info);
+    // clang-format on
+    if (info != 0) {
+        throw Math_error("dfeast_sbev failed");
+    }
+
+    // Return the m first eigenvalues and eigenvectors:
+
+    w = w.head(m - 1);
+    v = v.slice(0, n - 1, 0, m - 1);
+}
+
+void srs::eig(double emin,
+              double emax,
               const srs::sparse_dmatrix& a,
               srs::dmatrix& v,
               srs::dvector& w)
@@ -294,9 +365,8 @@ void srs::eig(double emin,
         "F", &n, a.data(), ia.data(), ja.data(), fpm, &epsout, &loop, &emin, 
         &emax, &m0, w.data(), v.data(), &m, res.data(), &info);
     // clang-format on
-
     if (info != 0) {
-        throw Math_error("Sparse eigensolver failed");
+        throw Math_error("dfeast_scsrev failed");
     }
 
     // Return the m first eigenvalues and eigenvectors:
