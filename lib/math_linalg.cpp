@@ -71,8 +71,10 @@ srs::imatrix srs::randi(int m, int n, int a, int b)
     std::mt19937_64 mt(rd());
     std::uniform_int_distribution<> rdist(a, b);
 
-    for (int i = 0; i < result.size(); ++i) {
-        result.data()[i] = rdist(mt);
+    for (int j = 0; j < n; ++j) {
+        for (int i = 0; i < m; ++i) {
+            result(i, j) = rdist(mt);
+        }
     }
     return result;
 }
@@ -85,8 +87,10 @@ srs::dmatrix srs::randu(int m, int n)
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<> rdist;
 
-    for (int i = 0; i < result.size(); ++i) {
-        result.data()[i] = rdist(mt);
+    for (int j = 0; j < n; ++j) {
+        for (int i = 0; i < m; ++i) {
+            result(i, j) = rdist(mt);
+        }
     }
     return result;
 }
@@ -484,17 +488,17 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     wr(q) += z;
 
                     for (int r = 0; r < p; ++r) {
-                        t       = a(r, p);
+                        t = a(r, p);
                         a(r, p) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = p + 1; r < q; ++r) {
-                        t       = a(p, r);
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = q + 1; r < n; ++r) {
-                        t       = a(p, r);
+                        t = a(p, r);
                         a(p, r) = c * t - s * a(q, r);
                         a(q, r) = s * t + c * a(q, r);
                     }
@@ -502,7 +506,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     // Update eigenvectors:
 
                     for (int r = 0; r < n; ++r) {
-                        t        = vr(r, p);
+                        t = vr(r, p);
                         vr(r, p) = c * t - s * vr(r, q);
                         vr(r, q) = s * t + c * vr(r, q);
                     }
@@ -533,7 +537,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         wr(k) = wr(i);
         wr(i) = p;
         for (int j = 0; j < n; ++j) {
-            p        = vr(j, i);
+            p = vr(j, i);
             vr(j, i) = vr(j, k);
             vr(j, k) = p;
         }

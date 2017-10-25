@@ -27,9 +27,7 @@ double srs::hypot(const double a, const double b)
     if (aa > ab) {
         return aa * std::sqrt(1.0 + std::pow(ab / aa, 2.0));
     }
-    else {
-        return ab == 0.0 ? 0.0 : ab * std::sqrt(1.0 + std::pow(aa / ab, 2.0));
-    }
+    return ab == 0.0 ? 0.0 : ab * std::sqrt(1.0 + std::pow(aa / ab, 2.0));
 }
 
 double srs::dihedral(const srs::dvector& a,
