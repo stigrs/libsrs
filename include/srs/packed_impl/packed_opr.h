@@ -18,7 +18,6 @@
 #define SRS_PACKED_OPR_H
 
 #include <algorithm>
-#include <gsl/gsl>
 
 
 namespace srs {
