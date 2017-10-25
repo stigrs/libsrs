@@ -25,6 +25,7 @@
 //
 #include <srs/band_impl/band_io.h>
 #include <srs/band_impl/band_matrix.h>
+#include <srs/band_impl/band_opr.h>
 
 
 namespace srs {
