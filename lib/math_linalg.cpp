@@ -297,7 +297,7 @@ void srs::eig(double emin,
     // Initialize FEAST:
 
     MKL_INT fpm[128];
-    feastinit(fpm);
+    feastinit((MKL_INT*)fpm);
 #ifndef NDEBUG
     fpm[0] = 1;  // print runtime status
 #endif
@@ -320,8 +320,8 @@ void srs::eig(double emin,
 
     // clang-format off
     dfeast_sbev(
-        "F", &n, &kla, ab.data(), &lda, fpm, &epsout, &loop, &emin, &emax,
-        &m0, w.data(), v.data(), &m, res.data(), &info);
+        "F", &n, &kla, ab.data(), &lda, (MKL_INT*)fpm, &epsout, &loop, 
+        &emin, &emax, &m0, w.data(), v.data(), &m, res.data(), &info);
     // clang-format on
     if (info != 0) {
         throw Math_error("dfeast_sbev failed");
@@ -342,7 +342,7 @@ void srs::eig(double emin,
     // Initialize FEAST:
 
     MKL_INT fpm[128];
-    feastinit(fpm);
+    feastinit((MKL_INT*)fpm);
 #ifndef NDEBUG
     fpm[0] = 1;  // print runtime status
 #endif
@@ -366,8 +366,8 @@ void srs::eig(double emin,
 
     // clang-format off
     dfeast_scsrev(
-        "F", &n, a.data(), ia.data(), ja.data(), fpm, &epsout, &loop, &emin, 
-        &emax, &m0, w.data(), v.data(), &m, res.data(), &info);
+        "F", &n, a.data(), ia.data(), ja.data(), (MKL_INT*)fpm, &epsout, &loop, 
+        &emin, &emax, &m0, w.data(), v.data(), &m, res.data(), &info);
     // clang-format on
     if (info != 0) {
         throw Math_error("dfeast_scsrev failed");
@@ -585,8 +585,8 @@ void srs::linsolve(const srs::sparse_dmatrix& a,
     MKL_INT msglvl = 0;   // no print of statistical information
     MKL_INT error  = 0;   // initialize error flag
 
-    pardisoinit(pt, &mtype, iparm);  // set default values
-    iparm[34] = 1;                   // zero-based indexing
+    pardisoinit((void*)pt, &mtype, (MKL_INT*)iparm);  // set default values
+    iparm[34] = 1;                                    // zero-based indexing
 
     // Solve linear system of equations:
 
@@ -595,9 +595,9 @@ void srs::linsolve(const srs::sparse_dmatrix& a,
 
     // clang-format off
     pardiso(
-        pt, &maxfct, &mnum, &mtype, &phase, &n, a.data(), a.row_index().data(),
-        a.columns().data(), perm.data(), &nrhs, iparm, &msglvl, b.data(), 
-        x.data(), &error);
+        (void*)pt, &maxfct, &mnum, &mtype, &phase, &n, a.data(), 
+        a.row_index().data(), a.columns().data(), perm.data(), &nrhs, 
+        (MKL_INT*)iparm, &msglvl, b.data(), x.data(), &error);
     // clang-format on
 
     if (error != 0) {
