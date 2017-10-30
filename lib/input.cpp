@@ -24,7 +24,7 @@ std::istream& operator>>(std::istream& from, Input& inp)
 {
     switch (inp.type) {
     case Input::t_int:
-        inp.read_int(from);
+        inp.read_int(from);                                                    
         break;
     case Input::t_long:
         inp.read_long(from);
@@ -32,7 +32,7 @@ std::istream& operator>>(std::istream& from, Input& inp)
     case Input::t_uint:
         inp.read_uint(from);
         break;
-    case Input::t_ulint:
+    case Input::t_ulint:                                                        
         inp.read_ulint(from);
         break;
     case Input::t_double:
