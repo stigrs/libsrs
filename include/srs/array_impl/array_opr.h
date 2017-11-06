@@ -73,6 +73,20 @@ inline Array<T, N> operator+(const Array<T, N>& a, const Array<T, N>& b)
 }
 
 template <class T, int N>
+inline Array<T, N> operator+(const Array<T, N>& a, const Array_ref<T, N>& b)
+{
+    Array<T, N> result(a);
+    return result += b;
+}
+
+template <class T, int N>
+inline Array<T, N> operator+(const Array_ref<T, N>& a, const Array<T, N>& b)
+{
+    Array<T, N> result(a);
+    return result += b;
+}
+
+template <class T, int N>
 inline Array<T, N> operator+(const Array_ref<T, N>& a, const Array_ref<T, N>& b)
 {
     Array<T, N> result(a);
@@ -93,6 +107,20 @@ inline Array<T, N> operator+(const Array_ref<const T, N>& a,
 
 template <class T, int N>
 inline Array<T, N> operator-(const Array<T, N>& a, const Array<T, N>& b)
+{
+    Array<T, N> result(a);
+    return result -= b;
+}
+
+template <class T, int N>
+inline Array<T, N> operator-(const Array<T, N>& a, const Array_ref<T, N>& b)
+{
+    Array<T, N> result(a);
+    return result -= b;
+}
+
+template <class T, int N>
+inline Array<T, N> operator-(const Array_ref<T, N>& a, const Array<T, N>& b)
 {
     Array<T, N> result(a);
     return result -= b;
