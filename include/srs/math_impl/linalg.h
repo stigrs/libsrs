@@ -336,6 +336,27 @@ inline T dot(const Array<T, 1>& a, const Array<T, 1>& b)
     return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
 }
 
+template <class T>
+inline T dot(const Array<T, 1>& a, const Array_ref<T, 1>& b)
+{
+    Expects(a.size() == b.size());
+    return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
+}
+
+template <class T>
+inline T dot(const Array_ref<T, 1>& a, const Array<T, 1>& b)
+{
+    Expects(a.size() == b.size());
+    return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
+}
+
+template <class T>
+inline T dot(const Array_ref<T, 1>& a, const Array_ref<T, 1>& b)
+{
+    Expects(a.size() == b.size());
+    return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
+}
+
 // Compute cross product.
 template <class T>
 inline Array<T, 1> cross(const Array<T, 1>& a, const Array<T, 1>& b)
@@ -347,6 +368,40 @@ inline Array<T, 1> cross(const Array<T, 1>& a, const Array<T, 1>& b)
     result(2) = a(0) * b(1) - a(1) * b(0);
     return result;
 }
+
+template <class T>
+inline Array<T, 1> cross(const Array<T, 1>& a, const Array_ref<T, 1>& b)
+{
+    Expects(a.size() == b.size() && a.size() == 3);
+    Array<T, 1> result(3);
+    result(0) = a(1) * b(2) - a(2) * b(1);
+    result(1) = a(2) * b(0) - a(0) * b(2);
+    result(2) = a(0) * b(1) - a(1) * b(0);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> cross(const Array_ref<T, 1>& a, const Array<T, 1>& b)
+{
+    Expects(a.size() == b.size() && a.size() == 3);
+    Array<T, 1> result(3);
+    result(0) = a(1) * b(2) - a(2) * b(1);
+    result(1) = a(2) * b(0) - a(0) * b(2);
+    result(2) = a(0) * b(1) - a(1) * b(0);
+    return result;
+}
+
+template <class T>
+inline Array<T, 1> cross(const Array_ref<T, 1>& a, const Array_ref<T, 1>& b)
+{
+    Expects(a.size() == b.size() && a.size() == 3);
+    Array<T, 1> result(3);
+    result(0) = a(1) * b(2) - a(2) * b(1);
+    result(1) = a(2) * b(0) - a(0) * b(2);
+    result(2) = a(0) * b(1) - a(1) * b(0);
+    return result;
+}
+
 
 //------------------------------------------------------------------------------
 
