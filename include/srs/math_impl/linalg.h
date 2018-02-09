@@ -36,6 +36,78 @@ namespace srs {
 
 // Create special vectors and matrices:
 
+// Create vector of zeros.
+template <class U>
+inline U zeros(int n)
+{
+    using value_type = typename U::value_type;
+
+    Expects(U::rank == 1);
+
+    U result(n, value_type(0));
+    return result;
+}
+
+// Create matrix of zeros.
+template <class U>
+inline U zeros(int n1, int n2)
+{
+    using value_type = typename U::value_type;
+
+    Expects(U::rank == 2);
+
+    U result(n1, n2, value_type(0));
+    return result;
+}
+
+// Create cube of zeros.
+template <class U>
+inline U zeros(int n1, int n2, int n3)
+{
+    using value_type = typename U::value_type;
+
+    Expects(U::rank == 3);
+
+    U result(n1, n2, n3, value_type(0));
+    return result;
+}
+
+// Create vector of ones.
+template <class U>
+inline U ones(int n)
+{
+    using value_type = typename U::value_type;
+
+    Expects(U::rank == 1);
+
+    U result(n, value_type(1));
+    return result;
+}
+
+// Create vector of ones.
+template <class U>
+inline U ones(int n1, int n2)
+{
+    using value_type = typename U::value_type;
+
+    Expects(U::rank == 2);
+
+    U result(n1, n2, value_type(1));
+    return result;
+}
+
+// Create cube of ones.
+template <class U>
+inline U ones(int n1, int n2, int n3)
+{
+    using value_type = typename U::value_type;
+
+    Expects(U::rank == 3);
+
+    U result(n1, n2, n3, value_type(1));
+    return result;
+}
+
 // Create identity matrix.
 inline dmatrix identity(int n)
 {

@@ -559,4 +559,22 @@ TEST_CASE("test_math")
             CHECK(srs::approx_equal(x(i), xans(i), 1.0e-4));
         }
     }
+
+    SECTION("zeros")
+    {
+        srs::ivector a = srs::zeros<srs::Array<int, 1>>(3);
+        srs::imatrix b = srs::zeros<srs::Array<int, 2>>(3, 4);
+        CHECK(a.size() == 3);
+        CHECK(b.rows() == 3);
+        CHECK(b.cols() == 4);
+    }
+
+    SECTION("ones")
+    {
+        srs::ivector a = srs::ones<srs::Array<int, 1>>(3);
+        CHECK(a.size() == 3);
+        CHECK(a(0) == 1);
+        CHECK(a(1) == 1);
+        CHECK(a(2) == 1);
+    }
 }
