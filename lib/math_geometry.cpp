@@ -87,9 +87,6 @@ void srs::rotate(srs::dmatrix& xyz, const srs::dmatrix& rotm)
 
     using size_type = srs::dmatrix::size_type;
 
-    srs::dvector xold;
-    srs::dvector xnew;
-
     for (size_type i = 0; i < xyz.rows(); ++i) {
         auto xyz_new = rotm * xyz.row(i);
         xyz(i, 0) = xyz_new(0);
