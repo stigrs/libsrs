@@ -25,8 +25,6 @@
 #include <srs/math_impl/core.h>
 #include <srs/math_impl/geometry.h>
 #include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
 #include <srs/math_impl/statistics.h>
 
 #endif  // SRS_MATH_H

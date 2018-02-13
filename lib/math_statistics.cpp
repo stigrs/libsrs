@@ -20,12 +20,10 @@
 #include <gsl/gsl>
 
 
-double srs::harmmean(const srs::dvector& x)
+double srs::harmmean(const arma::vec& x)
 {
-    using size_type = srs::dvector::size_type;
-
     double sumi = 0.0;
-    for (size_type i = 0; i < x.size(); ++i) {
+    for (arma::uword i = 0; i < x.size(); ++i) {
         Expects(x(i) != 0.0);
         sumi += 1.0 / x(i);
     }
@@ -33,11 +31,11 @@ double srs::harmmean(const srs::dvector& x)
     return x.size() / sumi;
 }
 
-double srs::median(srs::dvector& x)
+double srs::median(arma::vec& x)
 {
-    auto first = x.begin();
-    auto last  = x.end();
-    auto mid   = first + (last - first) / 2;
+    arma::vec::iterator first = x.begin();
+    arma::vec::iterator last  = x.end();
+    arma::vec::iterator mid   = first + (last - first) / 2;
 
     std::nth_element(first, mid, last);
     double med = *mid;
@@ -50,58 +48,50 @@ double srs::median(srs::dvector& x)
     return med;
 }
 
-double srs::var(const srs::dvector& x)
+double srs::var(const arma::vec& x)
 {
-    using size_type = srs::dvector::size_type;
-
     // Two-pass algorithm:
     double n     = static_cast<double>(x.size());
     double xmean = srs::mean(x);
     double sum2  = 0.0;
 
-    for (size_type i = 0; i < x.size(); ++i) {
+    for (arma::uword i = 0; i < x.size(); ++i) {
         sum2 += std::pow(x(i) - xmean, 2.0);
     }
     return sum2 / (n - 1.0);
 }
 
-double srs::mad(const srs::dvector& x)
+double srs::mad(const arma::vec& x)
 {
-    using size_type = srs::dvector::size_type;
-
     double xmean  = mean(x);
     double sumdev = 0.0;
 
-    for (size_type i = 0; i < x.size(); ++i) {
+    for (arma::uword i = 0; i < x.size(); ++i) {
         sumdev = std::abs(x(i) - xmean);
     }
     return sumdev / static_cast<double>(x.size());
 }
 
-double srs::rms(const srs::dvector& x)
+double srs::rms(const arma::vec& x)
 {
-    using size_type = srs::dvector::size_type;
-
     double sum2 = 0.0;
 
-    for (size_type i = 0; i < x.size(); ++i) {
+    for (arma::uword i = 0; i < x.size(); ++i) {
         sum2 += x(i) * x(i);
     }
     return std::sqrt(sum2 / static_cast<double>(x.size()));
 }
 
-double srs::cov(const srs::dvector& x, const srs::dvector& y)
+double srs::cov(const arma::vec& x, const arma::vec& y)
 {
     Expects(x.size() == y.size() && x.size() > 0);
-
-    using size_type = srs::dvector::size_type;
 
     double n     = x.size();
     double xmean = srs::mean(x);
     double ymean = srs::mean(y);
     double cov   = 0.0;
 
-    for (size_type i = 0; i < x.size(); ++i) {
+    for (arma::uword i = 0; i < x.size(); ++i) {
         double a = x(i) - xmean;
         double b = y(i) - ymean;
         cov += a * b / (n - 1.0);

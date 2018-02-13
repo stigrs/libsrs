@@ -4,10 +4,8 @@ project(libsrs_tests CXX)
 include_directories(${libsrs_SOURCE_DIR}/include)
 include_directories(${GSL_INCLUDE_DIR})
 include_directories(${ARMADILLO_INCLUDE_DIRS})
-include_directories(${MKL_INCLUDE_DIR})
-link_directories(${MKL_LIB_DIR})
-if(APPLE)
-    link_directories(${TBB_LIB_DIR})
+if(WIN32)
+    link_directories(${MKL_LIB_DIR})
 endif()
 
 # Copy *.inp files to build directory.
@@ -40,32 +38,10 @@ function(add_libsrs_test name)
             mkl_core.lib 
             test_catch
         ) 
-    elseif(APPLE)
-        target_link_libraries (
-            ${program} 
-            srs
-            mkl_intel_lp64
-            mkl_tbb_thread
-            mkl_core
-            tbb
-            stdc++
-            pthread
-            m 
-            ldl 
-            ${ARMADILLO_LIBRARIES}
-            test_catch
-        )
     else()
         target_link_libraries (
             ${program} 
             srs
-            mkl_intel_lp64
-            mkl_gnu_thread
-            mkl_core
-            gomp
-            pthread
-            m 
-            dl 
             ${ARMADILLO_LIBRARIES}
             test_catch
         )
@@ -75,19 +51,10 @@ function(add_libsrs_test name)
 endfunction()
 
 set(PROGRAMS 
-    test_array0
-    test_array1
-    test_array2
-    test_array3
-    test_array4
-    test_band
     test_datum
     test_format
     test_input
     test_math
-    test_packed
-    test_sparse_matrix
-    test_sparse_vector
     test_stream
     test_string
 )

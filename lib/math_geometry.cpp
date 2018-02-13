@@ -15,7 +15,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <srs/math_impl/geometry.h>
-#include <srs/math_impl/linalg.h>
 #include <gsl/gsl>
 
 
@@ -30,19 +29,19 @@ double srs::hypot(const double a, const double b)
     return ab == 0.0 ? 0.0 : ab * std::sqrt(1.0 + std::pow(aa / ab, 2.0));
 }
 
-double srs::dihedral(const srs::dvector& a,
-                     const srs::dvector& b,
-                     const srs::dvector& c,
-                     const srs::dvector& d)
+double srs::dihedral(const arma::vec& a,
+                     const arma::vec& b,
+                     const arma::vec& c,
+                     const arma::vec& d)
 {
-    auto ab  = srs::normalize(b - a);
-    auto bc  = srs::normalize(c - b);
-    auto cd  = srs::normalize(d - c);
-    auto n1  = srs::cross(ab, bc);
-    auto n2  = srs::cross(bc, cd);
-    auto m   = srs::cross(n1, bc);
-    double x = srs::dot(n1, n2);
-    double y = srs::dot(m, n2);
+    arma::vec ab = arma::normalise(b - a);
+    arma::vec bc = arma::normalise(c - b);
+    arma::vec cd = arma::normalise(d - c);
+    arma::vec n1 = arma::cross(ab, bc);
+    arma::vec n2 = arma::cross(bc, cd);
+    arma::vec m  = arma::cross(n1, bc);
+    double x     = arma::dot(n1, n2);
+    double y     = arma::dot(m, n2);
 
     double tau = srs::radtodeg(std::atan2(y, x));
     if (std::abs(tau) < 1.0e-8) {  // avoid very small angles close to zero
@@ -51,44 +50,38 @@ double srs::dihedral(const srs::dvector& a,
     return tau;
 }
 
-void srs::pdist_matrix(srs::dmatrix& dm, const srs::dmatrix& mat)
+void srs::pdist_matrix(arma::mat& dm, const arma::mat& mat)
 {
-    using size_type = srs::dmatrix::size_type;
+    dm = arma::zeros<arma::mat>(mat.n_rows, mat.n_rows);
 
-    dm.resize(mat.rows(), mat.rows(), 0.0);
-
-    for (size_type j = 0; j < dm.cols(); ++j) {
-        for (size_type i = j; i < dm.rows(); ++i) {
+    for (arma::uword j = 0; j < dm.n_cols; ++j) {
+        for (arma::uword i = j; i < dm.n_rows; ++i) {
             if (i != j) {
-                auto dij = mat.row(i) - mat.row(j);
-                dm(i, j) = srs::norm(dij);
+                arma::rowvec dij = mat.row(i) - mat.row(j);
+                dm(i, j) = arma::norm(dij);
                 dm(j, i) = dm(i, j);
             }
         }
     }
 }
 
-void srs::translate(srs::dmatrix& xyz, double dx, double dy, double dz)
+void srs::translate(arma::mat& xyz, double dx, double dy, double dz)
 {
-    Expects(xyz.cols() == 3);
+    Expects(xyz.n_cols == 3);
 
-    using size_type = srs::dmatrix::size_type;
-
-    for (size_type i = 0; i < xyz.rows(); ++i) {
+    for (arma::uword i = 0; i < xyz.n_rows; ++i) {
         xyz(i, 0) += dx;
         xyz(i, 1) += dy;
         xyz(i, 2) += dz;
     }
 }
 
-void srs::rotate(srs::dmatrix& xyz, const srs::dmatrix& rotm)
+void srs::rotate(arma::mat& xyz, const arma::mat& rotm)
 {
-    Expects(rotm.rows() == 3 && rotm.cols() == 3);
+    Expects(rotm.n_rows == 3 && rotm.n_cols == 3);
 
-    using size_type = srs::dmatrix::size_type;
-
-    for (size_type i = 0; i < xyz.rows(); ++i) {
-        auto xyz_new = rotm * xyz.row(i);
+    for (arma::uword i = 0; i < xyz.n_rows; ++i) {
+        arma::vec xyz_new = rotm * xyz.row(i);
         xyz(i, 0) = xyz_new(0);
         xyz(i, 1) = xyz_new(1);
         xyz(i, 2) = xyz_new(2);

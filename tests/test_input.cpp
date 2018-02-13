@@ -14,8 +14,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <srs/array.h>
 #include <srs/utils.h>
+#include <armadillo>
 #include <catch/catch.hpp>
 #include <map>
 #include <string>
@@ -27,12 +27,12 @@ TEST_CASE("test_input")
     double d;
     std::string s;
 
-    srs::ivector iv;
-    srs::uvector uv;
-    srs::dvector dv;
-    srs::ivector iv_ans = {1, 2, 3, 4};
-    srs::uvector uv_ans = {5, 6, 7, 8};
-    srs::dvector dv_ans = {0.1, 0.2, 0.3, 0.4, 0.5};
+    arma::ivec iv;
+    arma::uvec uv;
+    arma::vec dv;
+    arma::ivec iv_ans = {1, 2, 3, 4};
+    arma::uvec uv_ans = {5, 6, 7, 8};
+    arma::vec dv_ans  = {0.1, 0.2, 0.3, 0.4, 0.5};
 
     std::map<std::string, srs::Input> data;
     data["integer"] = srs::Input(i);
@@ -56,13 +56,13 @@ TEST_CASE("test_input")
     CHECK(d == 2.0);
     CHECK(s == "hello");
 
-    for (int it = 0; it < iv_ans.size(); ++it) {
+    for (arma::uword it = 0; it < iv_ans.size(); ++it) {
         CHECK(iv(it) == iv_ans(it));
     }
-    for (int it = 0; it < uv_ans.size(); ++it) {
+    for (arma::uword it = 0; it < uv_ans.size(); ++it) {
         CHECK(uv(it) == uv_ans(it));
     }
-    for (int it = 0; it < dv_ans.size(); ++it) {
+    for (arma::uword it = 0; it < dv_ans.size(); ++it) {
         CHECK(dv(it) == dv_ans(it));
     }
 }

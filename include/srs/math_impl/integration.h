@@ -17,7 +17,8 @@
 #ifndef SRS_MATH_INTEGRATION_H
 #define SRS_MATH_INTEGRATION_H
 
-#include <srs/array.h>
+#include <armadillo>
+#include <gsl/gsl>
 
 
 //
@@ -26,13 +27,14 @@
 namespace srs {
 
 // Integrate array of function values using the Trapezoidal rule.
-double trapezoidal(double xlo, double xup, const dvector& y);
+double trapezoidal(double xlo, double xup, const arma::vec& y);
 
 // Integrate array of function values using Simpson's rule.
-double simpsons(double xlo, double xup, const dvector& y);
+double simpsons(double xlo, double xup, const arma::vec& y);
 
 // Compute abscissas and weights of Gauss-Legendre n-point quadrature formula.
-void gaussleg(int n, dvector& x, dvector& w, double a = -1.0, double b = 1.0);
+void gaussleg(
+    int n, arma::vec& x, arma::vec& w, double a = -1.0, double b = 1.0);
 
 }  // namespace srs
 
