@@ -17,6 +17,7 @@
 #ifndef SRS_MATH_CORE_H
 #define SRS_MATH_CORE_H
 
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 #include <string>
