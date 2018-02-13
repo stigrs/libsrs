@@ -4,6 +4,9 @@ project(libsrs_tests CXX)
 include_directories(${libsrs_SOURCE_DIR}/include)
 include_directories(${GSL_INCLUDE_DIR})
 include_directories(${ARMADILLO_INCLUDE_DIRS})
+if(WIN32)
+    link_directories(${MKL_LIB_DIR})
+endif()
 
 # Copy *.inp files to build directory.
 file(GLOB INP_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/*.inp")
