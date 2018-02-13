@@ -17,7 +17,6 @@
 #ifndef SRS_MATH_CORE_H
 #define SRS_MATH_CORE_H
 
-#include <srs/array.h>
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -86,8 +85,8 @@ inline T sqr(const T& x)
 
 inline bool approx_equal(double a,
                          double b,
-                         double tol,
-                         const std::string& method = "absdiff")
+                         const std::string& method,
+                         double tol)
 {
     bool equal = false;
     if (method == "absdiff") {
@@ -95,24 +94,6 @@ inline bool approx_equal(double a,
     }
     else if (method == "reldiff") {
         equal = (std::abs(a - b) / std::max(a, b)) <= tol;
-    }
-    return equal;
-}
-
-template <int N>
-bool approx_equal(const Array<double, N>& a,
-                  const Array<double, N>& b,
-                  double tol,
-                  const std::string& method = "absdiff")
-{
-    using size_type = typename Array<double, N>::size_type;
-
-    bool equal = false;
-    if (a.size() != b.size()) {
-        equal = false;
-    }
-    for (size_type i = 0; i < a.size(); ++i) {
-        equal = approx_equal(a.data()[i], b.data()[i], tol, method);
     }
     return equal;
 }

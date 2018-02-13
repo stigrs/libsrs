@@ -64,15 +64,21 @@ find_package(Boost 1.65.0 REQUIRED)
 # GSL library is required.
 find_path(GSL_INCLUDE_DIR gsl HINTS $ENV{HOME}/include /usr/include /usr/local/include)
 
-# Intel MKL is required.
-find_path(MKL_INCLUDE_DIR mkl.h HINTS $ENV{MKL_INCLUDE_DIR} /opt/intel/mkl/include)
-if (WIN32)
-    find_path(MKL_LIB_DIR mkl_core.lib HINTS $ENV{MKL_LIB_DIR})
+# Armadillo library is required.
+if(WIN32)
+    find_path(ARMADILLO_INCLUDE_DIRS armadillo HINTS $ENV{HOME}/include)
+    add_definitions(-DARMA_USE_BLAS)
+    add_definitions(-DARMA_USE_LAPACK)
+    add_definitions(-DARMA_NO_DEBUG)
 else()
-    find_path(MKL_LIB_DIR libmkl_core.a HINTS $ENV{MKL_LIB_DIR} /opt/intel/mkl/lib /opt/intel/mkl/lib/intel64)
-    if(APPLE)
-        find_path(TBB_LIB_DIR libtbb.dylib HINTS /opt/intel/tbb/lib)
-    endif()
+    find_package(Armadillo 7.950.1 REQUIRED)
+    add_definitions(-DARMA_NO_DEBUG)
+endif()
+
+# Intel MKL is required on Windows.
+if (WIN32)
+    find_path(MKL_INCLUDE_DIR mkl.h HINTS $ENV{MKL_INCLUDE_DIR})
+    find_path(MKL_LIB_DIR mkl_core.lib HINTS $ENV{MKL_LIB_DIR})
 endif()
 
 add_library(srs_h INTERFACE)
@@ -92,17 +98,6 @@ install(
 add_subdirectory(lib)
 
 if(BUILD_TESTS)
-    # Armadillo library is required.
-    if(WIN32)
-        find_path(ARMADILLO_INCLUDE_DIRS armadillo HINTS $ENV{HOME}/include)
-        add_definitions(-DARMA_USE_BLAS)
-        add_definitions(-DARMA_USE_LAPACK)
-        add_definitions(-DARMA_NO_DEBUG)
-    else()
-        find_package(Armadillo 7.950.1 REQUIRED)
-        add_definitions(-DARMA_NO_DEBUG)
-    endif()
     enable_testing()
     add_subdirectory(tests)
-    add_subdirectory(bench)
 endif()
