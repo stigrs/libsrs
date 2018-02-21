@@ -14,19 +14,45 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_ARRAY0_H
+#define SRS_ARRAY0_H
 
+
+namespace srs {
 
 //
-// Provides a mathematical library with interfaces to Intel MKL.
+// The type Array<T, 0> is not really an array. It stores a single scalar
+// of type T and can only be converted to a reference to that type.
 //
+template <class T>
+class Array<T, 0> {
+public:
+    static constexpr int rank = 0;
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+    typedef T value_type;
 
-#endif  // SRS_MATH_H
+    Array() = default;
+
+    // Initialize the pseudo-array.
+    Array(const T& x) : elem(x) {}
+
+    // Assignment.
+    Array& operator=(const T& value)
+    {
+        elem = value;
+        return *this;
+    }
+
+    T& operator()() { return elem; }
+    const T& operator()() const { return elem; }
+
+    operator T&() { return elem; }
+    operator const T&() { return elem; }
+
+private:
+    T elem;
+};
+
+}  // namespace srs
+
+#endif  // SRS_ARRAY0_H

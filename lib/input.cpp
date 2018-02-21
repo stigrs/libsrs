@@ -15,7 +15,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <srs/utils.h>
-#include <srs/utils_impl/arma_io.h>
 #include <srs/utils_impl/input.h>
 
 
@@ -25,7 +24,7 @@ std::istream& operator>>(std::istream& from, Input& inp)
 {
     switch (inp.type) {
     case Input::t_int:
-        inp.read_int(from);
+        inp.read_int(from);                                                    
         break;
     case Input::t_long:
         inp.read_long(from);
@@ -33,7 +32,7 @@ std::istream& operator>>(std::istream& from, Input& inp)
     case Input::t_uint:
         inp.read_uint(from);
         break;
-    case Input::t_ulint:
+    case Input::t_ulint:                                                        
         inp.read_ulint(from);
         break;
     case Input::t_double:
@@ -66,9 +65,9 @@ std::ostream& operator<<(std::ostream& to, const Input& inp)
         to << "not initialized";
     }
     else {
-        arma::ivec iv;
-        arma::uvec uv;
-        arma::vec dv;
+        srs::ivector iv;
+        srs::uvector uv;
+        srs::dvector dv;
 
         switch (inp.type) {
         case Input::t_int:
@@ -90,16 +89,16 @@ std::ostream& operator<<(std::ostream& to, const Input& inp)
             to << *static_cast<std::string*>(inp.data);
             break;
         case Input::t_ivector:
-            iv = *static_cast<arma::ivec*>(inp.data);
-            srs::print_vector(to, iv);
+            iv = *static_cast<srs::ivector*>(inp.data);
+            to << iv;
             break;
         case Input::t_uvector:
-            uv = *static_cast<arma::uvec*>(inp.data);
-            srs::print_vector(to, uv);
+            uv = *static_cast<srs::uvector*>(inp.data);
+            to << uv;
             break;
         case Input::t_dvector:
-            dv = *static_cast<arma::vec*>(inp.data);
-            srs::print_vector(to, dv);
+            dv = *static_cast<srs::dvector*>(inp.data);
+            to << dv;
             break;
         default:
             throw Input_invalid("unknown type; cannot write data");
@@ -170,20 +169,20 @@ void Input::read_string(std::istream& from)
 
 void Input::read_ivector(std::istream& from)
 {
-    arma::ivec& v = *static_cast<arma::ivec*>(data);
-    srs::read_vector(from, v);
+    srs::ivector& v = *static_cast<srs::ivector*>(data);
+    from >> v;
 }
 
 void Input::read_uvector(std::istream& from)
 {
-    arma::uvec& v = *static_cast<arma::uvec*>(data);
-    srs::read_vector(from, v);
+    srs::uvector& v = *static_cast<srs::uvector*>(data);
+    from >> v;
 }
 
 void Input::read_dvector(std::istream& from)
 {
-    arma::vec& v = *static_cast<arma::vec*>(data);
-    srs::read_vector(from, v);
+    srs::dvector& v = *static_cast<srs::dvector*>(data);
+    from >> v;
 }
 
 }  // namespace srs

@@ -14,19 +14,34 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_BAND_IO_H
+#define SRS_BAND_IO_H
+
+#include <srs/band_impl/band_matrix.h>
+#include <iomanip>
+#include <iostream>
 
 
-//
-// Provides a mathematical library with interfaces to Intel MKL.
-//
+namespace srs {
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+template <class T>
+std::ostream& operator<<(std::ostream& to, const Band_matrix<T>& ab)
+{
+    using size_type = typename Band_matrix<T>::size_type;
 
-#endif  // SRS_MATH_H
+    to << ab.rows() << " x " << ab.cols() << "\n[";
+    for (size_type i = 0; i < ab.rows(); ++i) {
+        for (size_type j = 0; j < ab.cols(); ++j) {
+            to << std::setw(9) << ab(i, j) << " ";
+        }
+        if (i != ab.rows() - 1) {
+            to << "\n ";
+        }
+    }
+    to << "]\n";
+    return to;
+}
+
+}  // namespace srs
+
+#endif  // SRS_BAND_IO_H

@@ -1,7 +1,16 @@
 # LIBSRS
 
-LIBSRS extends the C++ STL with physical constants, mathematical functions 
-and other utility methods.
+LIBSRS extents the C++ STL with N-dimensional dense arrays, packed matrix 
+storage, band matrix storage, sparse vectors and matrices, mathematical 
+functions and other utility methods. 
+
+The design criteria for the array, vector, and matrix classes have been 
+numerical correctness, ease of implementation, flexibility, ease of use, 
+and easy integration with the Intel MKL. No efforts have been attempted to 
+avoid the creation of temporaries during arithmetic operations since this
+significantly adds to the code complexity. If fast numerical performance is 
+needed, the performance-critical parts of the code, identified through 
+profiling, code should be replaced with Intel MKL functions. 
 
 ## Code of Conduct
 
@@ -24,8 +33,8 @@ file for details regarding the licensing of Catch.
 * [CMake](https://cmake.org) 3.4.3
 * [Boost](http://www.boost.org/) 1.65.0
 * [GSL](https://github.com/Microsoft/GSL)
-* [Armadillo](http://arma.sourceforge.net) 7.950.1 
-* [Intel MKL](https://software.intel.com/en-us/mkl) 2018 Initial Release (on Windows)
+* [Intel MKL](https://software.intel.com/en-us/mkl) 2018 Initial Release
+* [Armadillo](http://arma.sourceforge.net) 7.950.1 (for testing and benchmarks)
 
 ### Supported Platforms
 

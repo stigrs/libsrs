@@ -14,19 +14,34 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_PACKED_IO_H
+#define SRS_PACKED_IO_H
+
+#include <srs/packed_impl/packed_matrix.h>
+#include <iomanip>
+#include <iostream>
 
 
-//
-// Provides a mathematical library with interfaces to Intel MKL.
-//
+namespace srs {
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+template <class T>
+std::ostream& operator<<(std::ostream& to, const Packed_matrix<T>& ap)
+{
+    using size_type = typename Packed_matrix<T>::size_type;
 
-#endif  // SRS_MATH_H
+    to << ap.rows() << " x " << ap.cols() << "\n[";
+    for (size_type i = 0; i < ap.rows(); ++i) {
+        for (size_type j = 0; j < ap.cols(); ++j) {
+            to << std::setw(9) << ap(i, j) << " ";
+        }
+        if (i != ap.rows() - 1) {
+            to << "\n ";
+        }
+    }
+    to << "]\n";
+    return to;
+}
+
+}  // namespace srs
+
+#endif  // SRS_PACKED_IO_H

@@ -17,7 +17,8 @@
 #ifndef SRS_MATH_STATISTICS_H
 #define SRS_MATH_STATISTICS_H
 
-#include <armadillo>
+#include <srs/array.h>
+#include <srs/math_impl/linalg.h>
 
 
 //
@@ -26,37 +27,37 @@
 namespace srs {
 
 // Arithmetic mean.
-inline double mean(const arma::vec& x)
+inline double mean(const dvector& x)
 {
-    return arma::sum(x) / static_cast<double>(x.size());
+    return sum(x) / static_cast<double>(x.size());
 }
 
 // Geometric mean.
-inline double geomean(const arma::vec& x)
+inline double geomean(const dvector& x)
 {
-    return std::pow(arma::prod(x), static_cast<double>(1.0 / x.size()));
+    return std::pow(srs::prod(x), static_cast<double>(1.0 / x.size()));
 }
 
 // Harmonic mean.
-double harmmean(const arma::vec& x);
+double harmmean(const dvector& x);
 
 // Median.
-double median(arma::vec& x);
+double median(dvector& x);
 
 // Variance.
-double var(const arma::vec& x);
+double var(const dvector& x);
 
 // Standard deviation.
-inline double stddev(const arma::vec& x) { return std::sqrt(var(x)); }
+inline double stddev(const dvector& x) { return std::sqrt(var(x)); }
 
 // Covariance.
-double cov(const arma::vec& x, const arma::vec& y);
+double cov(const dvector& x, const dvector& y);
 
 // Mean absolute deviation.
-double mad(const arma::vec& x);
+double mad(const dvector& x);
 
 // Root-mean-square deviation.
-double rms(const arma::vec& x);
+double rms(const dvector& x);
 
 }  // namespace srs
 

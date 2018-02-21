@@ -14,19 +14,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
-
+#ifndef SRS_SPARSE_H
+#define SRS_SPARSE_H
 
 //
-// Provides a mathematical library with interfaces to Intel MKL.
+// Provides sparse vector and matrix class.
 //
+#include <srs/sparse_impl/sparse_io.h>
+#include <srs/sparse_impl/sparse_matrix.h>
+#include <srs/sparse_impl/sparse_opr.h>
+#include <srs/sparse_impl/sparse_vector.h>
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+namespace srs {
 
-#endif  // SRS_MATH_H
+typedef Sparse_vector<int> sparse_ivector;
+typedef Sparse_vector<double> sparse_dvector;
+
+typedef Sparse_matrix<int> sparse_imatrix;
+typedef Sparse_matrix<double> sparse_dmatrix;
+
+}  // namespace srs
+
+#endif  // SRS_SPARSE_H

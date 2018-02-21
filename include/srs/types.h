@@ -14,19 +14,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_TYPES_H
+#define SRS_TYPES_H
 
 
-//
-// Provides a mathematical library with interfaces to Intel MKL.
-//
+namespace srs {
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+// Integer type.
+#ifdef MKL_INT
+typedef MKL_INT Int_t;
+#else
+typedef int Int_t;
+#endif
 
-#endif  // SRS_MATH_H
+//------------------------------------------------------------------------------
+
+// Vector and matrix norm types.
+enum Norm_t {
+    Fro = 0,
+    L1  = 1,
+    L2  = 2,
+    Inf = 100,
+};
+
+}  // namespace srs
+
+#endif  // SRS_TYPES_H

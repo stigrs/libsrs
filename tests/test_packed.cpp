@@ -14,19 +14,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#include <srs/packed.h>
+#include <catch/catch.hpp>
 
 
-//
-// Provides a mathematical library with interfaces to Intel MKL.
-//
-
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
-
-#endif  // SRS_MATH_H
+TEST_CASE("test_packed")
+{
+    int upper[10] = {1, 2, 2, 3, 3, 3, 4, 4, 4, 4};
+    srs::packed_imatrix u(4, upper);
+    CHECK(u.rows() == 4);
+    CHECK(u.cols() == 4);
+    CHECK(u(3, 0) == 4);
+    CHECK(u(0, 3) == 4);
+}

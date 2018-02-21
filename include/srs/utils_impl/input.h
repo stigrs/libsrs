@@ -17,7 +17,7 @@
 #ifndef SRS_INPUT_H
 #define SRS_INPUT_H
 
-#include <armadillo>
+#include <srs/array.h>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -80,20 +80,23 @@ public:
         s = ss;
     }
 
-    Input(arma::ivec& v) : data(&v), type(t_ivector), state(not_init) {}
-    Input(arma::ivec& v, arma::ivec& vv) : data(&v), type(t_ivector), state(def)
+    Input(srs::ivector& v) : data(&v), type(t_ivector), state(not_init) {}
+    Input(srs::ivector& v, srs::ivector& vv)
+        : data(&v), type(t_ivector), state(def)
     {
         v = vv;
     }
 
-    Input(arma::uvec& v) : data(&v), type(t_uvector), state(not_init) {}
-    Input(arma::uvec& v, arma::uvec& vv) : data(&v), type(t_uvector), state(def)
+    Input(srs::uvector& v) : data(&v), type(t_uvector), state(not_init) {}
+    Input(srs::uvector& v, srs::uvector& vv)
+        : data(&v), type(t_uvector), state(def)
     {
         v = vv;
     }
 
-    Input(arma::vec& v) : data(&v), type(t_dvector), state(not_init) {}
-    Input(arma::vec& v, arma::vec& vv) : data(&v), type(t_dvector), state(def)
+    Input(srs::dvector& v) : data(&v), type(t_dvector), state(not_init) {}
+    Input(srs::dvector& v, srs::dvector& vv)
+        : data(&v), type(t_dvector), state(def)
     {
         v = vv;
     }

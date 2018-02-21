@@ -20,28 +20,32 @@
 #include <vector>
 
 
-double srs::trapezoidal(double xlo, double xup, const arma::vec& y)
+double srs::trapezoidal(double xlo, double xup, const srs::dvector& y)
 {
+    using size_type = srs::dvector::size_type;
+
     const double step = std::abs(xup - xlo) / static_cast<double>(y.size());
 
     double ans = 0.0;
     ans += 0.5 * y(0);
     ans += 0.5 * y(y.size());
 
-    for (arma::uword i = 1; i < y.size() - 1; ++i) {
+    for (size_type i = 1; i < y.size() - 1; ++i) {
         ans += y(i);
     }
     return ans *= step;
 }
 
-double srs::simpsons(double xlo, double xup, const arma::vec& y)
+double srs::simpsons(double xlo, double xup, const srs::dvector& y)
 {
+    using size_type = srs::dvector::size_type;
+
     const double step = std::abs(xup - xlo) / static_cast<double>(y.size());
     double ans;
     double f;
 
     ans = 0.0;
-    for (arma::uword i = 0; i < y.size(); ++i) {
+    for (size_type i = 0; i < y.size(); ++i) {
         if ((i == 0) || (i == y.size() - 1)) {
             f = y(i);
         }
@@ -56,7 +60,7 @@ double srs::simpsons(double xlo, double xup, const arma::vec& y)
     return ans *= step / 3.0;
 }
 
-void srs::gaussleg(int n, arma::vec& x, arma::vec& w, double a, double b)
+void srs::gaussleg(int n, srs::dvector& x, srs::dvector& w, double a, double b)
 {
     // Given the lower and upper limits of integration a and b, this
     // function returns arrays x(n) and w(n) of length n, containing the
@@ -65,8 +69,8 @@ void srs::gaussleg(int n, arma::vec& x, arma::vec& w, double a, double b)
     Expects(n >= 2);
     Expects(srs::is_even(n));
 
-    x.set_size(n);
-    w.set_size(n);
+    x.resize(n);
+    w.resize(n);
 
     std::vector<double> xp = boost::math::legendre_p_zeros<double>(n);
 

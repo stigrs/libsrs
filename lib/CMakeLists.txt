@@ -4,8 +4,12 @@ project(libsrs_lib CXX)
 include_directories(${libsrs_SOURCE_DIR}/include)
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${GSL_INCLUDE_DIR})
-include_directories(${ARMADILLO_INCLUDE_DIRS})
 link_directories(${libsrs_BINARY_DIR})
+include_directories(${MKL_INCLUDE_DIR})
+link_directories(${MKL_LIB_DIR})
+if(APPLE)
+    link_directories(${TBB_LIB_DIR})
+endif()
 
 set(
     SRC_FILES
@@ -13,6 +17,7 @@ set(
     input.cpp
     math_geometry.cpp
     math_integration.cpp
+    math_linalg.cpp
     math_statistics.cpp
 )
 add_library(
@@ -26,10 +31,30 @@ if(WIN32)
         mkl_sequential.lib
         mkl_core.lib
     )
+elseif(APPLE)
+    target_link_libraries (
+        ${program} 
+        srs
+        mkl_intel_lp64
+        mkl_tbb_thread
+        mkl_core
+        tbb
+        stdc++
+        pthread
+        m 
+        ldl 
+        test_catch
+    )
 else()
     target_link_libraries(
         srs 
-        ${ARMADILLO_LIBRARIES}
+        mkl_intel_lp64
+        mkl_gnu_thread
+        mkl_core
+        gomp
+        pthread
+        m 
+        dl 
     ) 
 endif()
 

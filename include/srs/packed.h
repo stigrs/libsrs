@@ -14,19 +14,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
-
+#ifndef SRS_PACKED_H
+#define SRS_PACKED_H
 
 //
-// Provides a mathematical library with interfaces to Intel MKL.
+// Provides packed storage matrix.
 //
+#include <srs/packed_impl/packed_io.h>
+#include <srs/packed_impl/packed_matrix.h>
+#include <srs/packed_impl/packed_opr.h>
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+namespace srs {
 
-#endif  // SRS_MATH_H
+typedef Packed_matrix<int> packed_imatrix;
+typedef Packed_matrix<double> packed_dmatrix;
+
+}  // namespace srs
+
+#endif  // SRS_PACKED_H

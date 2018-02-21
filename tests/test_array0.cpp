@@ -14,19 +14,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#include <srs/array.h>
+#include <catch/catch.hpp>
 
-
-//
-// Provides a mathematical library with interfaces to Intel MKL.
-//
-
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
-
-#endif  // SRS_MATH_H
+TEST_CASE("test_array0")
+{
+    srs::Array<double, 0> a(1.0);
+    const double aa = a();
+    CHECK(a() == 1.0);
+    CHECK(aa == a());
+    a = 2.0;
+    CHECK(a() == 2.0);
+}

@@ -14,26 +14,32 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_INTEGRATION_H
-#define SRS_MATH_INTEGRATION_H
+#ifndef SRS_ARRAY_REF_H
+#define SRS_ARRAY_REF_H
 
-#include <srs/array.h>
-
-
-//
-// Provides integration functions.
-//
 namespace srs {
 
-// Integrate array of function values using the Trapezoidal rule.
-double trapezoidal(double xlo, double xup, const dvector& y);
-
-// Integrate array of function values using Simpson's rule.
-double simpsons(double xlo, double xup, const dvector& y);
-
-// Compute abscissas and weights of Gauss-Legendre n-point quadrature formula.
-void gaussleg(int n, dvector& x, dvector& w, double a = -1.0, double b = 1.0);
+//
+// N-dimensional dense array reference class.
+//
+// Note:
+// - An Array_ref is a reference to memory in an Array specified by a slice.
+//   An Array_ref does not owns its elements. As such, the created Array_ref is
+//   not alias safe and does not take into account that the underlying array
+//   memory could be freed (e.g. due to any operation involving a resize of the
+//   array or that the array goes out of scope).
+// - The general Array_ref template exists only to allow specializations.
+//
+template <class T, int N>
+class Array_ref {
+private:
+    Array_ref();
+};
 
 }  // namespace srs
 
-#endif  // SRS_MATH_INTEGRATION_H
+#include <srs/array_impl/array_ref1.h>
+#include <srs/array_impl/array_ref2.h>
+#include <srs/array_impl/array_ref3.h>
+
+#endif  // SRS_ARRAY_REF_H

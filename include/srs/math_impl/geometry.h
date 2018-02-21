@@ -17,8 +17,9 @@
 #ifndef SRS_MATH_GEOMETRY_H
 #define SRS_MATH_GEOMETRY_H
 
+#include <srs/array.h>
 #include <srs/datum.h>
-#include <armadillo>
+#include <srs/math_impl/linalg.h>
 #include <cmath>
 
 
@@ -87,33 +88,33 @@ inline void cart2pol(double x, double y, double& th, double& r)
 }
 
 // Compute distance between two points.
-inline double distance(const arma::vec& a, const arma::vec& b)
+inline double distance(const dvector& a, const dvector& b)
 {
-    return arma::norm(b - a);
+    return norm(b - a);
 }
 
 // Compute angle in degrees between three points.
-inline double angle(const arma::vec& a, const arma::vec& b, const arma::vec& c)
+inline double angle(const dvector& a, const dvector& b, const dvector& c)
 {
-    const arma::vec ab = arma::normalise(a - b);
-    const arma::vec bc = arma::normalise(c - b);
+    const auto& ab = normalize(a - b);
+    const auto& bc = normalize(c - b);
     return radtodeg(std::acos(dot(ab, bc)));
 }
 
 // Compute dihedral angle in degrees given four points.
-double dihedral(const arma::vec& a,
-                const arma::vec& b,
-                const arma::vec& c,
-                const arma::vec& d);
+double dihedral(const dvector& a,
+                const dvector& b,
+                const dvector& c,
+                const dvector& d);
 
 // Compute the pair-wise distances between observations in n-dim. space.
-void pdist_matrix(arma::mat& dm, const arma::mat& mat);
+void pdist_matrix(dmatrix& dm, const dmatrix& mat);
 
 // Perform translation.
-void translate(arma::mat& xyz, double dx, double dy, double dz);
+void translate(dmatrix& xyz, double dx, double dy, double dz);
 
 // Perform rotation given a rotation matrix.
-void rotate(arma::mat& xyz, const arma::mat& rotm);
+void rotate(dmatrix& xyz, const dmatrix& rotm);
 
 }  // namespace srs
 

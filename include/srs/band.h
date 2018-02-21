@@ -14,19 +14,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
-
+#ifndef SRS_BAND_H
+#define SRS_BAND_H
 
 //
-// Provides a mathematical library with interfaces to Intel MKL.
+// Provides band matrix storage format.
 //
+// Note:
+// - Elements are stored in column-major format.
+//
+#include <srs/band_impl/band_io.h>
+#include <srs/band_impl/band_matrix.h>
+#include <srs/band_impl/band_opr.h>
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
 
-#endif  // SRS_MATH_H
+namespace srs {
+
+typedef Band_matrix<int> band_imatrix;
+typedef Band_matrix<double> band_dmatrix;
+
+}  // namespace srs
+
+#endif  // SRS_BAND_H
