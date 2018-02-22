@@ -22,9 +22,9 @@ LIBSRS is released under the [MIT](LICENSE) license.
 
 ## Usage of Third Party Libraries
 
-This project makes use of the [Catch](https://https://github.com/philsquared/catch) 
+This project makes use of the [Catch2](https://github.com/catchorg/Catch2) 
 testing library. Please see the [ThirdPartyNotices.txt](ThirdPartyNotices.txt) 
-file for details regarding the licensing of Catch.
+file for details regarding the licensing of Catch2.
 
 ## Quick Start 
 

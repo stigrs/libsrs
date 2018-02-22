@@ -5,10 +5,10 @@ The original copyright notice and the license under which Stig Rune Sellevag
 received such third party material are set forth below. 
 
 
-1.	Catch (https://github.com/philsquared/Catch)
+1.	Catch2 (https://github.com/catchorg/Catch2)
 
 
-%% Catch NOTICES, INFORMATION, AND LICENSE BEGIN HERE
+%% Catch2 NOTICES, INFORMATION, AND LICENSE BEGIN HERE
 =========================================
 Boost Software License - Version 1.0 - August 17th, 2003
 
@@ -34,4 +34,4 @@ FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 =========================================
-END OF Catch NOTICES, INFORMATION, AND LICENSE
+END OF Catch2 NOTICES, INFORMATION, AND LICENSE
