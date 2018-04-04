@@ -83,6 +83,7 @@ set(PROGRAMS
     test_band
     test_datum
     test_format
+    test_grid
     test_input
     test_math
     test_packed

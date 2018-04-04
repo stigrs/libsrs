@@ -111,4 +111,10 @@ inline double Grid::operator()(size_type i) const
     return a0 + i * d;
 }
 
+//------------------------------------------------------------------------------
+
+// Non-member operators:
+
+std::ostream& operator<<(std::ostream& to, const Grid& g);
+
 #endif  // SRS_GRID_H
