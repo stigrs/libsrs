@@ -24,6 +24,7 @@
 
 #include <srs/math_impl/core.h>
 #include <srs/math_impl/geometry.h>
+#include <srs/math_impl/grid.h>
 #include <srs/math_impl/integration.h>
 #include <srs/math_impl/linalg.h>
 #include <srs/math_impl/signal.h>
