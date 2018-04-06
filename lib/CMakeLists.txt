@@ -14,12 +14,12 @@ endif()
 set(
     SRC_FILES
     datum.cpp
+    geometry.cpp
     grid.cpp
     input.cpp
-    math_geometry.cpp
-    math_integration.cpp
-    math_linalg.cpp
-    math_statistics.cpp
+    integration.cpp
+    linalg.cpp
+    statistics.cpp
 )
 add_library(
     srs 
