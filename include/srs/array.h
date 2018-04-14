@@ -36,7 +36,7 @@ namespace srs {
 // - Sub-array views (slicing).
 //
 // Note:
-// - The general Array_slice template exists only to allow specializations.
+// - The general Array template exists only to allow specializations.
 // - Array indexing uses signed integers (int).
 // - Use e.g. Intel MKL for improved numerical performance.
 //
