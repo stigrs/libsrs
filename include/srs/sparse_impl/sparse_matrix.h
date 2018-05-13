@@ -101,7 +101,7 @@ public:
     // Modifiers:
 
     void clear();
-    void swap(const Sparse_matrix& m);
+    void swap(Sparse_matrix& m);
     void insert(size_type i, size_type j, const T& value);
     void resize(size_type nrows, size_type ncols, size_type nnz);
 
@@ -241,7 +241,7 @@ inline void Sparse_matrix<T>::clear()
 }
 
 template <class T>
-inline void Sparse_matrix<T>::swap(const Sparse_matrix& m)
+inline void Sparse_matrix<T>::swap(Sparse_matrix& m)
 {
     elems.swap(m.elems);
     col_indx.swap(m.cols);

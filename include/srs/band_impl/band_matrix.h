@@ -108,7 +108,7 @@ public:
     // Modifiers:
 
     void clear();
-    void swap(const Band_matrix& ab);
+    void swap(Band_matrix& ab);
     void resize(size_type m, size_type n, size_type kl, size_type ku);
 
     // Access underlying array:
@@ -247,7 +247,7 @@ void Band_matrix<T>::clear()
 }
 
 template <class T>
-void Band_matrix<T>::swap(const Band_matrix<T>& ab)
+void Band_matrix<T>::swap(Band_matrix<T>& ab)
 {
     elems.swap(ab.elems);
     std::swap(extents, ab.extents);

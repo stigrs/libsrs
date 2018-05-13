@@ -86,7 +86,7 @@ public:
     // Modifiers:
 
     void clear();
-    void swap(const Packed_matrix& ap);
+    void swap(Packed_matrix& ap);
     void resize(size_type n);
 
     // Access underlying arrays:
@@ -191,7 +191,7 @@ inline void Packed_matrix<T>::clear()
 }
 
 template <class T>
-inline void Packed_matrix<T>::swap(const Packed_matrix& ap)
+inline void Packed_matrix<T>::swap(Packed_matrix& ap)
 {
     elems.swap(ap.elems);
     std::swap(extent, ap.extent);

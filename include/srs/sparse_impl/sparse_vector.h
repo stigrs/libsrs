@@ -98,7 +98,7 @@ public:
 
     void clear();
     void insert(const T& value, size_type i);
-    void swap(const Sparse_vector& x);
+    void swap(Sparse_vector& x);
     void resize(size_type n);
 
     // Euclidean norm.
@@ -251,7 +251,7 @@ inline void Sparse_vector<T>::insert(const T& value, size_type i)
 }
 
 template <class T>
-inline void Sparse_vector<T>::swap(const Sparse_vector<T>& x)
+inline void Sparse_vector<T>::swap(Sparse_vector<T>& x)
 {
     elems.swap(x.elems);
     indx.swap(x.indx);
