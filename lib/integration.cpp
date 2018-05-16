@@ -22,15 +22,13 @@
 
 double srs::trapezoidal(double xlo, double xup, const srs::dvector& y)
 {
-    using size_type = srs::dvector::size_type;
-
     const double step = std::abs(xup - xlo) / static_cast<double>(y.size());
 
     double ans = 0.0;
     ans += 0.5 * y(0);
     ans += 0.5 * y(y.size());
 
-    for (size_type i = 1; i < y.size() - 1; ++i) {
+    for (srs::size_t i = 1; i < y.size() - 1; ++i) {
         ans += y(i);
     }
     return ans *= step;
@@ -38,14 +36,12 @@ double srs::trapezoidal(double xlo, double xup, const srs::dvector& y)
 
 double srs::simpsons(double xlo, double xup, const srs::dvector& y)
 {
-    using size_type = srs::dvector::size_type;
-
     const double step = std::abs(xup - xlo) / static_cast<double>(y.size());
     double ans;
     double f;
 
     ans = 0.0;
-    for (size_type i = 0; i < y.size(); ++i) {
+    for (srs::size_t i = 0; i < y.size(); ++i) {
         if ((i == 0) || (i == y.size() - 1)) {
             f = y(i);
         }
