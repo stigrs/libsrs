@@ -27,6 +27,9 @@ typedef MKL_INT Int_t;
 typedef int Int_t;
 #endif
 
+// Size type.
+typedef Int_t size_t;
+
 //------------------------------------------------------------------------------
 
 // Vector and matrix norm types.
