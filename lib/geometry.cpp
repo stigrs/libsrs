@@ -53,12 +53,10 @@ double srs::dihedral(const srs::dvector& a,
 
 void srs::pdist_matrix(srs::dmatrix& dm, const srs::dmatrix& mat)
 {
-    using size_type = srs::dmatrix::size_type;
-
     dm.resize(mat.rows(), mat.rows(), 0.0);
 
-    for (size_type j = 0; j < dm.cols(); ++j) {
-        for (size_type i = j; i < dm.rows(); ++i) {
+    for (srs::size_t j = 0; j < dm.cols(); ++j) {
+        for (srs::size_t i = j; i < dm.rows(); ++i) {
             if (i != j) {
                 auto dij = mat.row(i) - mat.row(j);
                 dm(i, j) = srs::norm(dij);
@@ -72,9 +70,7 @@ void srs::translate(srs::dmatrix& xyz, double dx, double dy, double dz)
 {
     Expects(xyz.cols() == 3);
 
-    using size_type = srs::dmatrix::size_type;
-
-    for (size_type i = 0; i < xyz.rows(); ++i) {
+    for (srs::size_t i = 0; i < xyz.rows(); ++i) {
         xyz(i, 0) += dx;
         xyz(i, 1) += dy;
         xyz(i, 2) += dz;
@@ -85,12 +81,10 @@ void srs::rotate(srs::dmatrix& xyz, const srs::dmatrix& rotm)
 {
     Expects(rotm.rows() == 3 && rotm.cols() == 3);
 
-    using size_type = srs::dmatrix::size_type;
-
-    for (size_type i = 0; i < xyz.rows(); ++i) {
+    for (srs::size_t i = 0; i < xyz.rows(); ++i) {
         auto xyz_new = rotm * xyz.row(i);
-        xyz(i, 0)    = xyz_new(0);
-        xyz(i, 1)    = xyz_new(1);
-        xyz(i, 2)    = xyz_new(2);
+        xyz(i, 0) = xyz_new(0);
+        xyz(i, 1) = xyz_new(1);
+        xyz(i, 2) = xyz_new(2);
     }
 }

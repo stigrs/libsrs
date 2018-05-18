@@ -101,10 +101,8 @@ double srs::det(const srs::dmatrix& a)
 {
     Expects(a.rows() == a.cols());
 
-    using size_type = srs::dmatrix::size_type;
-
     double ddet;
-    size_type n = a.rows();
+    srs::size_t n = a.rows();
 
     if (n == 1) {
         ddet = a(0, 0);
@@ -123,14 +121,14 @@ double srs::det(const srs::dmatrix& a)
         lu(tmp, ipiv);
 
         int permut = 0;
-        for (size_type i = 1; i <= n; ++i) {
+        for (srs::size_t i = 1; i <= n; ++i) {
             if (i != ipiv(i - 1)) {  // Fortran uses base 1
                 permut++;
             }
         }
         ddet   = 1.0;
         auto d = tmp.diag();
-        for (size_type i = 0; i < d.size(); ++i) {
+        for (srs::size_t i = 0; i < d.size(); ++i) {
             ddet *= d(i);
         }
         ddet *= std::pow(-1.0, static_cast<double>(permut));
@@ -488,17 +486,17 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     wr(q) += z;
 
                     for (int r = 0; r < p; ++r) {
-                        t = a(r, p);
+                        t       = a(r, p);
                         a(r, p) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = p + 1; r < q; ++r) {
-                        t = a(p, r);
+                        t       = a(p, r);
                         a(p, r) = c * t - s * a(r, q);
                         a(r, q) = s * t + c * a(r, q);
                     }
                     for (int r = q + 1; r < n; ++r) {
-                        t = a(p, r);
+                        t       = a(p, r);
                         a(p, r) = c * t - s * a(q, r);
                         a(q, r) = s * t + c * a(q, r);
                     }
@@ -506,7 +504,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
                     // Update eigenvectors:
 
                     for (int r = 0; r < n; ++r) {
-                        t = vr(r, p);
+                        t        = vr(r, p);
                         vr(r, p) = c * t - s * vr(r, q);
                         vr(r, q) = s * t + c * vr(r, q);
                     }
@@ -537,7 +535,7 @@ void srs::jacobi(srs::dmatrix& a, srs::dvector& wr)
         wr(k) = wr(i);
         wr(i) = p;
         for (int j = 0; j < n; ++j) {
-            p = vr(j, i);
+            p        = vr(j, i);
             vr(j, i) = vr(j, k);
             vr(j, k) = p;
         }
