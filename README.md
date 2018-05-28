@@ -42,7 +42,7 @@ The test suite that exercises LIBSRS has been built and passes successfully
 on the following platforms:
 * GNU/Linux using GCC 5.4.0
 * GNU/Linux using Clang 3.8.0
-* OS X El Capitan (10.12) using Apple LLVM 8.1.0
+* OS X El Capitan (10.12) using Apple LLVM 8.1.0, 9.1.0, GCC 7.2.0
 * Windows using Visual Studio 2017
 
 ### Obtaining the Source Code
