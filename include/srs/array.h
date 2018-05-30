@@ -17,7 +17,7 @@
 #ifndef SRS_ARRAY_H
 #define SRS_ARRAY_H
 
-#include <complex>                                                              
+#include <complex>
 #include <stdexcept>
 #include <string>
 
