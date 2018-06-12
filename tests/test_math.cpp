@@ -134,9 +134,6 @@ TEST_CASE("test_math")
         arma::vec n1 = arma::normalise(v1);
         auto n2      = srs::normalize(v2);
 
-        std::cout << arma::normalise(v3) << std::endl;
-        std::cout << srs::normalize(v4) << std::endl;
-
         CHECK(srs::approx_equal(srs::norm(v2, 1), arma::norm(v1, 1), 1.0e-12));
         CHECK(srs::approx_equal(srs::norm(v2, 2), arma::norm(v1, 2), 1.0e-12));
         CHECK(srs::approx_equal(srs::norm(v2, 3), arma::norm(v1, 3), 1.0e-12));
