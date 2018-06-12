@@ -327,7 +327,7 @@ void srs::eig(double emin,
 
     // Return the m first eigenvalues and eigenvectors:
 
-    w = w.head(m - 1);
+    w = w.head(m);
     v = v.slice(0, n - 1, 0, m - 1);
 }
 
@@ -373,7 +373,7 @@ void srs::eig(double emin,
 
     // Return the m first eigenvalues and eigenvectors:
 
-    w = w.head(m - 1);
+    w = w.head(m);
     v = v.slice(0, n - 1, 0, m - 1);
 }
 
