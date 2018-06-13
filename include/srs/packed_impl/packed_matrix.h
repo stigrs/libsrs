@@ -20,7 +20,9 @@
 #include <srs/array.h>
 #include <srs/array_impl/functors.h>
 #include <srs/types.h>
+#include <cmath>
 #include <gsl/gsl>
+#include <iostream>
 #include <vector>
 
 
@@ -54,6 +56,7 @@ public:
     template <Int_t np>
     Packed_matrix(size_type n, const T (&a)[np]);
 
+    Packed_matrix(const Array<T, 1>& a);
     Packed_matrix(const Array<T, 2>& a);
 
     // Iterators:
@@ -132,6 +135,18 @@ Packed_matrix<T>::Packed_matrix(size_type n, const T (&a)[np])
     Expects(np >= n * (n + 1) / 2);
     for (size_type i = 0; i < size(); ++i) {
         elems[i] = a[i];
+    }
+}
+
+template <class T>
+Packed_matrix<T>::Packed_matrix(const Array<T, 1>& a) : elems(a.size())
+{
+    size_type n = static_cast<size_type>(
+        std::ceil(-1.0 + std::sqrt(1.0 + 4.0 * 2.0 * a.size()) / 2.0));
+    Ensures(a.size() >= n * (n + 1) / 2);
+    extent = n;
+    for (size_type i = 0; i < size(); ++i) {
+        elems[i] = a(i);
     }
 }
 
