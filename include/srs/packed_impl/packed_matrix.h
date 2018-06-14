@@ -215,7 +215,7 @@ inline void Packed_matrix<T>::swap(Packed_matrix& ap)
 template <class T>
 void Packed_matrix<T>::resize(size_type n)
 {
-    elems.resize(n * n);
+    elems.resize(n * (n + 1) / 2);
     extent = n;
 }
 
