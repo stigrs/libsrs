@@ -122,6 +122,11 @@ public:
                                 size_type jfirst,
                                 size_type jlast) const;
 
+	// Flatten matrix to one-dimensional:
+
+	Array_ref<T, 1> flatten(); 
+	Array_ref<const T, 1> flatten() const;
+
     // Capacity:
 
     bool empty() const { return elems.empty(); }
@@ -370,6 +375,18 @@ inline Array_ref<const T, 2> Array<T, 2>::slice(size_type ifirst,
                                  jlast - jfirst + 1,
                                  stride,
                                  data() + ifirst + jfirst * stride);
+}
+
+template <class T>
+inline Array_ref<T, 1> Array<T, 2>::flatten()
+{
+	return Array_ref<T, 1>(size(), 1, data());
+}
+
+template <class T>
+inline Array_ref<const T, 1> Array<T, 2>::flatten() const
+{
+	return Array_ref<const T, 1>(size(), 1, data());
 }
 
 template <class T>

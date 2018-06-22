@@ -69,8 +69,15 @@ public:
     Array_ref<T, 1> diag();
     Array_ref<const T, 1> diag() const;
 
+	// Flatten matrix to one-dimensional:
+
+	Array_ref<T, 1> flatten();
+	Array_ref<const T, 1> flatten() const;
+
+
     // Capacity:
 
+	size_type size() const { return extents[0] * extents[1]; }
     size_type rows() const { return extents[0]; }
     size_type cols() const { return extents[1]; }
     size_type extent(size_type dim) const
@@ -204,6 +211,18 @@ inline Array_ref<const T, 1> Array_ref<T, 2>::diag() const
 {
     Expects(extents[0] == extents[1]);
     return Array_ref<const T, 1>(extents[0], stride + 1, data());
+}
+
+template <class T>
+inline Array_ref<T, 1> Array_ref<T, 2>::flatten()
+{
+	return Array_ref<T, 1>(size(), 1, data());
+}
+
+template <class T>
+inline Array_ref<const T, 1> Array_ref<T, 2>::flatten() const
+{ 
+	return Array_ref<const T, 1>(size(), 1, data());
 }
 
 template <class T>
