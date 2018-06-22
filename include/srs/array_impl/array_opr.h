@@ -528,6 +528,98 @@ void sort(Array<T, 2>& a, int dim = 2, bool ascending = true)
     }
 }
 
+// Copy n elements from a to b.
+template <class T>
+void copy_n(srs::size_t n, const Array<T, 1>& a, Array<T, 1>& b)
+{
+    if (n > 0) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            b(i) = a(i);
+        }
+    }
+}
+
+template <class T>
+void copy_n(srs::size_t n, const Array_ref<T, 1>& a, Array_ref<T, 1>& b)
+{
+    if (n > 0) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            b(i) = a(i);
+        }
+    }
+}
+
+template <class T>
+void copy_n(srs::size_t n, const Array_ref<const T, 1>& a, Array_ref<T, 1>& b)
+{
+    if (n > 0) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            b(i) = a(i);
+        }
+    }
+}
+
+template <class T>
+void copy_n(srs::size_t n, const Array<T, 1>& a, Array_ref<T, 1>& b)
+{
+    if (n > 0) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            b(i) = a(i);
+        }
+    }
+}
+
+template <class T>
+void copy_n(srs::size_t n, const Array_ref<T, 1>& a, Array<T, 1>& b)
+{
+    if (n > 0) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            b(i) = a(i);
+        }
+    }
+}
+
+template <class T>
+void copy_n(srs::size_t n, const Array_ref<const T, 1>& a, Array<T, 1>& b)
+{
+    if (n > 0) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            b(i) = a(i);
+        }
+    }
+}
+
+// Copy n elements from a(j+i) to a(k+i).
+template <class T>
+void copy_n(srs::size_t n, srs::size_t j, srs::size_t k, Array<T, 1>& a)
+{
+    if (j > k) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            a(k + i) = a(j + i);
+        }
+    }
+    else if (j < k) {
+        for (srs::size_t i = n; i > 0; --i) {
+            a(k + i) = a(j + i);
+        }
+    }
+}
+
+template <class T>
+void copy_n(srs::size_t n, srs::size_t j, srs::size_t k, Array_ref<T, 1>& a)
+{
+    if (j > k) {
+        for (srs::size_t i = 0; i < n; ++i) {
+            a(k + i) = a(j + i);
+        }
+    }
+    else if (j < k) {
+        for (srs::size_t i = n; i > 0; --i) {
+            a(k + i) = a(j + i);
+        }
+    }
+}
+
 }  // namespace srs
 
 #endif  // SRS_ARRAY_OPR_H
