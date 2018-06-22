@@ -63,5 +63,4 @@ install(
     TARGETS srs
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
-    CONFIGURATIONS Release
 )
