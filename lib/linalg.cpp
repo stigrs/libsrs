@@ -228,14 +228,13 @@ void srs::eigs(srs::band_dmatrix& ab, srs::dmatrix& v, srs::dvector& w)
 
 void srs::eigs(srs::packed_dmatrix& ap, srs::dmatrix& v, srs::dvector& w)
 {
-    Expects(ap.rows() == ap.cols());
+    Expects(ap.size() >= w.size() * (w.size() + 1) / 2);
 
-    v.resize(ap.rows(), ap.cols());
-    w.resize(ap.cols());
-
-    MKL_INT n    = ap.cols();
-    MKL_INT ldz  = ap.rows();
+    MKL_INT n    = w.size();
+    MKL_INT ldz  = n;
     MKL_INT info = 0;
+
+    v.resize(n, n);
 
     info = LAPACKE_dspevd(
         LAPACK_COL_MAJOR, 'V', 'U', n, ap.data(), w.data(), v.data(), ldz);
@@ -600,6 +599,52 @@ void srs::linsolve(const srs::sparse_dmatrix& a,
 
     if (error != 0) {
         throw Math_error("could not solve sparse linear system of equations");
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void srs::schmidt(srs::dmatrix& a, srs::size_t n)
+{
+    srs::size_t n_out   = 0;
+    srs::size_t n_orb   = n;
+    srs::size_t n_basis = a.rows();
+
+    srs::dvector work(n_basis, 0.0);
+
+    double r_min = 0.1;
+
+    while (n_orb < n_basis) {
+        srs::size_t lim = n_orb + n_basis;
+        for (srs::size_t i = 0; i < lim; ++i) {
+            if (n_out >= n_basis) {
+                return;
+            }
+            auto an = a.column(n_out);
+            if (i < n_orb) {
+                auto ai = a.column(i);
+                an      = ai;
+            }
+            else {
+                an                  = 0.0;
+                a(i - n_orb, n_out) = 1.0;
+            }
+            for (srs::size_t j = 0; j < n_out; ++j) {
+                auto aj = a.column(j);
+                work(j) = srs::dot(aj, an);
+            }
+            for (srs::size_t j = 0; j < n_out; ++j) {
+                auto aj = a.column(j);
+                an      = an - work(j) * aj;
+            }
+            double r = std::sqrt(srs::dot(an, an));
+            if (r >= r_min) {
+                ++n_out;
+                an /= r;
+            }
+        }
+        r_min /= 10.0;
+        n_orb = n_out;
     }
 }
 

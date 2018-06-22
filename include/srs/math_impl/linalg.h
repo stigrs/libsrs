@@ -552,6 +552,11 @@ void linsolve(const sparse_dmatrix& a, dvector& b, dvector& x);
 
 //------------------------------------------------------------------------------
 
+// Schmidt orthogonalization of n orbitals in a.
+void schmidt(srs::dmatrix& a, srs::size_t n);
+
+//------------------------------------------------------------------------------
+
 // Wrappers to Intel MKL for fast numerical performance for large arrays:
 
 // Compute vector-scalar product and add the result to a vector.
