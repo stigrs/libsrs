@@ -59,6 +59,9 @@ double mad(const dvector& x);
 // Root-mean-square deviation.
 double rms(const dvector& x);
 
+// Root-mean-square displacement.
+double rmsd(const dmatrix& a, const dmatrix& b);
+
 }  // namespace srs
 
 #endif  // SRS_MATH_STATISTICS_H

@@ -82,6 +82,22 @@ double srs::rms(const srs::dvector& x)
     return std::sqrt(sum2 / static_cast<double>(x.size()));
 }
 
+double srs::rmsd(const srs::dmatrix& a, const srs::dmatrix& b)
+{
+	Expects(a.rows() == b.rows());	
+	Expects(a.cols() == b.cols());	
+
+	double sum2 = 0.0;
+	for (srs::size_t i = 0; i < a.size(); ++i) {
+		double dist = 0.0;
+		for (srs::size_t j = 0; j < a.cols(); ++j) {
+			dist += std::pow(a(i, j) - b(i, j), 2.0);
+		}
+		sum2 += dist;
+	}
+	return std::sqrt(sum2 / static_cast<double>(a.rows()));
+}
+
 double srs::cov(const srs::dvector& x, const srs::dvector& y)
 {
     Expects(x.size() == y.size() && x.size() > 0);
