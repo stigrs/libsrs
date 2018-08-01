@@ -40,7 +40,7 @@ file for details regarding the licensing of Catch2.
 
 The test suite that exercises LIBSRS has been built and passes successfully 
 on the following platforms:
-* GNU/Linux using GCC 5.4.0
+* GNU/Linux using GCC 5.4.0, 7.3.0
 * GNU/Linux using Clang 3.8.0
 * GNU/Linux using Intel C++ 18.0.1 20171018, Intel C++ 18.0.3 20180410
 * OS X El Capitan (10.12) using Apple LLVM 8.1.0
