@@ -24,7 +24,7 @@
 namespace srs {
 
 // Compute the numerical first derivative of the function f(x).
-double dfdx(std::function<double(double)> f, double x)
+inline double dfdx(std::function<double(double)> f, double x)
 {
     double eps = std::numeric_limits<double>::epsilon();
     double h = std::pow(eps, 1.0 / 3.0) * x;  // Numerical Recipes in C, ch. 5.7
