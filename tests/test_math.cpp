@@ -18,7 +18,12 @@
 #include <armadillo>
 #include <catch/catch.hpp>
 #include <complex>
-#include <iostream>
+#include <functional>
+
+double f(double x)
+{
+	return x * x;
+}
 
 TEST_CASE("test_math")
 {
@@ -30,6 +35,11 @@ TEST_CASE("test_math")
         int odd_number = -3;
         CHECK(srs::is_odd(odd_number) == true);
     }
+
+	SECTION("derivation")
+	{
+		CHECK(srs::approx_equal(srs::dfdx(f, 2.0), 4.0, 1.0e-10));
+	}
 
     SECTION("integration")
     {

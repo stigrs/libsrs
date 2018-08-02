@@ -14,21 +14,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_MATH_DERIVATION_H
+#define SRS_MATH_DERIVATION_H
 
+#include <cmath>
+#include <functional>
+#include <limits>
 
-//
-// Provides a mathematical library with interfaces to Intel MKL.
-//
+namespace srs {
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/derivation.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/grid.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+double dfdx(std::function<double(double)> f, double x)
+{
+    double eps = std::numeric_limits<double>::epsilon();
+    double h = std::pow(eps, 1.0 / 3.0) * x;  // Numerical Recipes in C, ch. 5.7
 
-#endif  // SRS_MATH_H
+    return (f(x + h) - f(x - h)) / (2.0 * h);
+}
+
+}  // namespace srs
+
+#endif  // SRS_MATH_DERIVATION_H
