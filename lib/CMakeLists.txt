@@ -20,6 +20,7 @@ set(
     input.cpp
     integration.cpp
     linalg.cpp
+	quaternion.cpp
     statistics.cpp
 )
 add_library(

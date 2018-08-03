@@ -20,10 +20,7 @@
 #include <complex>
 #include <functional>
 
-double f(double x)
-{
-	return x * x;
-}
+double f(double x) { return x * x; }
 
 TEST_CASE("test_math")
 {
@@ -36,10 +33,10 @@ TEST_CASE("test_math")
         CHECK(srs::is_odd(odd_number) == true);
     }
 
-	SECTION("derivation")
-	{
-		CHECK(srs::approx_equal(srs::dfdx(f, 2.0), 4.0, 1.0e-10));
-	}
+    SECTION("derivation")
+    {
+        CHECK(srs::approx_equal(srs::dfdx(f, 2.0), 4.0, 1.0e-10));
+    }
 
     SECTION("integration")
     {
@@ -603,8 +600,14 @@ TEST_CASE("test_math")
         eul = {0.0, 0.0, 0.0};
         CHECK(srs::approx_equal(srs::rotm2eul(srs::identity(3)), eul, 1.0e-12));
 
-		srs::dvector qans = {0.7071, 0.0, 0.7071, 0.0};
-		CHECK(srs::approx_equal(srs::eul2quat(0.0, 90.0, 0.0), qans, 1.0e-5));
+        srs::dvector qans = {0.7071, 0.0, 0.7071, 0.0};
+        CHECK(srs::approx_equal(srs::eul2quat(0.0, 90.0, 0.0), qans, 1.0e-5));
+    }
+
+    SECTION("quaternion")
+    {
+        srs::dvector quat = {0.707107, 0.0, 0.707107, 0.0};
+        srs::dmatrix ans = {{0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {-1.0, 0.0, 0.0}};
+        CHECK(srs::approx_equal(srs::quat2rotm(quat), ans, 1.0e-12));
     }
 }
-

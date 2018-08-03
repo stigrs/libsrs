@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (c) 2017 Stig Rune Sellevag. All rights reserved.
+// Copyright (c) 2018 Stig Rune Sellevag. All rights reserved.
 //
 // This code is licensed under the MIT License (MIT).
 //
@@ -14,23 +14,30 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
+#ifndef SRS_MATH_QUATERNION_H
+#define SRS_MATH_QUATERNION_H
 
+#include <srs/array.h>
+
+namespace srs {
 
 //
-// Provides a mathematical library with interfaces to Intel MKL.
+// Return rotation matrix for the qiven quaternions.
 //
+// Notes:
+//   Uses the XYZ convention
+//
+// Algorithm:
+//   https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion
+//
+// Arguments:
+//   Vector with quaternions (q0, q1, q2, q3)
+//
+// Returns:
+//   Rotation matrix
+//
+srs::dmatrix quat2rotm(const srs::dvector& quat);
 
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/derivation.h>
-#include <srs/math_impl/euler.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/grid.h>
-#include <srs/math_impl/integration.h>
-#include <srs/math_impl/linalg.h>
-#include <srs/math_impl/quaternion.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
+}  // namespace srs
 
-#endif  // SRS_MATH_H
+#endif  // SRS_MATH_QUATERNION_H
