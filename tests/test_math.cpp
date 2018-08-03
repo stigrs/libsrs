@@ -602,6 +602,9 @@ TEST_CASE("test_math")
 
         eul = {0.0, 0.0, 0.0};
         CHECK(srs::approx_equal(srs::rotm2eul(srs::identity(3)), eul, 1.0e-12));
+
+		srs::dvector qans = {0.7071, 0.0, 0.7071, 0.0};
+		CHECK(srs::approx_equal(srs::eul2quat(0.0, 90.0, 0.0), qans, 1.0e-5));
     }
 }
 

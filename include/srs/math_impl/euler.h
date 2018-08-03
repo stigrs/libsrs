@@ -62,6 +62,26 @@ srs::dmatrix eul2rotm(double x = 0.0, double y = 0.0, double z = 0.0);
 //
 srs::dvector rotm2eul(const srs::dmatrix& rotm);
 
+//
+// Return quaternions from Euler angles.
+//
+// Convention:
+//   Rm = Rm(Z(phi), Y(psi), X(theta)) = ZYX
+//   Axis rotation sequence: 3, 2, 1
+//
+// Algorithm:
+//   http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770024290.pdf
+//
+// Arguments:
+//   z: rotation angle in degrees around z-axis (yaw/phi)
+//   y: rotation angle in degrees around y-axis (roll/psi)
+//   x: rotation angle in degrees around x-axis (pitch/theta)
+//
+// Returns:
+//   array of quaternions [q0, q1, q2, q3]
+//
+srs::dvector eul2quat(double z = 0.0, double y = 0.0, double x = 0.0);
+
 }  // namespace srs
 
 #endif  // SRS_MATH_EULER_H

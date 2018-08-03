@@ -22,6 +22,7 @@
 
 srs::dmatrix srs::eul2rotm(double z, double y, double x)
 {
+    srs::dmatrix result = srs::identity(3);
     if ((z != 0.0) || (y != 0.0) || (x != 0.0)) {
         const double tol = 2.0 * std::numeric_limits<double>::epsilon();
 
@@ -72,11 +73,9 @@ srs::dmatrix srs::eul2rotm(double z, double y, double x)
         if (std::abs(m33) < tol) {
             m33 = 0.0;
         }
-        return {{m11, m12, m13}, {m21, m22, m23}, {m31, m32, m33}};
+        result = {{m11, m12, m13}, {m21, m22, m23}, {m31, m32, m33}};
     }
-    else {
-        return srs::identity(3);
-    }
+    return result;
 }
 
 srs::dvector srs::rotm2eul(const srs::dmatrix& rotm)
@@ -128,3 +127,40 @@ srs::dvector srs::rotm2eul(const srs::dmatrix& rotm)
     return {z, y, x};
 }
 
+srs::dvector srs::eul2quat(double z, double y, double x)
+{
+    srs::dvector result = {1.0, 0.0, 0.0, 0.0};
+    if ((z != 0.0) || (y != 0.0) || (x != 0.0)) {
+        const double tol = 2.0 * std::numeric_limits<double>::epsilon();
+
+        z *= 0.5 * datum::pi / 180.0;
+        y *= 0.5 * datum::pi / 180.0;
+        x *= 0.5 * datum::pi / 180.0;
+
+        double c1 = std::cos(z);
+        double c2 = std::cos(y);
+        double c3 = std::cos(x);
+        double s1 = std::sin(z);
+        double s2 = std::sin(y);
+        double s3 = std::sin(x);
+
+        double q0 = s1 * s2 * s3 + c1 * c2 * c3;
+        if (std::abs(q0) < tol) {
+            q0 = 0.0;
+        }
+        double q1 = -s1 * s2 * c3 + s3 * c1 * c2;
+        if (std::abs(q1) < tol) {
+            q1 = 0.0;
+        }
+        double q2 = s1 * s3 * c2 + s2 * c1 * c3;
+        if (std::abs(q2) < tol) {
+            q2 = 0.0;
+        }
+        double q3 = s1 * c2 * c3 - s2 * s3 * c1;
+        if (std::abs(q3) < tol) {
+            q3 = 0.0;
+        }
+        result = {q0, q1, q2, q3};
+    }
+    return result;
+}
