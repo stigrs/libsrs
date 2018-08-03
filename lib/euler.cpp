@@ -23,7 +23,7 @@
 srs::dmatrix srs::eul2rotm(double z, double y, double x)
 {
     if ((z != 0.0) || (y != 0.0) || (x != 0.0)) {
-        const double tol = std::numeric_limits<double>::epsilon();
+        const double tol = 2.0 * std::numeric_limits<double>::epsilon();
 
         z *= datum::pi / 180.0;
         y *= datum::pi / 180.0;
@@ -78,3 +78,53 @@ srs::dmatrix srs::eul2rotm(double z, double y, double x)
         return srs::identity(3);
     }
 }
+
+srs::dvector srs::rotm2eul(const srs::dmatrix& rotm)
+{
+    const double tol = 2.0 * std::numeric_limits<double>::epsilon();
+
+    double m11 = rotm(0, 0);
+    double m21 = rotm(1, 0);
+    double m31 = rotm(2, 0);
+    double m32 = rotm(2, 1);
+    double m33 = rotm(2, 2);
+
+    double z = 0.0;
+    double y = 0.0;
+    double x = 0.0;
+
+    if ((std::abs(m11) < tol) && (std::abs(m21) < tol)) {
+        z = 0.0;
+    }
+    else if ((std::abs(m11) < tol) && (std::abs(m21) > tol)) {
+        z = 0.5 * datum::pi;
+    }
+    else {
+        z = std::atan(m21 / m11);
+    }
+    double div = std::sqrt(1.0 - m31 * m31);
+    if ((std::abs(div) < tol) && (std::abs(m31) < tol)) {
+        y = 0.0;
+    }
+    else if ((std::abs(div) < tol) && (std::abs(m31) > tol)) {
+        y = -0.5 * datum::pi;
+    }
+    else {
+        y = std::atan(-m31 / div);
+    }
+    if ((std::abs(m33) < tol) && (std::abs(m32) < tol)) {
+        x = 0.0;
+    }
+    else if ((std::abs(m33) < tol) && (std::abs(m32) > tol)) {
+        x = 0.5 * datum::pi;
+    }
+    else {
+        x = std::atan(m32 / m33);
+    }
+    z *= 180.0 / datum::pi;
+    y *= 180.0 / datum::pi;
+    x *= 180.0 / datum::pi;
+
+    return {z, y, x};
+}
+

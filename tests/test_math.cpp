@@ -590,14 +590,18 @@ TEST_CASE("test_math")
         CHECK(a(2) == 1);
     }
 
-	SECTION("euler")
-	{
-            CHECK(
-                srs::approx_equal(srs::eul2rotm(), srs::identity(3), 1.0e-12));
+    SECTION("euler")
+    {
+        CHECK(srs::approx_equal(srs::eul2rotm(), srs::identity(3), 1.0e-12));
 
-            srs::dmatrix ans
-                = {{0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {-1.0, 0.0, 0.0}};
-            CHECK(
-                srs::approx_equal(srs::eul2rotm(0.0, 90.0, 0.0), ans, 1.0e-12));
-        }
+        srs::dmatrix ans = {{0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {-1.0, 0.0, 0.0}};
+        CHECK(srs::approx_equal(srs::eul2rotm(0.0, 90.0, 0.0), ans, 1.0e-12));
+
+        srs::dvector eul = {0.0, 90.0, 0.0};
+        CHECK(srs::approx_equal(srs::rotm2eul(ans), eul, 1.0e-12));
+
+        eul = {0.0, 0.0, 0.0};
+        CHECK(srs::approx_equal(srs::rotm2eul(srs::identity(3)), eul, 1.0e-12));
+    }
 }
+

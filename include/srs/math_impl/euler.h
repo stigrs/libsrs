@@ -41,6 +41,27 @@ namespace srs {
 //
 srs::dmatrix eul2rotm(double x = 0.0, double y = 0.0, double z = 0.0);
 
+//
+// Return Euler angles from rotation matrix.
+//
+// Convention:
+//   Rm = Rm(Z(phi), Y(psi), X(theta)) = ZYX
+//   Axis rotation scheme: 3, 2, 1
+//
+// Algorithm:
+//   http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770024290.pdf
+//
+// Arguments:
+//   rotation matrix
+//
+// Returns:
+//   vector with z, y, x
+//   z: rotation angle in degrees around z-axis (yaw/phi)
+//   y: rotation angle in degrees around y-axis (roll/psi)
+//   x: rotation angle in degrees around x-axis (pitch/theta)
+//
+srs::dvector rotm2eul(const srs::dmatrix& rotm);
+
 }  // namespace srs
 
 #endif  // SRS_MATH_EULER_H
