@@ -39,7 +39,7 @@ namespace srs {
 // Returns:
 //   3x3 rotation matrix giving same rotation as for given angles
 //
-srs::dmatrix euler2rot(double x = 0.0, double y = 0.0, double z = 0.0);
+srs::dmatrix eul2rotm(double x = 0.0, double y = 0.0, double z = 0.0);
 
 }  // namespace srs
 

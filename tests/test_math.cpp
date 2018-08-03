@@ -592,6 +592,12 @@ TEST_CASE("test_math")
 
 	SECTION("euler")
 	{
-		CHECK(srs::approx_equal(srs::euler2rot(), srs::identity(3), 1.0e-12));
-	}
+            CHECK(
+                srs::approx_equal(srs::eul2rotm(), srs::identity(3), 1.0e-12));
+
+            srs::dmatrix ans
+                = {{0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {-1.0, 0.0, 0.0}};
+            CHECK(
+                srs::approx_equal(srs::eul2rotm(0.0, 90.0, 0.0), ans, 1.0e-12));
+        }
 }
