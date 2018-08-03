@@ -589,4 +589,9 @@ TEST_CASE("test_math")
         CHECK(a(1) == 1);
         CHECK(a(2) == 1);
     }
+
+	SECTION("euler")
+	{
+		CHECK(srs::approx_equal(srs::euler2rot(), srs::identity(3), 1.0e-12));
+	}
 }

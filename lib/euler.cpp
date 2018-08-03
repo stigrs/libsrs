@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (c) 2017 Stig Rune Sellevag. All rights reserved.
+// Copyright (c) 2018 Stig Rune Sellevag. All rights reserved.
 //
 // This code is licensed under the MIT License (MIT).
 //
@@ -14,22 +14,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SRS_MATH_H
-#define SRS_MATH_H
-
-
-//
-// Provides a mathematical library with interfaces to Intel MKL.
-//
-
-#include <srs/math_impl/core.h>
-#include <srs/math_impl/derivation.h>
 #include <srs/math_impl/euler.h>
-#include <srs/math_impl/geometry.h>
-#include <srs/math_impl/grid.h>
-#include <srs/math_impl/integration.h>
 #include <srs/math_impl/linalg.h>
-#include <srs/math_impl/signal.h>
-#include <srs/math_impl/statistics.h>
 
-#endif  // SRS_MATH_H
+srs::dmatrix srs::euler2rot(double z, double y, double x)
+{
+    if (z != 0.0 && y != 0.0 && x != 0.0) {
+        return srs::identity(3);
+    }
+    else {
+        return srs::identity(3);
+    }
+}

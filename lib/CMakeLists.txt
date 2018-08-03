@@ -14,6 +14,7 @@ endif()
 set(
     SRC_FILES
     datum.cpp
+	euler.cpp
     geometry.cpp
     grid.cpp
     input.cpp
