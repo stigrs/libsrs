@@ -8,6 +8,7 @@
 *.out
 *.log
 *.tmp
+*.swp
 tmp.*
 .vscode/.cmaketools.json
 .vscode/c_cpp_properties.json
