@@ -23,6 +23,11 @@
 //
 // Class providing cooling schedule methods for simulated annealing solver.
 //
+// Available cooling methods:
+//   exp:   exponential cooling
+//   fast:  fast cooling
+//   boltz: Boltzmann cooling
+//
 class Coolschedule {
 public:
     Coolschedule(double tinit,

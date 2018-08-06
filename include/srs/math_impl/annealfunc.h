@@ -24,6 +24,11 @@
 //
 // Class for generating a new neighbour point for simulated annealing solver.
 //
+// Available annealing functions:
+//   fast:    from Student's t distribution
+//   boltz:   from multivariate normal distribution
+//   frenkel: from Algorithm 2 of Frenkel and Smit (2002)
+//
 class Annealfunc {
 public:
     Annealfunc(const std::string& func_, double step_ = 0.01, int seed = 0);
