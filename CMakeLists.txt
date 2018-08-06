@@ -94,6 +94,7 @@ target_include_directories(srs_h INTERFACE
 install(
     DIRECTORY include/srs
     DESTINATION include
+    FILES_MATCHING PATTERN "*.h"
 )
 
 add_subdirectory(lib)
