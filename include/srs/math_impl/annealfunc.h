@@ -26,7 +26,7 @@
 //
 class Annealfunc {
 public:
-    Annealfunc(const std::string func_, double step_ = 0.01, int seed = 0);
+    Annealfunc(const std::string& func_, double step_ = 0.01, int seed = 0);
 
     // Wrapper function for annealing function.
     srs::dvector generate(const srs::dvector& x, double temp);
