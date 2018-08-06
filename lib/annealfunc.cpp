@@ -16,6 +16,7 @@
 
 #include <srs/math_impl/annealfunc.h>
 #include <srs/math_impl/linalg.h>
+#include <cmath>
 
 Annealfunc::Annealfunc(const std::string& func_, double step_, int seed)
 {
@@ -57,7 +58,26 @@ srs::dvector Annealfunc::anneal_fast(const srs::dvector& x, double temp)
     for (srs::size_t i = 0; i < y.size(); ++i) {
         y(i) = rnd(mt);
     }
-    y = srs::normalize(y);
-    return x + temp * y;
+    return x + temp * srs::normalize(y);
+}
+
+srs::dvector Annealfunc::anneal_boltz(const srs::dvector& x, double temp)
+{
+    std::normal_distribution<double> rnd;
+    srs::dvector y(x.size());
+    for (srs::size_t i = 0; i < y.size(); ++i) {
+        y(i) = rnd(mt);
+    }
+    return x + std::sqrt(temp) * srs::normalize(y);
+}
+
+srs::dvector Annealfunc::anneal_frenkel(const srs::dvector& x)
+{
+    std::uniform_real_distribution<double> rnd;
+    srs::dvector xnew(x.size(), 0.0);
+    for (srs::size_t i = 0; i < xnew.size(); ++i) {
+        xnew(i) = x(i) + (rnd(mt) - 0.5) * step;
+    }
+    return xnew;
 }
 
