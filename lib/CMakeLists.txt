@@ -23,6 +23,7 @@ set(
     integration.cpp
     linalg.cpp
 	quaternion.cpp
+    simanneal.cpp
     statistics.cpp
 )
 add_library(

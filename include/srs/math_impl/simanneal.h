@@ -17,10 +17,34 @@
 #ifndef SRS_MATH_SIMANNEAL_H
 #define SRS_MATH_SIMANNEAL_H
 
+#include <srs/array.h>
+#include <functional>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+
+
+//------------------------------------------------------------------------------
+
+// Error reporting:
+
+struct Simanneal_error : std::runtime_error {
+    Simanneal_error(std::string s) : std::runtime_error(s) {}
+};
+
+//------------------------------------------------------------------------------
+
 //
 // Class providing simulated annealing solver.
 //
 class Simanneal {
+public:
+    Simanneal(std::function<double(const srs::dvector&)>& fn,
+              std::istream& from,
+              const std::string& key = "Simanneal");
+
+private:
+    std::function<double(const srs::dvector&)> func;
 };
 
 #endif  // SRS_MATH_SIMANNEAL_H
