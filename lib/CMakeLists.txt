@@ -14,6 +14,7 @@ endif()
 set(
     SRC_FILES
     annealfunc.cpp
+    coolschedule.cpp
     datum.cpp
 	euler.cpp
     geometry.cpp
