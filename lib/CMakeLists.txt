@@ -13,6 +13,7 @@ endif()
 
 set(
     SRC_FILES
+    annealfunc.cpp
     datum.cpp
 	euler.cpp
     geometry.cpp

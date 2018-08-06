@@ -18,21 +18,10 @@
 #define SRS_MATH_SIMANNEAL_H
 
 //
-// Class for generating a new neighbour point for simulated annealing solver.
-//
-class Anneal_func {
-};
-
-//
-// Class providing cooling schedule methods.
-//
-class Cool_schedule {
-};
-
-//
 // Class providing simulated annealing solver.
 //
-class Sim_anneal {
+class Simanneal {
 };
 
 #endif  // SRS_MATH_SIMANNEAL_H
+
