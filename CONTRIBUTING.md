@@ -1,7 +1,7 @@
 # Contribute to LIBSRS
 
-LIBSRS provides a suite of C++ utility methods. This document describes how 
-you can contribute.
+LIBSRS provides a suite of C++ numerical and other utility methods. This 
+document describes how you can contribute.
 
 ## How can I contribute?
 

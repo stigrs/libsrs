@@ -2,7 +2,7 @@
 
 LIBSRS extents the C++ STL with N-dimensional dense arrays, packed matrix 
 storage, band matrix storage, sparse vectors and matrices, mathematical 
-functions and other utility methods. 
+functions, physical constants, and other utility methods. 
 
 The design criteria for the array, vector, and matrix classes have been 
 numerical correctness, ease of implementation, flexibility, ease of use, 
