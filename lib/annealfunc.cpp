@@ -40,21 +40,23 @@ Annealfunc::Annealfunc(const std::string& func_, double step_, int seed)
 
 srs::dvector Annealfunc::generate(const srs::dvector& x, double temp)
 {
+    srs::dvector result;
     if (func == "fast") {
-        return anneal_fast(x, temp);
+        result = anneal_fast(x, temp);
     }
     else if (func == "boltz") {
-        return anneal_boltz(x, temp);
+        result = anneal_boltz(x, temp);
     }
     else if (func == "frenkel") {
-        return anneal_frenkel(x);
+        result = anneal_frenkel(x);
     }
     else if (func == "vandekerckhove") {
-        return anneal_vandekerckhove(x);
+        result = anneal_vandekerckhove(x);
     }
     else {
-        return anneal_fast(x, temp);
+        result = anneal_fast(x, temp);
     }
+    return result;
 }
 
 srs::dvector Annealfunc::anneal_fast(const srs::dvector& x, double temp)
