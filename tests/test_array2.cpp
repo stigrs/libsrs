@@ -99,7 +99,7 @@ TEST_CASE("test_array2")
 
     SECTION("pointer_array")
     {
-        int* ptr = new int[4];
+        gsl::owner<int*> ptr = new int[4];
         srs::Array<int, 2> a(2, 2, ptr);
         CHECK(a.rows() == 2);
         CHECK(a.cols() == 2);
