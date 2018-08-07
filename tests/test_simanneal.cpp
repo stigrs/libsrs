@@ -33,6 +33,9 @@ double camel(const srs::dvector& p)
 
 TEST_CASE("test_simanneal")
 {
+    double fglobal       = -1.0316;
+    srs::dvector xglobal = {-0.0899, 0.7127};
+
     srs::dvector x0 = {0.0, 0.0};
 
     std::ifstream from;
@@ -40,15 +43,12 @@ TEST_CASE("test_simanneal")
 
     std::function<double(const srs::dvector&)> fn = camel;
 
+    double e;
+    srs::dvector x;
+
     Simanneal sim(fn, x0, from);
-    sim.solve();
+    sim.solve(e, x);
 
-    double fglobal       = -1.0316;
-    srs::dvector xglobal = {-0.0899, 0.7127};
-
-    CHECK(srs::approx_equal(
-        sim.get_global_minimum(), fglobal, 1.0e-4, "reldiff"));
-
-    CHECK(srs::approx_equal(
-        sim.get_optimized_parameters(), xglobal, 1.0e-3, "reldiff"));
+    CHECK(srs::approx_equal(e, fglobal, 1.0e-4, "reldiff"));
+    CHECK(srs::approx_equal(x, xglobal, 1.0e-3, "reldiff"));
 }

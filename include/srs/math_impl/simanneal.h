@@ -40,18 +40,6 @@ struct Simanneal_error : std::runtime_error {
 
 //------------------------------------------------------------------------------
 
-// Storage:
-
-struct Simanneal_store {
-    unsigned k;
-    double t;
-    double e;
-    srs::dvector x;
-};
-
-//------------------------------------------------------------------------------
-
-
 //
 // Class providing simulated annealing solver.
 //
@@ -63,17 +51,11 @@ public:
               const std::string& key = "Simanneal");
 
     // Simulated annealing solver.
-    void solve();
-
-    // Get global minimum.
-    double get_global_minimum() const { return srs::min(ebest); }
-
-    // Get optimized parameters.
-    srs::dvector get_optimized_parameters() const { return xbest; }
+    void solve(double& eglobal, srs::dvector& xglobal);
 
 private:
     // Check if simulated annealing solver is finished.
-    bool check_exit() const;
+    bool finished() const;
 
     // Generate a new point.
     void new_point();
@@ -84,9 +66,6 @@ private:
     // Update simulated annealing solver.
     void update();
 
-    // Update storage of local minima.
-    void save_minimum();
-
     // Reannealing function.
     void reanneal();
 
@@ -95,7 +74,6 @@ private:
     std::unique_ptr<Annealfunc> anneal;  // annealing function
     std::unique_ptr<Coolschedule> cool;  // cooling schedule
 
-    double xtol;  // x tolerance
     double etol;  // function tolerance
     double emin;  // lowest function value permitted
 
@@ -117,8 +95,6 @@ private:
     unsigned nreject;    // iterator for number of consecutive rejected trials
     unsigned naccept;    // iterator for number of accepted trials
     unsigned nreanneal;  // iterator for number of reannealing runs
-
-    std::vector<Simanneal_store> store;  // storage of local minima
 
     std::mt19937_64 mt;  // random number engine
 };

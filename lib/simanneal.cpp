@@ -45,7 +45,6 @@ Simanneal::Simanneal(std::function<double(const srs::dvector&)>& fn,
     input_data["cool_schedule"] = srs::Input(cool_schedule, "exp");
     input_data["tinit"]         = srs::Input(tinit, 298.15);
     input_data["tmin"]          = srs::Input(tmin, tmin);
-    input_data["xtol"]          = srs::Input(xtol, 1.0e-6);
     input_data["etol"]          = srs::Input(etol, 1.0e-8);
     input_data["emin"]          = srs::Input(emin, emin_def);
     input_data["nminima"]       = srs::Input(nminima, 10);
@@ -62,11 +61,9 @@ Simanneal::Simanneal(std::function<double(const srs::dvector&)>& fn,
             if (token == "End") {
                 break;
             }
-            else {
-                auto it = input_data.find(token);
-                if (it != input_data.end()) {
-                    from >> it->second;
-                }
+            auto it = input_data.find(token);
+            if (it != input_data.end()) {
+                from >> it->second;
             }
         }
     }
@@ -99,43 +96,45 @@ Simanneal::Simanneal(std::function<double(const srs::dvector&)>& fn,
 
     if (seed == 0) {
         std::random_device rd;
-        std::seed_seq seed_seq_{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
-        mt.seed(seed_seq_);
+        std::seed_seq seq{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
+        mt.seed(seq);
     }
     else {
         mt.seed(seed);  // should only be used for testing purposes
     }
 }
 
-void Simanneal::solve()
+void Simanneal::solve(double& eglobal, srs::dvector& xglobal)
 {
-    while (!check_exit()) {
+    while (!finished()) {
         new_point();
         update();
     }
+    eglobal = srs::min(ebest);
+    xglobal = xbest;
 }
 
 //------------------------------------------------------------------------------
 
-bool Simanneal::check_exit() const
+bool Simanneal::finished() const
 {
-    bool finished = false;
+    bool result = false;
     if (ecurr <= emin) {
-        finished = true;
+        result = true;
     }
     if (kiter >= maxiter) {
-        finished = true;
+        result = true;
     }
     if (nreject >= maxreject) {
-        finished = true;
+        result = true;
     }
-    if (ebest.size() > 1) {
+    if (!ebest.empty()) {
         double ediff = ebest.end()[-1] - ebest.end()[-2];
         if ((std::abs(ediff) <= etol) && (kiter >= miniter)) {
-            finished = true;
+            result = true;
         }
     }
-    return finished;
+    return result;
 }
 
 void Simanneal::new_point()
@@ -145,7 +144,6 @@ void Simanneal::new_point()
     if (check_accept(enew)) {
         xcurr = xnew;
         ecurr = enew;
-        save_minimum();
         naccept += 1;
     }
 }
@@ -184,20 +182,6 @@ void Simanneal::update()
     }
 }
 
-void Simanneal::save_minimum()
-{
-    for (std::size_t i = 0; i < store.size(); ++i) {
-        if (!srs::approx_equal(xcurr, store[i].x, xtol)) {
-            Simanneal_store loc_min;
-            loc_min.k = kiter;
-            loc_min.t = tcurr;
-            loc_min.x = xcurr;
-            loc_min.e = ecurr;
-            store.push_back(loc_min);
-        }
-    }
-}
-
 void Simanneal::reanneal()
 {
     tcurr   = tinit;
@@ -207,4 +191,3 @@ void Simanneal::reanneal()
     nreject = 0;
     nreanneal += 1;
 }
-
