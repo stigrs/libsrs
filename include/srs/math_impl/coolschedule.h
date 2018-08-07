@@ -30,6 +30,8 @@
 //
 class Coolschedule {
 public:
+    Coolschedule() {}
+
     Coolschedule(double tinit,
                  double tmin_ = std::numeric_limits<double>::epsilon(),
                  const std::string& schedule_ = "exp");
