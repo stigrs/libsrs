@@ -18,10 +18,16 @@
 #define SRS_MATH_SIMANNEAL_H
 
 #include <srs/array.h>
+#include <srs/math_impl/annealfunc.h>
+#include <srs/math_impl/coolschedule.h>
+#include <srs/math_impl/linalg.h>
 #include <functional>
 #include <iostream>
+#include <memory>
+#include <random>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 
 //------------------------------------------------------------------------------
@@ -34,17 +40,87 @@ struct Simanneal_error : std::runtime_error {
 
 //------------------------------------------------------------------------------
 
+// Storage:
+
+struct Simanneal_store {
+    unsigned k;
+    double t;
+    double e;
+    srs::dvector x;
+};
+
+//------------------------------------------------------------------------------
+
+
 //
 // Class providing simulated annealing solver.
 //
 class Simanneal {
 public:
     Simanneal(std::function<double(const srs::dvector&)>& fn,
+              const srs::dvector& x0,
               std::istream& from,
               const std::string& key = "Simanneal");
 
+    // Simulated annealing solver.
+    void solve();
+
+    // Get global minimum.
+    double get_global_minimum() const { return srs::min(ebest); }
+
+    // Get optimized parameters.
+    srs::dvector get_optimized_parameters() const { return xbest; }
+
 private:
-    std::function<double(const srs::dvector&)> func;
+    // Check if simulated annealing solver is finished.
+    bool check_exit() const;
+
+    // Generate a new point.
+    void new_point();
+
+    // Acceptance function for simulated annealing solver.
+    bool check_accept(double enew);
+
+    // Update simulated annealing solver.
+    void update();
+
+    // Update storage of local minima.
+    void save_minimum();
+
+    // Reannealing function.
+    void reanneal();
+
+    std::function<double(const srs::dvector&)>& func;
+
+    std::unique_ptr<Annealfunc> anneal;  // annealing function
+    std::unique_ptr<Coolschedule> cool;  // cooling schedule
+
+    double xtol;  // x tolerance
+    double etol;  // function tolerance
+    double emin;  // lowest function value permitted
+
+    double tinit;  // initial temperature
+    double tcurr;  // current temperature
+    double ecurr;  // current function value
+
+    srs::dvector xinit;  // initial x value
+    srs::dvector xcurr;  // current x value
+    srs::dvector xbest;  // best x value
+    srs::dvector ebest;  // best function values
+
+    unsigned nminima;       // number of local minima stored
+    unsigned maxiter;       // maximum number of annealing iterations (k)
+    unsigned miniter;       // minimum number of annealing iterations
+    unsigned maxreject;     // maximum number of consecutive rejected trials
+    unsigned reanneal_int;  // reannealing interval
+    unsigned kiter;         // annealing iterator
+    unsigned nreject;    // iterator for number of consecutive rejected trials
+    unsigned naccept;    // iterator for number of accepted trials
+    unsigned nreanneal;  // iterator for number of reannealing runs
+
+    std::vector<Simanneal_store> store;  // storage of local minima
+
+    std::mt19937_64 mt;  // random number engine
 };
 
 #endif  // SRS_MATH_SIMANNEAL_H

@@ -87,6 +87,7 @@ set(PROGRAMS
     test_input
     test_math
     test_packed
+    test_simanneal
     test_sparse_matrix
     test_sparse_vector
     test_stream

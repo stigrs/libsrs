@@ -14,11 +14,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <srs/math_impl/core.h>
+#include <srs/math_impl/linalg.h>
 #include <srs/math_impl/simanneal.h>
 #include <srs/utils.h>
+#include <cmath>
+#include <limits>
 #include <map>
 
+
 Simanneal::Simanneal(std::function<double(const srs::dvector&)>& fn,
+                     const srs::dvector& x0,
                      std::istream& from,
                      const std::string& key)
     : func(fn)
@@ -26,9 +32,27 @@ Simanneal::Simanneal(std::function<double(const srs::dvector&)>& fn,
     std::string anneal_func;
     std::string cool_schedule;
 
+    double stepsize = 0.01;
+    double tmin     = std::numeric_limits<double>::epsilon();
+    double emin_def = -std::numeric_limits<double>::max();
+
+    int seed = 0;
+
     std::map<std::string, srs::Input> input_data;
     input_data["anneal_func"]   = srs::Input(anneal_func, "fast");
+    input_data["stepsize"]      = srs::Input(stepsize, stepsize);
+    input_data["seed"]          = srs::Input(seed, seed);
     input_data["cool_schedule"] = srs::Input(cool_schedule, "exp");
+    input_data["tinit"]         = srs::Input(tinit, 298.15);
+    input_data["tmin"]          = srs::Input(tmin, tmin);
+    input_data["xtol"]          = srs::Input(xtol, 1.0e-6);
+    input_data["etol"]          = srs::Input(etol, 1.0e-8);
+    input_data["emin"]          = srs::Input(emin, emin_def);
+    input_data["nminima"]       = srs::Input(nminima, 10);
+    input_data["maxiter"]       = srs::Input(maxiter, 10000);
+    input_data["maxiter"]       = srs::Input(maxiter, 1000);
+    input_data["maxreject"]     = srs::Input(maxreject, 300);
+    input_data["reanneal_int"]  = srs::Input(reanneal_int, 100);
 
     // Read input:
 
@@ -54,5 +78,133 @@ Simanneal::Simanneal(std::function<double(const srs::dvector&)>& fn,
             throw Simanneal_error(it->first + " not initialized");
         }
     }
+
+    // TODO: Implement validation of input data
+
+    anneal = std::make_unique<Annealfunc>(anneal_func, stepsize, seed);
+    cool   = std::make_unique<Coolschedule>(tinit, tmin, cool_schedule);
+
+    tcurr = tinit;
+    xcurr = x0;
+    xbest = xcurr;
+    ecurr = func(xcurr);
+    ebest.push_back(ecurr);
+
+    kiter     = 1;
+    nreject   = 0;
+    naccept   = 0;
+    nreanneal = 0;
+
+    // Seed random number engine:
+
+    if (seed == 0) {
+        std::random_device rd;
+        std::seed_seq seed_seq_{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
+        mt.seed(seed_seq_);
+    }
+    else {
+        mt.seed(seed);  // should only be used for testing purposes
+    }
+}
+
+void Simanneal::solve()
+{
+    while (!check_exit()) {
+        new_point();
+        update();
+    }
+}
+
+//------------------------------------------------------------------------------
+
+bool Simanneal::check_exit() const
+{
+    bool finished = false;
+    if (ecurr <= emin) {
+        finished = true;
+    }
+    if (kiter >= maxiter) {
+        finished = true;
+    }
+    if (nreject >= maxreject) {
+        finished = true;
+    }
+    if (ebest.size() > 1) {
+        double ediff = ebest.end()[-1] - ebest.end()[-2];
+        if ((std::abs(ediff) <= etol) && (kiter >= miniter)) {
+            finished = true;
+        }
+    }
+    return finished;
+}
+
+void Simanneal::new_point()
+{
+    auto xnew = anneal->generate(xcurr, tcurr);
+    auto enew = func(xnew);
+    if (check_accept(enew)) {
+        xcurr = xnew;
+        ecurr = enew;
+        save_minimum();
+        naccept += 1;
+    }
+}
+
+bool Simanneal::check_accept(double enew)
+{
+    bool accept  = false;
+    double ediff = enew - ecurr;
+    if (ediff < 0.0) {
+        accept  = true;
+        nreject = 0;
+    }
+    else {
+        double h = std::exp(-ediff / tcurr);
+        std::uniform_real_distribution<double> rnd;
+        if (h > rnd(mt)) {
+            accept = true;
+        }
+        else {
+            nreject += 1;
+        }
+    }
+    return accept;
+}
+
+void Simanneal::update()
+{
+    kiter += 1;
+    if ((naccept >= reanneal_int) && (kiter > 1)) {  // reanneal if needed
+        reanneal();
+    }
+    tcurr = cool->cool(kiter);      // create new temperature
+    if (ecurr < srs::min(ebest)) {  // update global minimum
+        ebest.push_back(ecurr);
+        xbest = xcurr;
+    }
+}
+
+void Simanneal::save_minimum()
+{
+    for (std::size_t i = 0; i < store.size(); ++i) {
+        if (!srs::approx_equal(xcurr, store[i].x, xtol)) {
+            Simanneal_store loc_min;
+            loc_min.k = kiter;
+            loc_min.t = tcurr;
+            loc_min.x = xcurr;
+            loc_min.e = ecurr;
+            store.push_back(loc_min);
+        }
+    }
+}
+
+void Simanneal::reanneal()
+{
+    tcurr   = tinit;
+    xcurr   = xbest;
+    ecurr   = srs::min(ebest);
+    naccept = 1;
+    nreject = 0;
+    nreanneal += 1;
 }
 
