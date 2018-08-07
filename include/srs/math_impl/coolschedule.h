@@ -33,8 +33,8 @@ public:
     Coolschedule() {}
 
     Coolschedule(double tinit,
-                 double tmin_ = std::numeric_limits<double>::epsilon(),
-                 const std::string& schedule_ = "exp");
+                 const std::string& schedule_ = "exp",
+                 double tmin_ = std::numeric_limits<double>::epsilon());
 
     // Temperature cooling function.
     double cool(unsigned k) const;
