@@ -16,7 +16,10 @@
 
 #include <srs/math_impl/annealfunc.h>
 #include <srs/math_impl/linalg.h>
+#include <algorithm>
 #include <cmath>
+#include <numeric>
+
 
 Annealfunc::Annealfunc(const std::string& func_, double step_, int seed)
 {
@@ -45,6 +48,9 @@ srs::dvector Annealfunc::generate(const srs::dvector& x, double temp)
     }
     else if (func == "frenkel") {
         return anneal_frenkel(x);
+    }
+    else if (func == "vandekerckhove") {
+        return anneal_vandekerckhove(x);
     }
     else {
         return anneal_fast(x, temp);
@@ -77,6 +83,21 @@ srs::dvector Annealfunc::anneal_frenkel(const srs::dvector& x)
     srs::dvector xnew(x.size(), 0.0);
     for (srs::size_t i = 0; i < xnew.size(); ++i) {
         xnew(i) = x(i) + (rnd(mt) - 0.5) * step;
+    }
+    return xnew;
+}
+
+srs::dvector Annealfunc::anneal_vandekerckhove(const srs::dvector& x)
+{
+    std::normal_distribution<double> rnd;
+
+    srs::ivector perm(x.size());
+    std::iota(perm.begin(), perm.end(), 0);
+    std::shuffle(perm.begin(), perm.end(), mt);
+
+    srs::dvector xnew = x;
+    for (srs::size_t i = 0; i < xnew.size(); ++i) {
+        xnew(i) += perm(i) * rnd(mt) * step;
     }
     return xnew;
 }

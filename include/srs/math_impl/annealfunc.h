@@ -31,6 +31,8 @@
 //
 class Annealfunc {
 public:
+    Annealfunc() {}
+
     Annealfunc(const std::string& func_, double step_ = 0.01, int seed = 0);
 
     // Wrapper function for annealing function.
@@ -45,6 +47,9 @@ private:
 
     // Generates a point using Algorithm 2 of Frenkel and Smit (2002).
     srs::dvector anneal_frenkel(const srs::dvector& x);
+
+    // Generates a point using an algorithm by Joachim Vandekerckhove.
+    srs::dvector anneal_vandekerckhove(const srs::dvector& x);
 
     std::string func;
     double step;
