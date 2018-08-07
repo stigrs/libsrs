@@ -62,11 +62,9 @@ Simanneal::Simanneal(std::function<double(const srs::dvector&)>& fn,
             if (token == "End") {
                 break;
             }
-            else {
-                auto it = input_data.find(token);
-                if (it != input_data.end()) {
-                    from >> it->second;
-                }
+            auto it = input_data.find(token);
+            if (it != input_data.end()) {
+                from >> it->second;
             }
         }
     }
