@@ -31,6 +31,7 @@
 #include <srs/math_impl/linalg.h>
 #include <srs/math_impl/quaternion.h>
 #include <srs/math_impl/signal.h>
+#include <srs/math_impl/simanneal.h>
 #include <srs/math_impl/statistics.h>
 
 #endif  // SRS_MATH_H
