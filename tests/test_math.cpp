@@ -403,7 +403,7 @@ TEST_CASE("test_math")
 
         srs::eig(emin, emax, ab, v, w);
         for (int i = 0; i < 6; ++i) {
-            CHECK(srs::approx_equal(w(i), eig[i], 1.0e-12));
+            CHECK(srs::approx_equal(w(i), gsl::at(eig, i), 1.0e-12));
         }
     }
 
@@ -456,7 +456,7 @@ TEST_CASE("test_math")
 
         srs::eig(emin, emax, a, v, w);
         for (int i = 0; i < 6; ++i) {
-            CHECK(srs::approx_equal(w(i), eig[i], 1.0e-12));
+            CHECK(srs::approx_equal(w(i), gsl::at(eig, i), 1.0e-12));
         }
     }
 
