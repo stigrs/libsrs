@@ -168,7 +168,7 @@ void srs::lu(srs::dmatrix& a, srs::ivector& ipiv)
     if (info < 0) {
         throw Math_error("dgetrf: illegal input parameter");
     }
-    else if (info > 0) {
+    if (info > 0) {
         throw Math_error("dgetrf: U matrix is singular");
     }
 }
