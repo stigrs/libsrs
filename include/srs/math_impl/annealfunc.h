@@ -31,6 +31,8 @@
 //
 class Annealfunc {
 public:
+    Annealfunc() {}
+
     Annealfunc(const std::string& func_, double step_ = 0.01, int seed = 0);
 
     // Wrapper function for annealing function.
