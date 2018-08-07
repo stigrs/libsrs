@@ -21,17 +21,15 @@
 #include <numeric>
 
 
-Annealfunc::Annealfunc(const std::string& func_, double step_, int seed)
+Annealfunc::Annealfunc(const std::string& fn, double step, int seed)
 {
-    func = func_;
-    step = step_;
+    func     = fn;
+    stepsize = step;
 
-    // Seed random number engine:
-
-    if (seed == 0) {
+    if (seed == 0) {  // seed random number engine
         std::random_device rd;
-        std::seed_seq seed_seq_{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
-        mt.seed(seed_seq_);
+        std::seed_seq seq{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
+        mt.seed(seq);
     }
     else {
         mt.seed(seed);  // should only be used for testing purposes
@@ -40,21 +38,23 @@ Annealfunc::Annealfunc(const std::string& func_, double step_, int seed)
 
 srs::dvector Annealfunc::generate(const srs::dvector& x, double temp)
 {
+    srs::dvector result;
     if (func == "fast") {
-        return anneal_fast(x, temp);
+        result = anneal_fast(x, temp);
     }
     else if (func == "boltz") {
-        return anneal_boltz(x, temp);
+        result = anneal_boltz(x, temp);
     }
     else if (func == "frenkel") {
-        return anneal_frenkel(x);
+        result = anneal_frenkel(x);
     }
     else if (func == "vandekerckhove") {
-        return anneal_vandekerckhove(x);
+        result = anneal_vandekerckhove(x);
     }
     else {
-        return anneal_fast(x, temp);
+        result = anneal_fast(x, temp);
     }
+    return result;
 }
 
 srs::dvector Annealfunc::anneal_fast(const srs::dvector& x, double temp)
@@ -82,7 +82,7 @@ srs::dvector Annealfunc::anneal_frenkel(const srs::dvector& x)
     std::uniform_real_distribution<double> rnd;
     srs::dvector xnew(x.size(), 0.0);
     for (srs::size_t i = 0; i < xnew.size(); ++i) {
-        xnew(i) = x(i) + (rnd(mt) - 0.5) * step;
+        xnew(i) = x(i) + (rnd(mt) - 0.5) * stepsize;
     }
     return xnew;
 }
@@ -97,8 +97,7 @@ srs::dvector Annealfunc::anneal_vandekerckhove(const srs::dvector& x)
 
     srs::dvector xnew = x;
     for (srs::size_t i = 0; i < xnew.size(); ++i) {
-        xnew(i) += perm(i) * rnd(mt) * step;
+        xnew(i) += perm(i) * rnd(mt) * stepsize;
     }
     return xnew;
 }
-

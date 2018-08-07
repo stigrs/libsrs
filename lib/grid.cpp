@@ -34,11 +34,9 @@ void Grid::set(std::istream& from, const std::string& key)
             if (token == "End") {
                 break;
             }
-            else {
-                auto it = input_data.find(token);
-                if (it != input_data.end()) {
-                    from >> it->second;
-                }
+            auto it = input_data.find(token);
+            if (it != input_data.end()) {
+                from >> it->second;
             }
         }
     }

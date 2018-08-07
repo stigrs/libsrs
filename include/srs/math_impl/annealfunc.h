@@ -33,7 +33,7 @@ class Annealfunc {
 public:
     Annealfunc() {}
 
-    Annealfunc(const std::string& func_, double step_ = 0.01, int seed = 0);
+    Annealfunc(const std::string& fn, double step = 0.01, int seed = 0);
 
     // Wrapper function for annealing function.
     srs::dvector generate(const srs::dvector& x, double temp);
@@ -52,10 +52,9 @@ private:
     srs::dvector anneal_vandekerckhove(const srs::dvector& x);
 
     std::string func;
-    double step;
+    double stepsize;
 
     std::mt19937_64 mt;  // random number engine
 };
 
 #endif  // SRS_MATH_ANNEALFUNC_H
-
