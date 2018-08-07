@@ -29,6 +29,10 @@
 //   boltz:   from multivariate normal distribution
 //   frenkel: from Algorithm 2 of Frenkel and Smit (2002)
 //
+// Note:
+//   This header should only be included by simanneal.h. It should not be
+//   included by the user.
+//
 class Annealfunc {
 public:
     Annealfunc() {}

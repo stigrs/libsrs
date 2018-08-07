@@ -27,6 +27,10 @@
 //   exp:   exponential cooling
 //   fast:  fast cooling
 //   boltz: Boltzmann cooling
+
+// Note:
+//   This header should only be included by simanneal.h. It should not be
+//   included by the user.
 //
 class Coolschedule {
 public:
@@ -40,9 +44,9 @@ public:
     double cool(unsigned k) const;
 
 private:
-    double t0;
-    double tmin;
-    std::string schedule;
+    double t0;             // initial temperature
+    double tmin;           // minimum temperature allowed
+    std::string schedule;  // cooling method
 };
 
 inline Coolschedule::Coolschedule(double tinit,
@@ -55,4 +59,3 @@ inline Coolschedule::Coolschedule(double tinit,
 }
 
 #endif  // SRS_MATH_COOLSCHEDULE_H
-
