@@ -22,7 +22,7 @@
 #include <valarray>
 
 
-typedef std::chrono::duration<double, std::milli> Timer;
+using Timer = std::chrono::duration<double, std::milli>;
 
 void print(int n,
            const Timer& t_arma,
