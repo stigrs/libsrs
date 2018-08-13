@@ -128,7 +128,7 @@ bool Simanneal::finished() const
     if (nreject >= maxreject) {
         result = true;
     }
-    if (!ebest.empty()) {
+    if (ebest.size() > 1) {
         double ediff = ebest.end()[-1] - ebest.end()[-2];
         if ((std::abs(ediff) <= etol) && (kiter >= miniter)) {
             result = true;

@@ -47,10 +47,10 @@ inline long krond(long i, long j) { return i == j; }
 inline std::size_t krond(std::size_t i, std::size_t j) { return i == j; }
 
 // Round double to nearest integer type.
-template<typename T>
+template <typename T>
 inline T round(double x)
 {
-	return static_cast<T>((x > 0.0) ? x + 0.5 : x - 0.5);
+    return static_cast<T>((x > 0.0) ? x + 0.5 : x - 0.5);
 }
 
 // Round double to nearest integer.
