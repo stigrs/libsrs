@@ -61,7 +61,7 @@ void benchmark(int n, int m)
     srs::dmatrix m4(n, m, 1.0);
     srs::dmatrix m5;
     t1 = std::chrono::high_resolution_clock::now();
-    mkl_transpose(m4, m5);
+    mkl_transpose(m4, m5); // BUG: causes an exception on Windows 7 (MSVC 2017) for large n and m
     t2          = std::chrono::high_resolution_clock::now();
     Timer t_mkl = t2 - t1;
 
@@ -80,5 +80,5 @@ int main()
 
     n = 1000;
     m = 500;
-    benchmark(n, m);
+    benchmark(n, m); 
 }
