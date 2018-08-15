@@ -63,13 +63,14 @@ bool operator!=(const Slice_iter<T>&, const Slice_iter<T>&);
 // TODO: Make it a random access iterator.
 //
 template <class T>
-class Slice_iter {
+class Slice_iter { 
 public:
-    typedef T value_type;
-    typedef T* pointer;
-    typedef T& reference;
-    typedef Int_t size_type;
-    typedef std::bidirectional_iterator_tag iterator_category;
+    using value_type        = T;
+    using pointer           = T*;
+    using reference         = T&;
+    using difference_type   = std::ptrdiff_t;
+    using size_type         = Int_t;
+    using iterator_category = std::bidirectional_iterator_tag;
 
     Slice_iter(T* p, const srs::Slice& s) : ptr(p), desc(s), curr(s.start) {}
 
