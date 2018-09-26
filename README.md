@@ -12,6 +12,8 @@ significantly adds to the code complexity. If fast numerical performance is
 needed, the performance-critical parts of the code, identified through 
 profiling, code should be replaced with Intel MKL functions. 
 
+**Note: LIBSRS is no longer under active development or maintenance.**
+
 ## Code of Conduct
 
 This project has adopted the [Covenant Code of Conduct](CODE_OF_CONDUCT.md).
